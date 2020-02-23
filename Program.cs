@@ -11,7 +11,7 @@ namespace NeoDoc
 			if (args.Length < 1)
 				return;
 
-			string folder = args[0];
+		    string folder = args[0];
 
             if (string.IsNullOrEmpty(folder))
                 return;
@@ -24,7 +24,7 @@ namespace NeoDoc
 
 			int amount = files.Length;
 
-			LangParser langParser = new LangParser();
+			LangMatcher langMatcher = new LangMatcher(); // lang processing system
 
 			for (int n = 0; n < amount; n++)
 			{
@@ -36,14 +36,17 @@ namespace NeoDoc
 
 				Console.WriteLine("[" + (int)Math.Floor((n + 1) / (double)amount * 100.0) + "%] '" + relPath + "'");
 
-				Lang lang = langParser.GetByFileExtension(Path.GetExtension(file));
+                // get the lang based on the file extension
+				Lang lang = langMatcher.GetByFileExtension(Path.GetExtension(file));
 
 				if (lang == null)
 					continue;
 
-				Console.WriteLine("Running " + lang.GetName() + " parser");
+				Console.WriteLine("Running '" + lang.GetName() + "' parser");
 
-				// TODO run the parser
+				FileParser fileParser = new FileParser(lang, file); // fileParser is used to process a file
+				fileParser.CleanUp();
+				fileParser.Process();
 
 				Console.WriteLine("Finished parsing");
 				Console.WriteLine("");

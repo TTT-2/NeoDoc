@@ -36,18 +36,34 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.ComponentModel" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source\Langs\Lua.cs" />
-    <Compile Include="source\Langs\ILang.cs" />
     <Compile Include="source\Langs\Lang.cs" />
-    <Compile Include="source\LangParser.cs" />
+    <Compile Include="source\LangMatcher.cs" />
+    <Compile Include="source\Params\Param.cs" />
+    <Compile Include="source\Params\Desc.cs" />
+    <Compile Include="source\ParamMatcher.cs" />
+    <Compile Include="source\FileParser.cs" />
+    <Compile Include="source\Params\Ignore.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />
     <Folder Include="source\Langs\" />
+    <Folder Include="source\Params\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

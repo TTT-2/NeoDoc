@@ -18,5 +18,10 @@ namespace NeoDoc.Langs
         {
             return @"-{2,}";
         }
+
+        public override char GetSingleCommentChar()
+        {
+            return '-';
+        }
     }
 }

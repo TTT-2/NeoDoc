@@ -6,11 +6,11 @@ using NeoDoc.Langs;
 
 namespace NeoDoc
 {
-    public class LangParser
+    public class LangMatcher
     {
         private readonly Dictionary<string, Lang> cachedTypes;
 
-        public LangParser()
+        public LangMatcher()
         {
             cachedTypes = GenerateTypesList();
         }
@@ -41,12 +41,6 @@ namespace NeoDoc
             cachedTypes.TryGetValue(ext, out Lang val);
 
             return val;
-        }
-
-        // returns the regex for matching params, e.g. "-- @param" or "//// @param"
-        public string GetParamRegex(Lang lang)
-        {
-            return @"^\s*" + lang.GetCommentStyleRegex() + @"\s*@\w+";
         }
     }
 }
