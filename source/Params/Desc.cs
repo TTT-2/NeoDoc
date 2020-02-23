@@ -2,7 +2,7 @@
 {
     public class Desc : Param
     {
-        public string Description { get; set; }
+        public string Description { get; set; } = "";
 
         public override string GetName()
         {
@@ -17,6 +17,16 @@
         public override void Process(string[] paramData)
         {
             Description = string.Join(" ", paramData);
+        }
+
+        public override void ProcessAddition(string[] paramData)
+        {
+            if (!string.IsNullOrEmpty(Description))
+            {
+                Description += " ";
+            }
+
+            Description += string.Join(" ", paramData);
         }
     }
 }

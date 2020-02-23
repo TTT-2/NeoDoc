@@ -68,15 +68,58 @@ namespace NeoDoc
             if (Ignored)
                 return;
 
+            // we don't need to declare it everytime, so keep it simple and do it one time outside the loop
+            Param lineParam, lastParam = null;
+            string line;
+
             for (int i = 0; i < Lines.Length; i++)
             {
-                string line = Lines[i];
-                Param param = paramMatcher.GetLineParam(line);
+                line = Lines[i];
+                lineParam = paramMatcher.GetLineParam(line);
 
-                if (param == null)
-                    continue;
+                if (lineParam == null) // if there is no line param
+                {
+                    if (paramMatcher.IsLineCommentStart(line))
+                    {
+                        if (lastParam != null)
+                        {
+                            // TODO thats just logging
+                            Console.WriteLine("Found: " + lastParam.GetName() + " with data '" + lastParam.GetOutput() + "'");
+                        }
 
-                Console.WriteLine("Found: " + param.GetName() + " with data '" + param.GetOutput() + "'");
+                        lastParam = new Params.Desc(); // start with a new description per default if matching e.g. "---"
+                    }
+
+                    string foundLineParamString = paramMatcher.GetLineParamString(line);
+
+                    if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
+                    {
+                        Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
+
+                        continue;
+                    }
+
+                    if (!paramMatcher.IsLineComment(line) || lastParam == null) // if there is no comment or no last param
+                    {
+                        continue;
+                    }
+
+                    lineParam = lastParam; // use last param as new line param to support multiline commenting style
+
+                    lineParam.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
+                }
+                else
+                {
+                    // TODO thats just logging
+                    Console.WriteLine("Found: " + lastParam.GetName() + " with data '" + lastParam.GetOutput() + "'");
+
+                    lastParam = lineParam; // update the last param
+                }
+
+                // TODO
+                // first: match all params
+                // second: process all params (e.g. replace classes refs)
+                // third: process params output and generate docs
             }
         }
 

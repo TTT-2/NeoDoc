@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 
@@ -11,12 +12,20 @@ namespace NeoDoc
     {
         private readonly Lang lang;
         private readonly Dictionary<string, Param> cachedParams;
+        private readonly Regex commentStartRegex, commentRegex, paramRegex;
 
         public ParamMatcher(Lang lang)
         {
             this.lang = lang;
 
             cachedParams = GenerateParamsList();
+
+            // e.g. check for "-- " or "////"
+            string commentRegexStr = @"^\s*" + lang.GetCommentStyleRegex();
+
+            commentStartRegex = new Regex(@"^\s*" + lang.GetCommentStartRegex()); // e.g. check for "---" or "///"
+            commentRegex = new Regex(commentRegexStr);
+            paramRegex = new Regex(commentRegexStr + @"\s*@\w+"); // e.g. check for "-- @param" or "//// @param"
         }
 
         private Dictionary<string, Param> GenerateParamsList()
@@ -39,7 +48,7 @@ namespace NeoDoc
             return dict;
         }
 
-        // returns the lang class by it's file extension
+        // returns the param class by it's file extension
         public Param GetByName(string name)
         {
             cachedParams.TryGetValue(name, out Param val);
@@ -47,10 +56,22 @@ namespace NeoDoc
             return val;
         }
 
-        // returns the regex for matching params, e.g. "-- @param" or "//// @param"
-        public string GetParamRegex()
+        // returns regex to check for comments, e.g. "---" or "///"
+        public Regex GetCommentStartRegex()
         {
-            return @"^\s*" + lang.GetCommentStyleRegex() + @"\s*@\w+";
+            return commentStartRegex;
+        }
+
+        // returns regex to check for comments, e.g. "-- " or "////"
+        public Regex GetCommentRegex()
+        {
+            return commentRegex;
+        }
+
+        // returns the regex for matching params, e.g. "-- @param" or "//// @param"
+        public Regex GetParamRegex()
+        {
+            return paramRegex;
         }
 
         // extracts the line's param string
@@ -88,6 +109,30 @@ namespace NeoDoc
             return retArr;
         }
 
+        // returns whether the current string / line is a comment
+        public bool IsLineCommentStart(string line)
+        {
+            Match match = GetCommentStartRegex().Match(line);
+
+            return match.Success;
+        }
+
+        // returns whether the current string / line is a comment
+        public bool IsLineComment(string line)
+        {
+            Match match = GetCommentRegex().Match(line);
+
+            return match.Success;
+        }
+
+        // returns the line param as string
+        public string GetLineParamString(string line)
+        {
+            Match match = GetParamRegex().Match(line);
+
+            return match.Value;
+        }
+
         // returns whether the current string / line contains param and returns the class
         public Param GetLineParam(string line)
         {
@@ -112,6 +157,13 @@ namespace NeoDoc
             }
 
             return null;
+        }
+
+        // returns all the comment data, should used if there isn't a @param part inside so used as multiline 
+        public string[] GetLineCommentData(string line)
+        {
+            // removes the e.g. "-- " or "//// " in front of the line
+            return line.TrimStart(lang.GetSingleCommentChar()).TrimStart().Split(' ');
         }
     }
 }

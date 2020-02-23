@@ -16,5 +16,10 @@
         {
             // nothing to process
         }
+
+        public override void ProcessAddition(string[] paramData)
+        {
+            // nothing to process
+        }
     }
 }

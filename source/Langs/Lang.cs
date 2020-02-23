@@ -1,5 +1,4 @@
-﻿using System;
-namespace NeoDoc.Langs
+﻿namespace NeoDoc.Langs
 {
     public abstract class Lang
     {
@@ -7,5 +6,6 @@ namespace NeoDoc.Langs
         public abstract string GetFileExtension();
         public abstract string GetCommentStyleRegex();
         public abstract char GetSingleCommentChar();
+        public abstract string GetCommentStartRegex();
     }
 }

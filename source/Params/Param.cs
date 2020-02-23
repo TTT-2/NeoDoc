@@ -4,6 +4,7 @@
     {
         public abstract string GetName(); // returns the name of the param
         public abstract void Process(string[] paramData); // paramData = everything except the @param prefix part
+        public abstract void ProcessAddition(string[] paramData); // paramData = everything of the line that already hadn't a param part
         public abstract string GetOutput(); // returns the output used for the website
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace NeoDoc.Langs
+﻿namespace NeoDoc.Langs
 {
     public class Lua : Lang
     {
@@ -22,6 +20,11 @@ namespace NeoDoc.Langs
         public override char GetSingleCommentChar()
         {
             return '-';
+        }
+
+        public override string GetCommentStartRegex()
+        {
+            return @"-{3,}";
         }
     }
 }
