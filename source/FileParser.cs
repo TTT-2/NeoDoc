@@ -15,6 +15,7 @@ namespace NeoDoc
         private bool Ignored { get; set; }
 
         public string[] Lines { get; set; }
+        public List<Param> paramsList { get; set; }
 
         public FileParser(Lang lang, string path)
         {
@@ -24,6 +25,8 @@ namespace NeoDoc
             paramMatcher = new ParamMatcher(lang);
 
             Lines = File.ReadAllLines(path); // Load each line of the file in the buffer
+
+            paramsList = new List<Param>();
         }
 
         public void CleanUp()
@@ -75,6 +78,12 @@ namespace NeoDoc
             for (int i = 0; i < Lines.Length; i++)
             {
                 line = Lines[i];
+
+                if (!paramMatcher.IsLineComment(line)) // if there is no comment 
+                {
+                    continue;
+                }
+
                 lineParam = paramMatcher.GetLineParam(line);
 
                 if (lineParam == null) // if there is no line param
@@ -83,8 +92,8 @@ namespace NeoDoc
                     {
                         if (lastParam != null)
                         {
-                            // TODO thats just logging
-                            Console.WriteLine("Found: " + lastParam.GetName() + " with data '" + lastParam.GetOutput() + "'");
+                            // add the last param before replacing it
+                            paramsList.Add(lastParam);
                         }
 
                         lastParam = new Params.Desc(); // start with a new description per default if matching e.g. "---"
@@ -99,7 +108,7 @@ namespace NeoDoc
                         continue;
                     }
 
-                    if (!paramMatcher.IsLineComment(line) || lastParam == null) // if there is no comment or no last param
+                    if (lastParam == null) // if there is no last param
                     {
                         continue;
                     }
@@ -110,16 +119,31 @@ namespace NeoDoc
                 }
                 else
                 {
-                    // TODO thats just logging
-                    Console.WriteLine("Found: " + lastParam.GetName() + " with data '" + lastParam.GetOutput() + "'");
+                    if (lastParam != null)
+                    {
+                        // add the last param before replacing it
+                        paramsList.Add(lastParam);
+                    }
 
                     lastParam = lineParam; // update the last param
                 }
+            }
 
-                // TODO
-                // first: match all params
-                // second: process all params (e.g. replace classes refs)
-                // third: process params output and generate docs
+            // add the last param of the file
+            if (lastParam != null)
+            {
+                paramsList.Add(lastParam);
+            }
+
+            // TODO
+            // first: match all params - DONE
+            // second: process all params (e.g. replace classes refs)
+            // third: process params output and generate docs
+
+            // TODO just debugging
+            foreach (Param p in paramsList)
+            {
+                Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
             }
         }
 
