@@ -131,4 +131,8 @@ $RECYCLE.BIN/
 .DS_Store
 .vs/*
 
+# mono
 mono_crash.*.json
+
+# node
+webfiles/node_modules/*

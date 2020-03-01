@@ -1,24 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using NeoDoc.DataStructures;
 using NeoDoc.Langs;
 using NeoDoc.Params;
+
+// Structure:
+// 1. Wrapper, e.g. "module" or "class"
+// 2. Section, e.g. "section"
+// 3. Param, e.g. "desc" or "param"
 
 namespace NeoDoc
 {
     public class FileParser
     {
+        private readonly LangMatcher langMatcher;
         private readonly Lang lang;
         private readonly string path;
         private readonly ParamMatcher paramMatcher;
 
-        private bool Ignored { get; set; }
+        private List<Wrapper> WrapperList { get; set; }
+
+        private Wrapper CurrentWrapper { get; set; }
+        private Section CurrentSection { get; set; }
 
         public string[] Lines { get; set; }
-        public List<Param> paramsList { get; set; }
 
-        public FileParser(Lang lang, string path)
+        public FileParser(LangMatcher langMatcher, Lang lang, string path)
         {
+            this.langMatcher = langMatcher;
             this.lang = lang;
             this.path = path;
 
@@ -26,7 +37,15 @@ namespace NeoDoc
 
             Lines = File.ReadAllLines(path); // Load each line of the file in the buffer
 
-            paramsList = new List<Param>();
+            // initialize wrapper list
+            WrapperList = new List<Wrapper>
+            {
+                new Module() // adds a new wrapper with default "none" data
+            };
+
+            // initializes the current vars for easy and fast access
+            CurrentWrapper = WrapperList.Last();
+            CurrentSection = CurrentWrapper.SectionList.Last();
         }
 
         public void CleanUp()
@@ -49,42 +68,43 @@ namespace NeoDoc
             Lines = tmpArr.ToArray();
         }
 
-        // Preprocessing the file, e.g. to detect whether it's ignored or whether it's a module
-        public void PreProcess()
+        public void Process()
         {
+            List<Param> paramsList = new List<Param>();
+            Param lastParam = null;
+
             for (int i = 0; i < Lines.Length; i++)
             {
                 string line = Lines[i];
 
-                if (paramMatcher.GetLineParam(line) is Params.Ignore) // @ignore support
-                {
-                    Ignored = true;
-
-                    return; // don't do anything
-                }
-                // TODO check for @module and @class
-            }
-        }
-
-        public void Process()
-        {
-            if (Ignored)
-                return;
-
-            // we don't need to declare it everytime, so keep it simple and do it one time outside the loop
-            Param lineParam, lastParam = null;
-            string line;
-
-            for (int i = 0; i < Lines.Length; i++)
-            {
-                line = Lines[i];
-
                 if (!paramMatcher.IsLineComment(line)) // if there is no comment 
                 {
+                    if (lastParam != null) // if there is something else than a comment. That means the doc comment section has end
+                    {
+                        // add the last param before setting it to null
+                        paramsList.Add(lastParam);
+
+                        lastParam = null;
+                    }
+
+                    DataStructure dataStructure = langMatcher.GetDataStructureType(lang, line);
+
+                    if (dataStructure != null)
+                    {
+                        dataStructure.Process(line);
+                        dataStructure.ParamsList = paramsList.ToArray(); // set the params with an array copy of the list
+
+                        // now add the datastructure into the current section of the current container
+                        CurrentSection.DataStructureList.Add(dataStructure);
+                    }
+
+                    // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+                    paramsList.Clear();
+
                     continue;
                 }
 
-                lineParam = paramMatcher.GetLineParam(line);
+                Param lineParam = paramMatcher.GetLineParam(line);
 
                 if (lineParam == null) // if there is no line param
                 {
@@ -119,31 +139,60 @@ namespace NeoDoc
                 }
                 else
                 {
-                    if (lastParam != null)
+                    if (lineParam is Wrapper || lineParam is Section)
                     {
-                        // add the last param before replacing it
-                        paramsList.Add(lastParam);
-                    }
+                        if (lineParam is Wrapper)
+                        {
+                            CurrentWrapper = (Wrapper)lineParam; // updates the new wrapper
 
-                    lastParam = lineParam; // update the last param
+                            WrapperList.Add(CurrentWrapper); // adds the new wrapper into the list
+
+                            CurrentSection = CurrentWrapper.SectionList.Last(); // reset the section
+                        }
+                        else
+                        {
+                            CurrentSection = (Section)lineParam; // update the section
+
+                            CurrentWrapper.SectionList.Add(CurrentSection); // adds the new section into the list
+                        }
+
+                        lastParam = null; // reset last param and wrapper don't need to support multiline
+                    }
+                    else
+                    {
+                        if (lastParam != null)
+                        {
+                            paramsList.Add(lastParam); // add the last param before replacing it
+                        }
+
+                        lastParam = lineParam; // update the last param
+                    }
                 }
             }
 
-            // add the last param of the file
-            if (lastParam != null)
-            {
-                paramsList.Add(lastParam);
-            }
-
-            // TODO
-            // first: match all params - DONE
-            // second: process all params (e.g. replace classes refs)
-            // third: process params output and generate docs
+            // HINT: if there is a docu comment at the EOF, it won't get included because there need to be a function afterwards
 
             // TODO just debugging
-            foreach (Param p in paramsList)
+            foreach (Wrapper wrapper in WrapperList)
             {
-                Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
+                Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
+
+                foreach (Section section in wrapper.SectionList)
+                {
+                    Console.WriteLine("Found section '" + section.GetName() + "'");
+
+                    foreach (DataStructure dataStructure in section.DataStructureList)
+                    {
+                        Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
+
+                        foreach (Param p in dataStructure.ParamsList)
+                        {
+                            Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
+                        }
+                    }
+                }
+
+                Console.WriteLine("");
             }
         }
 

@@ -44,7 +44,7 @@ namespace NeoDoc
 
 				Console.WriteLine("Running '" + lang.GetName() + "' parser");
 
-				FileParser fileParser = new FileParser(lang, file); // fileParser is used to process a file
+				FileParser fileParser = new FileParser(langMatcher, lang, file); // fileParser is used to process a file
 				fileParser.CleanUp();
 				fileParser.Process();
 

@@ -2,6 +2,11 @@
 {
     public class Ignore : Param
     {
+        public override string GetData()
+        {
+            return "";
+        }
+
         public override string GetName()
         {
             return "ignore";
