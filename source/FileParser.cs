@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NeoDoc.DataStructures;
+using NeoDoc.DataStructures.Lua;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 
@@ -123,7 +124,7 @@ namespace NeoDoc
 
                     if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
                     {
-                        Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
+                    //    Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
 
                         continue;
                     }
@@ -175,14 +176,17 @@ namespace NeoDoc
             // TODO just debugging
             foreach (Wrapper wrapper in WrapperList)
             {
-                Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
+            //    Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
 
                 foreach (Section section in wrapper.SectionList)
                 {
-                    Console.WriteLine("Found section '" + section.GetName() + "'");
+                //    Console.WriteLine("Found section '" + section.GetName() + "'");
 
                     foreach (DataStructure dataStructure in section.DataStructureList)
                     {
+                        if (!(dataStructure is CreateConVar))
+                            continue;
+
                         Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
 
                         foreach (Param p in dataStructure.ParamsList)

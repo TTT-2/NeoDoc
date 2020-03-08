@@ -132,7 +132,13 @@ $RECYCLE.BIN/
 .vs/*
 
 # mono
-mono_crash.*.json
+mono_crash.*
 
 # node
 webfiles/node_modules/*
+
+# build
+webfiles/build/*
+
+# tailwindcss
+webfiles/css/output.css
