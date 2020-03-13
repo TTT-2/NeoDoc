@@ -1,6 +1,6 @@
 ﻿namespace NeoDoc.Params
 {
-    public class Ignore : Param
+    public class IgnoreParam : Param
     {
         public override string GetData()
         {

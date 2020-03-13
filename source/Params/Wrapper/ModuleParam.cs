@@ -2,11 +2,11 @@
 
 namespace NeoDoc.Params
 {
-    public class Class : Wrapper
+    public class ModuleParam : WrapperParam
     {
         public override string GetName()
         {
-            return "class";
+            return "module";
         }
     }
 }

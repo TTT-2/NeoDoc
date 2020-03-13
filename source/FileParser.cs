@@ -21,10 +21,10 @@ namespace NeoDoc
         private readonly string path;
         private readonly ParamMatcher paramMatcher;
 
-        private List<Wrapper> WrapperList { get; set; }
+        private List<WrapperParam> WrapperList { get; set; }
 
-        private Wrapper CurrentWrapper { get; set; }
-        private Section CurrentSection { get; set; }
+        private WrapperParam CurrentWrapper { get; set; }
+        private SectionParam CurrentSection { get; set; }
 
         public string[] Lines { get; set; }
 
@@ -39,9 +39,9 @@ namespace NeoDoc
             Lines = File.ReadAllLines(path); // Load each line of the file in the buffer
 
             // initialize wrapper list
-            WrapperList = new List<Wrapper>
+            WrapperList = new List<WrapperParam>
             {
-                new Module() // adds a new wrapper with default "none" data
+                new ModuleParam() // adds a new wrapper with default "none" data
             };
 
             // initializes the current vars for easy and fast access
@@ -124,7 +124,7 @@ namespace NeoDoc
                             paramsList.Add(lastParam);
                         }
 
-                        lastParam = new Params.Desc(); // start with a new description per default if matching e.g. "---"
+                        lastParam = new DescParam(); // start with a new description per default if matching e.g. "---"
                     }
 
                     string foundLineParamString = paramMatcher.GetLineParamString(line);
@@ -148,11 +148,11 @@ namespace NeoDoc
                 }
                 else
                 {
-                    if (lineParam is Wrapper || lineParam is Section)
+                    if (lineParam is WrapperParam || lineParam is SectionParam)
                     {
-                        if (lineParam is Wrapper)
+                        if (lineParam is WrapperParam)
                         {
-                            CurrentWrapper = (Wrapper)lineParam; // updates the new wrapper
+                            CurrentWrapper = (WrapperParam)lineParam; // updates the new wrapper
 
                             WrapperList.Add(CurrentWrapper); // adds the new wrapper into the list
 
@@ -160,7 +160,7 @@ namespace NeoDoc
                         }
                         else
                         {
-                            CurrentSection = (Section)lineParam; // update the section
+                            CurrentSection = (SectionParam)lineParam; // update the section
 
                             CurrentWrapper.SectionList.Add(CurrentSection); // adds the new section into the list
                         }
@@ -182,11 +182,11 @@ namespace NeoDoc
             // HINT: if there is a docu comment at the EOF, it won't get included because there need to be a function afterwards
 
             // TODO just debugging
-            foreach (Wrapper wrapper in WrapperList)
+            foreach (WrapperParam wrapper in WrapperList)
             {
             //    Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
 
-                foreach (Section section in wrapper.SectionList)
+                foreach (SectionParam section in wrapper.SectionList)
                 {
                 //    Console.WriteLine("Found section '" + section.GetName() + "'");
 

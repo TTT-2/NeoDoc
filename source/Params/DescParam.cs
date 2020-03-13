@@ -1,6 +1,6 @@
 ﻿namespace NeoDoc.Params
 {
-    public class Desc : Param
+    public class DescParam : Param
     {
         public string Description { get; set; } = "";
 

@@ -1,23 +1,21 @@
 ﻿using System.Collections.Generic;
+using NeoDoc.DataStructures;
 
 namespace NeoDoc.Params
 {
-    public abstract class Wrapper : Param
+    public class SectionParam : Param
     {
-        public string WrapperName { get; set; } = "none";
-        public List<Section> SectionList { get; set; }
+        public string SectionName { get; set; } = "none";
+        public List<DataStructure> DataStructureList;
 
-        public Wrapper()
+        public SectionParam()
         {
-            SectionList = new List<Section>
-            {
-                new Section() // adds a new section with default "none" data
-            };
+            DataStructureList = new List<DataStructure>();
         }
 
         public override string GetData()
         {
-            return WrapperName;
+            return SectionName;
         }
 
         public override string GetOutput()
@@ -30,12 +28,17 @@ namespace NeoDoc.Params
             if (paramData.Length < 1)
                 return;
 
-            WrapperName = paramData[0];
+            SectionName = paramData[0];
         }
 
         public override void ProcessAddition(string[] paramData)
         {
             // nothing to process
+        }
+
+        public override string GetName()
+        {
+            return "section";
         }
     }
 }

@@ -24,9 +24,26 @@ namespace NeoDoc.DataStructures.Lua
         {
             Line = line;
 
-            Match match = new Regex(@"^\s*local\s*").Match(line);
+            // if param "@local" found
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                foreach (Param param in ParamsList)
+                {
+                    if (param is LocalParam)
+                    {
+                        Local = true;
 
-            Local = match.Success;
+                        break;
+                    }
+                }
+            }
+
+            if (!Local)
+            {
+                Match match = new Regex(@"^\s*local\s*").Match(line);
+
+                Local = match.Success;
+            }
 
             Name = GetRegex().Match(line).Value;
         }
