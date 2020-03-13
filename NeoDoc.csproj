@@ -66,6 +66,7 @@
     <Compile Include="source\Params\Wrapper\Class.cs" />
     <Compile Include="source\Params\Section.cs" />
     <Compile Include="source\DataStructures\Lua\CreateConVar.cs" />
+    <Compile Include="source\Params\NameParam.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />
@@ -83,7 +84,6 @@
     <None Include="webfiles\README.md" />
     <None Include="webfiles\package-lock.json" />
     <None Include="webfiles\package.json" />
-    <None Include="webfiles\ressources.txt" />
     <None Include="webfiles\config\dev.env.js" />
     <None Include="webfiles\config\index.js" />
     <None Include="webfiles\config\prod.env.js" />
@@ -91,7 +91,6 @@
     <None Include="webfiles\src\App.vue" />
     <None Include="webfiles\src\main.js" />
     <None Include="webfiles\src\components\HelloWorld.vue" />
-    <None Include="webfiles\src\assets\logo.png" />
     <None Include="webfiles\src\router\index.js" />
     <None Include="webfiles\postcss.config.js" />
     <None Include="webfiles\src\assets\css\tailwind.css" />

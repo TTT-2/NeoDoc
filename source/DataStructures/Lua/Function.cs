@@ -8,10 +8,11 @@ namespace NeoDoc.DataStructures.Lua
     {
         private string Line { get; set; }
         private bool Local { get; set; }
+        private string Name { get; set; }
 
         public override Regex GetRegex()
         {
-            return new Regex(@"^(\s*local\s+){0,1}\s*function\s*\w+((\.|\:)\w+)*\s*\(([\w" + "\"" + @"]+\s*(,\s*[\w" + "\"" + @"]+\s*)*){0,1}\)"); // RegEx matches "function opt.name(param, opt)"
+            return new Regex(@"^(\s*local\s+){0,1}\s*function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*){0,1}\)"); // RegEx matches "function opt.name(param, opt)"
         }
 
         public override bool Check(string line)
@@ -26,6 +27,8 @@ namespace NeoDoc.DataStructures.Lua
             Match match = new Regex(@"^\s*local\s*").Match(line);
 
             Local = match.Success;
+
+            Name = GetRegex().Match(line).Value;
         }
 
         public bool IsLocal()

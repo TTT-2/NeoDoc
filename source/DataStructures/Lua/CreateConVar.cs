@@ -11,7 +11,7 @@ namespace NeoDoc.DataStructures.Lua
 
         public override Regex GetRegex()
         {
-            return new Regex(@"\s*CreateConVar\s*\([\w" + "\"" + @"]+\s*,\s*[\w" + "\"" + @"]+\s*(,\s*[\w" + "\"" + @"\{\}]+\s*){0,4}\)"); // TODO match {} table, string creation and parentheses too!
+            return new Regex(@"\s*CreateConVar\s*\([^)]*\)");
         }
 
         public override bool Check(string line)
@@ -23,15 +23,44 @@ namespace NeoDoc.DataStructures.Lua
         {
             Line = line;
 
-            Regex splitRegex1 = new Regex(@"CreateConVar\s*\(");
-            Match splitMatch1 = splitRegex1.Match(line);
-            int splitPos1 = splitMatch1.Index + splitMatch1.Length;
+            string name = null;
 
-            Regex splitRegex2 = new Regex(@"CreateConVar\s*\([\w" + "\"" + @"]+\s*");
-            Match splitMatch2 = splitRegex2.Match(line);
-            int splitPos2 = splitMatch2.Index + splitMatch2.Length;
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                foreach (Param param in ParamsList)
+                {
+                    if (param is NameParam)
+                    {
+                        name = param.GetData();
 
-            ConVarName = line.Substring(splitPos1, splitPos2 - splitPos1);
+                        break;
+                    }
+                }
+            }
+
+            if (name == null)
+            {
+                Regex splitRegex1 = new Regex(@"CreateConVar\s*\(");
+                Match splitMatch1 = splitRegex1.Match(line);
+                int splitPos1 = splitMatch1.Index + splitMatch1.Length;
+
+                Match splitMatch2 = Regex.Match(line, @"\)", RegexOptions.RightToLeft);
+                int splitPos2 = splitMatch2.Index;
+
+                string result = line.Substring(splitPos1, splitPos2 - splitPos1);
+                string[] splits = result.Split(',');
+
+                if (splits.Length > 0)
+                {
+                    name = splits[0];
+                }
+                else
+                {
+                    name = result;
+                }
+            }
+
+            ConVarName = name;
         }
 
         public override string GetName()
