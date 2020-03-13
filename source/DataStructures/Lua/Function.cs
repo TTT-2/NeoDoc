@@ -43,7 +43,40 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetData()
         {
-            return "'" + GetName() + " with data '" + Line + "'";
+            return "'" + GetName() + " with data '" + Name + "'";
+        }
+
+        public override DataStructure CheckDataStructureTransformation()
+        {
+            // check whether it's a hook
+
+            // if param "@hook" found
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                foreach (Param param in ParamsList)
+                {
+                    if (param is HookParam)
+                    {
+                        return new Hook
+                        {
+                            HookName = Name
+                        };
+                    }
+                }
+            }
+
+            // if "GM" or "GAMEMODE" found
+            Regex regex = new Regex(@"\s*function\s*(GAMEMODE|GM)\:\w+\s*\(");
+
+            if (regex.Match(Line).Success)
+            {
+                return new Hook
+                {
+                    HookName = Name
+                };
+            }
+
+            return null;
         }
     }
 }

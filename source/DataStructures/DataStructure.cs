@@ -13,5 +13,10 @@ namespace NeoDoc.DataStructures
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
         public abstract string GetData(); // returns data
+
+        public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
+        {
+            return null;
+        }
     }
 }

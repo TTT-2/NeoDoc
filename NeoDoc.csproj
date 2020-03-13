@@ -67,6 +67,12 @@
     <Compile Include="source\Params\Section.cs" />
     <Compile Include="source\DataStructures\Lua\CreateConVar.cs" />
     <Compile Include="source\Params\NameParam.cs" />
+    <Compile Include="source\DataStructures\Lua\Hook.cs" />
+    <Compile Include="source\Params\HookParam.cs" />
+    <Compile Include="source\Params\Realm.cs" />
+    <Compile Include="source\Params\Note.cs" />
+    <Compile Include="source\Params\ParamParam.cs" />
+    <Compile Include="source\Params\ReturnParam.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />

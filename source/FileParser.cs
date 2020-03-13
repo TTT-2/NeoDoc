@@ -92,8 +92,15 @@ namespace NeoDoc
 
                     if (dataStructure != null)
                     {
-                        dataStructure.Process(line);
                         dataStructure.ParamsList = paramsList.ToArray(); // set the params with an array copy of the list
+                        dataStructure.Process(line);
+
+                        DataStructure transformation = dataStructure.CheckDataStructureTransformation();
+
+                        if (transformation != null)
+                        {
+                            dataStructure = transformation;
+                        }
 
                         // now add the datastructure into the current section of the current container
                         CurrentSection.DataStructureList.Add(dataStructure);
@@ -124,7 +131,8 @@ namespace NeoDoc
 
                     if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
                     {
-                    //    Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
+                        Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
+                        Console.WriteLine(line);
 
                         continue;
                     }
@@ -184,19 +192,19 @@ namespace NeoDoc
 
                     foreach (DataStructure dataStructure in section.DataStructureList)
                     {
-                        if (!(dataStructure is CreateConVar))
+                        if (!(dataStructure is Function))
                             continue;
 
-                        Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
+                    //    Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
 
-                        foreach (Param p in dataStructure.ParamsList)
+                    /*    foreach (Param p in dataStructure.ParamsList)
                         {
                             Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
-                        }
+                        }*/
                     }
                 }
 
-                Console.WriteLine("");
+            //    Console.WriteLine("");
             }
         }
 

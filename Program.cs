@@ -34,7 +34,7 @@ namespace NeoDoc
 				relPath = relPath.TrimStart('\\');
 				relPath = relPath.Replace('\\', '/');
 
-				Console.WriteLine("[" + (int)Math.Floor((n + 1) / (double)amount * 100.0) + "%] '" + relPath + "'");
+			//	Console.WriteLine("[" + (int)Math.Floor((n + 1) / (double)amount * 100.0) + "%] '" + relPath + "'");
 
                 // get the lang based on the file extension
 				Lang lang = langMatcher.GetByFileExtension(Path.GetExtension(file));
@@ -42,13 +42,13 @@ namespace NeoDoc
 				if (lang == null)
 					continue;
 
-				Console.WriteLine("Running '" + lang.GetName() + "' parser");
+			//	Console.WriteLine("Running '" + lang.GetName() + "' parser");
 
 				FileParser fileParser = new FileParser(langMatcher, lang, file); // fileParser is used to process a file
 				fileParser.CleanUp();
 				fileParser.Process();
 
-				Console.WriteLine("Finished parsing");
+			//	Console.WriteLine("Finished parsing");
 				Console.WriteLine("");
 			}
 		}
