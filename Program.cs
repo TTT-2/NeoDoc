@@ -5,7 +5,7 @@ using System.IO;
 /*
  * TODO
  *
- * match param[…] and return[default=…] too
+ * convert param[…] and return[default=…] too
  * @author
  * @register
  *
@@ -16,6 +16,8 @@ using System.IO;
 ---
 -- ...
 AccessorFunc(PANEL, "m_iMin", "Min")
+ *
+ * Match module("...", ..., ...) as well ? No -> Add @module in documentation on your own!
  */
 
 namespace NeoDoc

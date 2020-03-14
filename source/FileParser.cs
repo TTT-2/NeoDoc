@@ -131,8 +131,14 @@ namespace NeoDoc
 
                     if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
                     {
+                        ConsoleColor oldColor = Console.ForegroundColor;
+
+                        Console.ForegroundColor = ConsoleColor.Red;
+
                         Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
                         Console.WriteLine(line);
+
+                        Console.ForegroundColor = oldColor;
 
                         continue;
                     }

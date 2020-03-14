@@ -75,8 +75,10 @@ namespace NeoDoc
         }
 
         // extracts the line's param string
-        private string ExtractLineParam(string line)
+        private string ExtractLineParam(string line, out string[] paramSettings)
         {
+            paramSettings = null;
+
             string param = line.TrimStart(lang.GetSingleCommentChar()).TrimStart();
 
             if (!param.StartsWith("@"))
@@ -88,7 +90,11 @@ namespace NeoDoc
             string[] paramDataArr = extractedParam.Split('['); // e.g. split the default param data from "-- @return[default=false]"
 
             if (paramDataArr.Length > 1)
+            {
                 extractedParam = paramDataArr[0];
+
+                paramSettings = paramDataArr[1].TrimEnd(']').Trim().Split(',');
+            }
 
             return extractedParam;
         }
@@ -143,7 +149,7 @@ namespace NeoDoc
         public Param GetLineParam(string line)
         {
             // extract possible param from line
-            string param = ExtractLineParam(line);
+            string param = ExtractLineParam(line, out string[] paramSettings);
 
             if (param == null)
                 return null;
@@ -157,6 +163,9 @@ namespace NeoDoc
 
                     // let each val process the data on it's own (without the param prefix stuff)
                     val.Process(ExtractLineParamData(line));
+
+                    if (paramSettings != null)
+                        val.ProcessSettings(paramSettings);
 
                     return val;
                 }
