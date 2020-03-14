@@ -53,7 +53,10 @@ namespace NeoDoc
         {
             cachedParams.TryGetValue(name, out Param val);
 
-            return val;
+            if (val == null)
+                return null;
+
+            return (Param)Activator.CreateInstance(val.GetType()); // return a new instance of this Param
         }
 
         // returns regex to check for comments, e.g. "---" or "///"
@@ -154,24 +157,18 @@ namespace NeoDoc
             if (param == null)
                 return null;
 
-            // search for the Param with the same name
-            foreach (string name in cachedParams.Keys)
-            {
-                if (param == name)
-                {
-                    cachedParams.TryGetValue(name, out Param val);
+            Param val = GetByName(param);
 
-                    // let each val process the data on it's own (without the param prefix stuff)
-                    val.Process(ExtractLineParamData(line));
+            if (val == null)
+                return null;
 
-                    if (paramSettings != null)
-                        val.ProcessSettings(paramSettings);
+            // let each val process the data on it's own (without the param prefix stuff)
+            val.Process(ExtractLineParamData(line));
 
-                    return val;
-                }
-            }
+            if (paramSettings != null)
+                val.ProcessSettings(paramSettings);
 
-            return null;
+            return val;
         }
 
         // returns all the comment data, should used if there isn't a @param part inside so used as multiline 
