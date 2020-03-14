@@ -58,9 +58,9 @@ namespace NeoDoc.DataStructures.Lua
             return "function";
         }
 
-        public override string GetData()
+        public override string GetJSONData()
         {
-            return "'" + GetName() + " with data '" + Name + "'";
+            return "\"" + Name + "\"";
         }
 
         public override DataStructure CheckDataStructureTransformation()

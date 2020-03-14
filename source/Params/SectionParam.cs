@@ -40,5 +40,23 @@ namespace NeoDoc.Params
         {
             return "section";
         }
+
+        public string GetJSONData()
+        {
+            string json = "\"" + GetData() + "\":{";
+
+            // data structures
+            json += "\"dataStructures\":[";
+
+            foreach (DataStructure dataStructure in DataStructureList)
+            {
+                if (dataStructure.IsGlobal())
+                    continue;
+
+                json += dataStructure.GetJSONData() + ",";
+            }
+
+            return json + "]}"; // close dataStructures and section
+        }
     }
 }

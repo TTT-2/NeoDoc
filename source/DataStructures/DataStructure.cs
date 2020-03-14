@@ -7,16 +7,20 @@ namespace NeoDoc.DataStructures
     public abstract class DataStructure
     {
         public Param[] ParamsList;
-
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
         public abstract void Process(string line); // process data based on given line string
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
-        public abstract string GetData(); // returns data
+        public abstract string GetJSONData(); // returns data
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
         {
             return null;
+        }
+
+        public virtual bool IsGlobal() // whether the DataStructure should be excluded from the sections / wrappers data structuring
+        {
+            return false;
         }
     }
 }

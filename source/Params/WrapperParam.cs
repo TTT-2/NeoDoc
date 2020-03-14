@@ -63,5 +63,24 @@ namespace NeoDoc.Params
                 Authors.Add(author);
             }
         }
+
+        public string GetJSONData()
+        {
+            string json = "\"" + GetData() + "\":{";
+
+            // add auhtors
+            if (Authors.Count > 0)
+                json += "\"authors\":{\"" + string.Join("\",", Authors) + "\"},";
+
+            // sections
+            json += "\"sections\":{";
+
+            foreach (SectionParam section in SectionList)
+            {
+                json += section.GetJSONData() + ",";
+            }
+
+            return json + "}}"; // close sections and wrapper
+        }
     }
 }

@@ -65,9 +65,14 @@ namespace NeoDoc.DataStructures.Lua
             return "hook";
         }
 
-        public override string GetData()
+        public override string GetJSONData()
         {
-            return HookName;
+            return "\"" + HookName + "\"";
+        }
+
+        public override bool IsGlobal()
+        {
+            return true;
         }
     }
 }

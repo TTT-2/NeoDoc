@@ -16,6 +16,9 @@ using System.IO;
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
  * (convert param[…] and return[default=…] into the doc pages too)
+ *
+ * Export Hooks and ConVars from Sections and Wrappers ! -> add IsGlobal var and extract them in the end
+ * Remove @ in front of function's json extraction
  */
 
 namespace NeoDoc
@@ -70,12 +73,16 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            //string jsonFunctions = CreateJSONFunctionList(fileParsers);
             WrapperParam[] wrapperList = ProcessFileParsers(fileParsers);
 
-            DebugWrapperParams(wrapperList);
+            string jsonString = GenerateJSONSearchIndex(wrapperList);
+
+            Console.WriteLine(jsonString);
+
+            //DebugWrapperParams(wrapperList);
 		}
 
+        // TODO don't include local functions and don't include empty sections or wrapper!
         private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers)
         {
             Dictionary<string, WrapperParam> wrapperParamsDict = new Dictionary<string, WrapperParam>();
@@ -134,6 +141,18 @@ namespace NeoDoc
             return wrapperParams;
         }
 
+        private static string GenerateJSONSearchIndex(WrapperParam[] wrapperParams)
+        {
+            string json = "{";
+
+            foreach (WrapperParam wrapper in wrapperParams)
+            {
+                json += wrapper.GetJSONData() + ",";
+            }
+
+            return json + "}";
+        }
+
         private static void DebugWrapperParams(WrapperParam[] wrapperParams)
         {
             Console.WriteLine();
@@ -152,7 +171,7 @@ namespace NeoDoc
 
                     foreach (DataStructure dataStructure in section.DataStructureList)
                     {
-                        Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
+                        Console.WriteLine("Found dataStructure '" + dataStructure.GetJSONData() + "'");
 
                         if (dataStructure.ParamsList == null)
                             continue;
