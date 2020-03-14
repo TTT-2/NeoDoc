@@ -4,6 +4,8 @@ namespace NeoDoc.Params
 {
     public abstract class WrapperParam : Param
     {
+        public List<string> Authors { get; set; }
+
         public string WrapperName { get; set; } = "none";
         public List<SectionParam> SectionList { get; set; }
 
@@ -13,6 +15,8 @@ namespace NeoDoc.Params
             {
                 new SectionParam() // adds a new section with default "none" data
             };
+
+            Authors = new List<string>();
         }
 
         public override string GetData()
@@ -36,6 +40,17 @@ namespace NeoDoc.Params
         public override void ProcessAddition(string[] paramData)
         {
             // nothing to process
+        }
+
+        public void ProcessParamsList(List<Param> paramsList)
+        {
+            foreach (Param param in paramsList)
+            {
+                if (param is AuthorParam)
+                {
+                    Authors.Add(param.GetData());
+                }
+            }
         }
     }
 }

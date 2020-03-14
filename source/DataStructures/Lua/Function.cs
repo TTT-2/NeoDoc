@@ -12,7 +12,7 @@ namespace NeoDoc.DataStructures.Lua
 
         public override Regex GetRegex()
         {
-            return new Regex(@"^(\s*local\s+){0,1}\s*function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*){0,1}\)"); // RegEx matches "function opt.name(param, opt)"
+            return new Regex(@"(^\s*(local\s+)?\s*|@)function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*)?\)"); // RegEx matches "@function opt.name(param, opt)" or "local function opt:name()"
         }
 
         public override bool Check(string line)
@@ -22,8 +22,6 @@ namespace NeoDoc.DataStructures.Lua
 
         public override void Process(string line)
         {
-            Line = line;
-
             // if param "@local" found
             if (ParamsList != null && ParamsList.Length > 0)
             {
@@ -37,6 +35,8 @@ namespace NeoDoc.DataStructures.Lua
                     }
                 }
             }
+
+            Line = line;
 
             if (!Local)
             {

@@ -89,6 +89,8 @@
     <Compile Include="source\Params\NameParam.cs" />
     <Compile Include="source\Params\DescParam.cs" />
     <Compile Include="source\Params\PredictedParam.cs" />
+    <Compile Include="source\Params\FunctionParam.cs" />
+    <Compile Include="source\Params\AuthorParam.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />

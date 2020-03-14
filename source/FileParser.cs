@@ -10,7 +10,8 @@ using NeoDoc.Params;
 // Structure:
 // 1. Wrapper, e.g. "module" or "class"
 // 2. Section, e.g. "section"
-// 3. Param, e.g. "desc" or "param"
+// 3. Datastructures, e.g. "function"
+// 4. Param, e.g. "desc" or "param"
 
 namespace NeoDoc
 {
@@ -154,11 +155,20 @@ namespace NeoDoc
                 }
                 else
                 {
+                    if (lastParam != null)
+                    {
+                        // add the last param before setting it to null
+                        paramsList.Add(lastParam);
+
+                        lastParam = null;
+                    }
+
                     if (lineParam is WrapperParam || lineParam is SectionParam)
                     {
                         if (lineParam is WrapperParam)
                         {
                             CurrentWrapper = (WrapperParam)lineParam; // updates the new wrapper
+                            CurrentWrapper.ProcessParamsList(paramsList); // e.g. add @author to the wrapper's data
 
                             WrapperList.Add(CurrentWrapper); // adds the new wrapper into the list
 
@@ -171,15 +181,33 @@ namespace NeoDoc
                             CurrentWrapper.SectionList.Add(CurrentSection); // adds the new section into the list
                         }
 
-                        lastParam = null; // reset last param and wrapper don't need to support multiline
+                        // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+                        paramsList.Clear();
+                    }
+                    else if (lineParam is FunctionParam) // match @functions and transform them into DataStructures
+                    {
+                        DataStructure dataStructure = new Function
+                        {
+                            ParamsList = paramsList.ToArray() // set the params with an array copy of the list
+                        };
+
+                        dataStructure.Process(line);
+
+                        DataStructure transformation = dataStructure.CheckDataStructureTransformation();
+
+                        if (transformation != null)
+                        {
+                            dataStructure = transformation;
+                        }
+
+                        // now add the datastructure into the current section of the current container
+                        CurrentSection.DataStructureList.Add(dataStructure);
+
+                        // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+                        paramsList.Clear();
                     }
                     else
                     {
-                        if (lastParam != null)
-                        {
-                            paramsList.Add(lastParam); // add the last param before replacing it
-                        }
-
                         lastParam = lineParam; // update the last param
                     }
                 }

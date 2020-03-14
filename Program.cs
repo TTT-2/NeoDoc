@@ -5,19 +5,13 @@ using System.IO;
 /*
  * TODO
  *
- * convert param[…] and return[default=…] too
  * @author
  * @register
  *
- * support @function for AccessorFunctions e.g.:
----
--- @function GetMin()
--- @return number
----
--- ...
-AccessorFunc(PANEL, "m_iMin", "Min")
- *
- * Match module("...", ..., ...) as well ? No -> Add @module in documentation on your own!
+ * Rework documentation: put @module and @function right below the previous param descriptions
+ * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
+ * Cleanup wrong parameters, e.g. "deprecTated"
+ * (convert param[…] and return[default=…] into the doc pages too)
  */
 
 namespace NeoDoc
