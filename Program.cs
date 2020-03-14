@@ -84,11 +84,11 @@ namespace NeoDoc
             {
                 foreach (WrapperParam wrapper in fileParser.WrapperList)
                 {
-                    Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
+                    Console.WriteLine("Found wrapper '" + wrapper.GetData() + "'");
 
                     foreach (SectionParam section in wrapper.SectionList)
                     {
-                        Console.WriteLine("Found section '" + section.GetName() + "'");
+                        Console.WriteLine("Found section '" + section.GetData() + "'");
 
                         foreach (DataStructure dataStructure in section.DataStructureList)
                         {
