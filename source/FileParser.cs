@@ -22,7 +22,7 @@ namespace NeoDoc
         private readonly string path;
         private readonly ParamMatcher paramMatcher;
 
-        private List<WrapperParam> WrapperList { get; set; }
+        public List<WrapperParam> WrapperList { get; set; }
 
         private WrapperParam CurrentWrapper { get; set; }
         private SectionParam CurrentSection { get; set; }
@@ -211,34 +211,6 @@ namespace NeoDoc
                         lastParam = lineParam; // update the last param
                     }
                 }
-            }
-
-            // HINT: if there is a docu comment at the EOF, it won't get included because there need to be a function afterwards
-
-            // TODO just debugging
-            foreach (WrapperParam wrapper in WrapperList)
-            {
-            //    Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
-
-                foreach (SectionParam section in wrapper.SectionList)
-                {
-                //    Console.WriteLine("Found section '" + section.GetName() + "'");
-
-                    foreach (DataStructure dataStructure in section.DataStructureList)
-                    {
-                        if (!(dataStructure is Function))
-                            continue;
-
-                    //    Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
-
-                    /*    foreach (Param p in dataStructure.ParamsList)
-                        {
-                            Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
-                        }*/
-                    }
-                }
-
-            //    Console.WriteLine("");
             }
         }
 

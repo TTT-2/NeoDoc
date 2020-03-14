@@ -1,5 +1,8 @@
-﻿using NeoDoc.Langs;
+﻿using NeoDoc.DataStructures;
+using NeoDoc.Langs;
+using NeoDoc.Params;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 /*
@@ -32,7 +35,7 @@ namespace NeoDoc
 			string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
 
 			// Prepare the files
-			//Dictionary<string, string> fileTypeDict = new Dictionary<string, string>();
+			List<FileParser> fileParsers = new List<FileParser>();
 
 			int amount = files.Length;
 
@@ -60,9 +63,50 @@ namespace NeoDoc
 				fileParser.CleanUp();
 				fileParser.Process();
 
+				fileParsers.Add(fileParser);
+
 				Console.WriteLine("Finished parsing");
 				Console.WriteLine("");
 			}
+
+			ProcessFileParsers(fileParsers);
 		}
+
+        private static void ProcessFileParsers(List<FileParser> fileParsers)
+        {
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+
+            // TODO just debugging
+            foreach (FileParser fileParser in fileParsers)
+            {
+                foreach (WrapperParam wrapper in fileParser.WrapperList)
+                {
+                    Console.WriteLine("Found wrapper '" + wrapper.GetName() + "'");
+
+                    foreach (SectionParam section in wrapper.SectionList)
+                    {
+                        Console.WriteLine("Found section '" + section.GetName() + "'");
+
+                        foreach (DataStructure dataStructure in section.DataStructureList)
+                        {
+                            Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
+
+                            if (dataStructure.ParamsList == null)
+                                continue;
+
+                            foreach (Param p in dataStructure.ParamsList)
+                            {
+                                Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
+                            }
+                        }
+                    }
+
+                    Console.WriteLine("");
+                }
+            }
+        }
 	}
 }
