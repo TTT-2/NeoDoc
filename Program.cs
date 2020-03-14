@@ -12,6 +12,7 @@ using System.IO;
  * @register
  *
  * Rework documentation: put @module and @function right below the previous param descriptions
+ * Improve @function calls, e.g. add PANEL in front of function
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
  * (convert param[…] and return[default=…] into the doc pages too)
@@ -69,8 +70,57 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
+            CleanupEmptyDataKeeper(fileParsers);
 			ProcessFileParsers(fileParsers);
 		}
+
+        private static void CleanupEmptyDataKeeper(List<FileParser> fileParsers)
+        {
+            for (int i = 0; i < fileParsers.Count; i++)
+            {
+                FileParser fileParser = fileParsers[i];
+
+                for (int i2 = 0; i2 < fileParser.WrapperList.Count; i2++)
+                {
+                    WrapperParam wrapper = fileParser.WrapperList[i2];
+
+                    for (int i3 = 0; i3 < wrapper.SectionList.Count; i3++)
+                    {
+                        SectionParam section = wrapper.SectionList[i3];
+
+                        if (section.DataStructureList.Count < 1)
+                        {
+                            wrapper.SectionList.Remove(section);
+
+                            i3 -= 1;
+
+                            if (i3 >= wrapper.SectionList.Count)
+                                break;
+                        }
+                    }
+
+                    if (wrapper.SectionList.Count < 1)
+                    {
+                        fileParser.WrapperList.Remove(wrapper);
+
+                        i2 -= 1;
+
+                        if (i2 >= fileParser.WrapperList.Count)
+                            break;
+                    }
+                }
+
+                if (fileParser.WrapperList.Count < 1)
+                {
+                    fileParsers.Remove(fileParser);
+
+                    i -= 1;
+
+                    if (i >= fileParsers.Count)
+                        break;
+                }
+            }
+        }
 
         private static void ProcessFileParsers(List<FileParser> fileParsers)
         {
