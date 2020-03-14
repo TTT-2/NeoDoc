@@ -52,5 +52,16 @@ namespace NeoDoc.Params
                 }
             }
         }
+
+        public void MergeData(WrapperParam wrapper)
+        {
+            foreach (string author in wrapper.Authors)
+            {
+                if (Authors.Contains(author))
+                    continue;
+
+                Authors.Add(author);
+            }
+        }
     }
 }

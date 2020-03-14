@@ -70,59 +70,71 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            CleanupEmptyDataKeeper(fileParsers);
-			ProcessFileParsers(fileParsers);
+            //string jsonFunctions = CreateJSONFunctionList(fileParsers);
+            WrapperParam[] wrapperList = ProcessFileParsers(fileParsers);
+
+            DebugWrapperParams(wrapperList);
 		}
 
-        private static void CleanupEmptyDataKeeper(List<FileParser> fileParsers)
+        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers)
         {
-            for (int i = 0; i < fileParsers.Count; i++)
+            Dictionary<string, WrapperParam> wrapperParamsDict = new Dictionary<string, WrapperParam>();
+
+            foreach (FileParser fileParser in fileParsers)
             {
-                FileParser fileParser = fileParsers[i];
-
-                for (int i2 = 0; i2 < fileParser.WrapperList.Count; i2++)
+                foreach (WrapperParam wrapper in fileParser.WrapperList)
                 {
-                    WrapperParam wrapper = fileParser.WrapperList[i2];
+                    // at first, we need to add the wrappers
+                    bool wrapperExists = wrapperParamsDict.TryGetValue(wrapper.GetData(), out WrapperParam finalWrapper);
 
-                    for (int i3 = 0; i3 < wrapper.SectionList.Count; i3++)
+                    if (!wrapperExists)
                     {
-                        SectionParam section = wrapper.SectionList[i3];
+                        wrapperParamsDict.Add(wrapper.GetData(), wrapper); // add this wrapper as main wrapper if not already exists
 
-                        if (section.DataStructureList.Count < 1)
+                        continue; // we don't need to do any other thing here because a new wrapper will come with it's sections automatically
+                    }
+                    else
+                        finalWrapper.MergeData(wrapper); // e.g. merge Authors
+
+                    // now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
+                    foreach (SectionParam section in wrapper.SectionList)
+                    {
+                        // section already exists?
+                        SectionParam finalSection = null;
+
+                        foreach (SectionParam tmpSection in finalWrapper.SectionList)
                         {
-                            wrapper.SectionList.Remove(section);
+                            if (tmpSection.GetData() == section.GetData())
+                            {
+                                finalSection = tmpSection;
 
-                            i3 -= 1;
-
-                            if (i3 >= wrapper.SectionList.Count)
                                 break;
+                            }
+                        }
+
+                        bool sectionExists = finalSection != null;
+
+                        if (!sectionExists)
+                            finalWrapper.SectionList.Add(section); // add this section as new section into the wrappers section list
+                        else // otherwise, the section already exists and need to copy all functions of the current section
+                        {
+                            foreach (DataStructure dataStructure in section.DataStructureList)
+                            {
+                                finalSection.DataStructureList.Add(dataStructure);
+                            }
                         }
                     }
-
-                    if (wrapper.SectionList.Count < 1)
-                    {
-                        fileParser.WrapperList.Remove(wrapper);
-
-                        i2 -= 1;
-
-                        if (i2 >= fileParser.WrapperList.Count)
-                            break;
-                    }
-                }
-
-                if (fileParser.WrapperList.Count < 1)
-                {
-                    fileParsers.Remove(fileParser);
-
-                    i -= 1;
-
-                    if (i >= fileParsers.Count)
-                        break;
                 }
             }
+
+            WrapperParam[] wrapperParams = new WrapperParam[wrapperParamsDict.Count];
+
+            wrapperParamsDict.Values.CopyTo(wrapperParams, 0);
+
+            return wrapperParams;
         }
 
-        private static void ProcessFileParsers(List<FileParser> fileParsers)
+        private static void DebugWrapperParams(WrapperParam[] wrapperParams)
         {
             Console.WriteLine();
             Console.WriteLine();
@@ -130,32 +142,36 @@ namespace NeoDoc
             Console.WriteLine();
 
             // TODO just debugging
-            foreach (FileParser fileParser in fileParsers)
+            foreach (WrapperParam wrapper in wrapperParams)
             {
-                foreach (WrapperParam wrapper in fileParser.WrapperList)
+                Console.WriteLine("Found wrapper '" + wrapper.GetData() + "'");
+
+                foreach (SectionParam section in wrapper.SectionList)
                 {
-                    Console.WriteLine("Found wrapper '" + wrapper.GetData() + "'");
+                    Console.WriteLine("Found section '" + section.GetData() + "'");
 
-                    foreach (SectionParam section in wrapper.SectionList)
+                    foreach (DataStructure dataStructure in section.DataStructureList)
                     {
-                        Console.WriteLine("Found section '" + section.GetData() + "'");
+                        Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
 
-                        foreach (DataStructure dataStructure in section.DataStructureList)
+                        if (dataStructure.ParamsList == null)
+                            continue;
+
+                        foreach (Param p in dataStructure.ParamsList)
                         {
-                            Console.WriteLine("Found dataStructure '" + dataStructure.GetData() + "'");
-
-                            if (dataStructure.ParamsList == null)
-                                continue;
-
-                            foreach (Param p in dataStructure.ParamsList)
-                            {
-                                Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
-                            }
+                            Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
                         }
                     }
-
-                    Console.WriteLine("");
                 }
+
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
             }
         }
 	}
