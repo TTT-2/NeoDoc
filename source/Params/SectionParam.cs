@@ -56,7 +56,7 @@ namespace NeoDoc.Params
                 json += dataStructure.GetJSONData() + ",";
             }
 
-            return json + "]}"; // close dataStructures and section
+            return json.Remove(json.Length - 1, 1) + "]}"; // close dataStructures and section and remove last ","
         }
     }
 }

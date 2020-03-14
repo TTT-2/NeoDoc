@@ -80,7 +80,7 @@ namespace NeoDoc.Params
                 json += section.GetJSONData() + ",";
             }
 
-            return json + "}}"; // close sections and wrapper
+            return json.Remove(json.Length - 1, 1) + "}}"; // close sections and wrapper and remove last ","
         }
     }
 }

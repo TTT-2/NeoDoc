@@ -73,16 +73,55 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            WrapperParam[] wrapperList = ProcessFileParsers(fileParsers);
+            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers));
+
+            CleanupEmptyDataKeeper(wrapperList); // remove empty sections and wrappers that were created e.g. because of hooks, ConVars or local functions
+
+            // Generate Folders
+            string newDir = Directory.GetCurrentDirectory() + "../../../output";
+
+            if (!Directory.Exists(newDir))
+                Directory.CreateDirectory(newDir);
 
             string jsonString = GenerateJSONSearchIndex(wrapperList);
 
-            Console.WriteLine(jsonString);
+            // Write JSON
+            File.WriteAllText(newDir + "/jsonList.json", jsonString);
+        }
 
-            //DebugWrapperParams(wrapperList);
-		}
+        private static void CleanupEmptyDataKeeper(List<WrapperParam> wrapperParams)
+        {
+            for (int i2 = 0; i2 < wrapperParams.Count; i2++)
+            {
+                WrapperParam wrapper = wrapperParams[i2];
 
-        // TODO don't include local functions and don't include empty sections or wrapper!
+                for (int i3 = 0; i3 < wrapper.SectionList.Count; i3++)
+                {
+                    SectionParam section = wrapper.SectionList[i3];
+
+                    if (section.DataStructureList.Count < 1)
+                    {
+                        wrapper.SectionList.Remove(section);
+
+                        i3 -= 1;
+
+                        if (i3 >= wrapper.SectionList.Count)
+                            break;
+                    }
+                }
+
+                if (wrapper.SectionList.Count < 1)
+                {
+                    wrapperParams.Remove(wrapper);
+
+                    i2 -= 1;
+
+                    if (i2 >= wrapperParams.Count)
+                        break;
+                }
+            }
+        }
+
         private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers)
         {
             Dictionary<string, WrapperParam> wrapperParamsDict = new Dictionary<string, WrapperParam>();
@@ -127,6 +166,13 @@ namespace NeoDoc
                         {
                             foreach (DataStructure dataStructure in section.DataStructureList)
                             {
+                                if (dataStructure.IsGlobal())
+                                {
+                                    // TODO add to global list
+
+                                    continue;
+                                }
+
                                 finalSection.DataStructureList.Add(dataStructure);
                             }
                         }
@@ -141,7 +187,7 @@ namespace NeoDoc
             return wrapperParams;
         }
 
-        private static string GenerateJSONSearchIndex(WrapperParam[] wrapperParams)
+        private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams)
         {
             string json = "{";
 
@@ -150,48 +196,7 @@ namespace NeoDoc
                 json += wrapper.GetJSONData() + ",";
             }
 
-            return json + "}";
-        }
-
-        private static void DebugWrapperParams(WrapperParam[] wrapperParams)
-        {
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-
-            // TODO just debugging
-            foreach (WrapperParam wrapper in wrapperParams)
-            {
-                Console.WriteLine("Found wrapper '" + wrapper.GetData() + "'");
-
-                foreach (SectionParam section in wrapper.SectionList)
-                {
-                    Console.WriteLine("Found section '" + section.GetData() + "'");
-
-                    foreach (DataStructure dataStructure in section.DataStructureList)
-                    {
-                        Console.WriteLine("Found dataStructure '" + dataStructure.GetJSONData() + "'");
-
-                        if (dataStructure.ParamsList == null)
-                            continue;
-
-                        foreach (Param p in dataStructure.ParamsList)
-                        {
-                            Console.WriteLine("Found: " + p.GetName() + " with data '" + p.GetOutput() + "'");
-                        }
-                    }
-                }
-
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
-            }
+            return json.Remove(json.Length - 1, 1) + "}"; // remove last ","
         }
 	}
 }

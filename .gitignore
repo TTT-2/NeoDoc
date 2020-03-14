@@ -142,3 +142,6 @@ webfiles/build/*
 
 # tailwindcss
 webfiles/css/output.css
+
+# output
+output/*
