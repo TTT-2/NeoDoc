@@ -1,15 +1,15 @@
 ﻿namespace NeoDoc.Params
 {
-    public class ThreeDParam : MarkParam
+    public class SeeParam : TextParam
     {
         public override string GetName()
         {
-            return "3D";
+            return "see";
         }
 
         public override string GetOutput()
         {
-            return "This is a 3D method"; // nothing to output
+            return Text;
         }
     }
 }

@@ -2,6 +2,16 @@
 using System;
 using System.IO;
 
+/*
+ * TODO
+ *
+ * match param[…] and return[default=…] too
+ * @author
+ * @register
+ * @predicted
+ * support ints too (\d)
+ */
+
 namespace NeoDoc
 {
     internal static class NeoDoc

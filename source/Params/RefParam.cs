@@ -1,10 +1,10 @@
 ﻿namespace NeoDoc.Params
 {
-    public class ParamParam : ParameterParam
+    public class RefParam : SeeParam
     {
         public override string GetName()
         {
-            return "param";
+            return "ref";
         }
     }
 }

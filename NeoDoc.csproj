@@ -54,8 +54,6 @@
     <Compile Include="source\Langs\Lua.cs" />
     <Compile Include="source\Langs\Lang.cs" />
     <Compile Include="source\LangMatcher.cs" />
-    <Compile Include="source\Params\Param.cs" />
-    <Compile Include="source\Params\DescParam.cs" />
     <Compile Include="source\ParamMatcher.cs" />
     <Compile Include="source\FileParser.cs" />
     <Compile Include="source\Params\IgnoreParam.cs" />
@@ -66,12 +64,10 @@
     <Compile Include="source\Params\Wrapper\ClassParam.cs" />
     <Compile Include="source\Params\SectionParam.cs" />
     <Compile Include="source\DataStructures\Lua\CreateConVar.cs" />
-    <Compile Include="source\Params\NameParam.cs" />
     <Compile Include="source\DataStructures\Lua\Hook.cs" />
     <Compile Include="source\Params\HookParam.cs" />
     <Compile Include="source\Params\RealmParam.cs" />
     <Compile Include="source\Params\NoteParam.cs" />
-    <Compile Include="source\Params\ParamParam.cs" />
     <Compile Include="source\Params\ReturnParam.cs" />
     <Compile Include="source\Params\LocalParam.cs" />
     <Compile Include="source\Params\InternalParam.cs" />
@@ -81,6 +77,17 @@
     <Compile Include="source\Params\TodoParam.cs" />
     <Compile Include="source\Params\DeprecatedParam.cs" />
     <Compile Include="source\Params\UsageParam.cs" />
+    <Compile Include="source\Params\SeeParam.cs" />
+    <Compile Include="source\Params\RefParam.cs" />
+    <Compile Include="source\Params\ImportantParam.cs" />
+    <Compile Include="source\Params\BaseParams\Param.cs" />
+    <Compile Include="source\Params\BaseParams\MarkParam.cs" />
+    <Compile Include="source\Params\BaseParams\ParameterParam.cs" />
+    <Compile Include="source\Params\BaseParams\TextParam.cs" />
+    <Compile Include="source\Params\ParamParam.cs" />
+    <Compile Include="source\Params\BaseParams\StateParam.cs" />
+    <Compile Include="source\Params\NameParam.cs" />
+    <Compile Include="source\Params\DescParam.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />
@@ -90,6 +97,7 @@
     <Folder Include="source\DataStructures\Lua\" />
     <Folder Include="source\Params\Wrapper\" />
     <Folder Include="webfiles\src\assets\css\" />
+    <Folder Include="source\Params\BaseParams\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

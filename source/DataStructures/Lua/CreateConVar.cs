@@ -11,7 +11,7 @@ namespace NeoDoc.DataStructures.Lua
 
         public override Regex GetRegex()
         {
-            return new Regex(@"\s*CreateConVar\s*\([^)]*\)");
+            return new Regex(@"\s*CreateConVar\s*\(");
         }
 
         public override bool Check(string line)
@@ -40,7 +40,7 @@ namespace NeoDoc.DataStructures.Lua
 
             if (name == null)
             {
-                Regex splitRegex1 = new Regex(@"CreateConVar\s*\(");
+                Regex splitRegex1 = GetRegex();
                 Match splitMatch1 = splitRegex1.Match(line);
                 int splitPos1 = splitMatch1.Index + splitMatch1.Length;
 
