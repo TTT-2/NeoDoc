@@ -84,7 +84,13 @@ namespace NeoDoc
                 return null;
             }
 
-            return param.TrimStart('@').Split(' ')[0];
+            string extractedParam = param.TrimStart('@').Split(' ')[0].ToLower();
+            string[] paramDataArr = extractedParam.Split('['); // e.g. split the default param data from "-- @return[default=false]"
+
+            if (paramDataArr.Length > 1)
+                extractedParam = paramDataArr[0];
+
+            return extractedParam;
         }
 
         // extracts the line's param string
