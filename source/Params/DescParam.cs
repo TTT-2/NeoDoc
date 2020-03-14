@@ -1,6 +1,6 @@
 ﻿namespace NeoDoc.Params
 {
-    public class DescParam : StateParam
+    public class DescParam : TextParam
     {
         public override string GetName()
         {
