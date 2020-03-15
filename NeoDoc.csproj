@@ -103,11 +103,12 @@
     <Folder Include="webfiles\src\layouts\" />
     <Folder Include="webfiles\src\docu\" />
     <Folder Include="webfiles\src\docu\createconvars\" />
+    <Folder Include="webfiles\src\assets\" />
+    <Folder Include="webfiles\src\assets\css\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include=".gitignore" />
-    <None Include="webfiles\babel.config.js" />
     <None Include="webfiles\.gitignore" />
     <None Include="webfiles\package.json" />
     <None Include="webfiles\src\main.js" />
@@ -119,11 +120,12 @@
     <None Include="webfiles\index.html" />
     <None Include="webfiles\404.html" />
     <None Include="webfiles\webpack.config.js" />
-    <None Include="webfiles\.babelrc" />
     <None Include="webfiles\src\docu\createconvars.vue" />
     <None Include="webfiles\src\docu\createconvars\ttt_ban_type.vue" />
     <None Include="webfiles\src\home.vue" />
     <None Include="webfiles\src\globalComponents.js" />
+    <None Include="webfiles\src\assets\css\tailwind.css" />
+    <None Include="webfiles\postcss.config.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

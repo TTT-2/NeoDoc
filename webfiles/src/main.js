@@ -1,5 +1,6 @@
 import Vue from 'vue'
 
+import './assets/css/tailwind.css';
 import './globalComponents.js'
 
 const app = new Vue({

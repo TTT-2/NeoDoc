@@ -4,22 +4,14 @@
             <li>
                 <v-link href="/home">Home</v-link>
                 <v-link href="/docu/hooks">Hooks</v-link>
+                <v-link href="/docu/createconvars">ConVars</v-link>
+                <v-link href="/docu/datastructures">Functions</v-link>
             </li>
         </ul>
 
         <slot></slot>
     </div>
 </template>
-
-<script>
-    import VLink from '../components/VLink.vue'
-
-    export default {
-        components: {
-          VLink
-        }
-    }
-</script>
 
 <style scoped>
     .container {
