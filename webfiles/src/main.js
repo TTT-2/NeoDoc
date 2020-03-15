@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import routes from './routes'
 
 const app = new Vue({
     el: '#app',
@@ -8,21 +7,15 @@ const app = new Vue({
     },
     computed: {
         ViewComponent() {
-            const matchingView = routes[this.currentRoute]
+            var ret
 
-            if (matchingView)
-                return require('./' + matchingView + '.vue')
-            else {
-                var ret
-
-                try {
-                    ret = require('.' + this.currentRoute + '.vue')
-                } catch (e) {
-                    ret = require('./docu/404.vue')
-                }
-
-                return ret
+            try {
+                ret = require('.' + this.currentRoute + '.vue')
+            } catch (e) {
+                ret = require('./docu/404.vue')
             }
+
+            return ret
         }
     },
     render(h) {
