@@ -77,13 +77,17 @@ namespace NeoDoc
             // Generate Folders
             string newDir = Directory.GetCurrentDirectory() + "../../../output";
 
-            if (!Directory.Exists(newDir))
-                Directory.CreateDirectory(newDir);
+            if (Directory.Exists(newDir))
+                Directory.Delete(newDir, true);
+
+            Directory.CreateDirectory(newDir);
 
             string jsonString = GenerateJSONSearchIndex(wrapperList, globalsDict);
 
             // Write JSON
             File.WriteAllText(newDir + "/jsonList.json", jsonString);
+
+            GenerateDocumentationData(wrapperList, globalsDict);
         }
 
         private static void CleanupEmptyDataKeeper(List<WrapperParam> wrapperParams)
@@ -134,12 +138,16 @@ namespace NeoDoc
 
                     if (!wrapperExists)
                     {
-                        wrapperParamsDict.Add(wrapper.GetData(), wrapper); // add this wrapper as main wrapper if not already exists
+                        // create a new wrapper of the same type
+                        WrapperParam tmpWrapper = (WrapperParam)Activator.CreateInstance(wrapper.GetType());
+                        tmpWrapper.WrapperName = wrapper.WrapperName;
 
-                        continue; // we don't need to do any other thing here because a new wrapper will come with it's sections automatically
+                        wrapperParamsDict.Add(tmpWrapper.WrapperName, tmpWrapper); // add this wrapper as main wrapper if not already exists
+
+                        finalWrapper = tmpWrapper;
                     }
-                    else
-                        finalWrapper.MergeData(wrapper); // e.g. merge Authors
+
+                    finalWrapper.MergeData(wrapper); // e.g. merge Authors
 
                     // now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
                     foreach (SectionParam section in wrapper.SectionList)
@@ -160,56 +168,62 @@ namespace NeoDoc
                         bool sectionExists = finalSection != null;
 
                         if (!sectionExists)
-                            finalWrapper.SectionList.Add(section); // add this section as new section into the wrappers section list
-                        else // otherwise, the section already exists and need to copy all functions of the current section
                         {
-                            foreach (DataStructure dataStructure in section.DataStructureList)
+                            // create a new section of the same type
+                            SectionParam tmpSection = (SectionParam)Activator.CreateInstance(section.GetType());
+                            tmpSection.SectionName = section.SectionName;
+
+                            finalWrapper.SectionList.Add(tmpSection); // add this section as new section into the wrappers section list
+
+                            finalSection = tmpSection;
+                        }
+
+                        foreach (DataStructure dataStructure in section.DataStructureList)
+                        {
+                            if (!dataStructure.IsGlobal())
                             {
-                                if (!dataStructure.IsGlobal())
+                                // just insert if not already exists
+                                bool alreadyExists = false;
+
+                                foreach (DataStructure tmpDs in finalSection.DataStructureList)
                                 {
-                                    // just insert if not already exists
-                                    bool alreadyExists = false;
-
-                                    foreach (DataStructure tmpDs in finalSection.DataStructureList)
+                                    if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
                                     {
-                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
-                                        {
-                                            alreadyExists = true;
+                                        alreadyExists = true;
 
-                                            break;
-                                        }
+                                        break;
                                     }
-
-                                    if (!alreadyExists)
-                                        finalSection.DataStructureList.Add(dataStructure);
                                 }
-                                else
+
+                                if (!alreadyExists)
+                                    finalSection.DataStructureList.Add(dataStructure);
+                            }
+                            else
+                            {
+                                bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+
+                                if (!exists)
                                 {
-                                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+                                    ds = new List<DataStructure>();
 
-                                    if (!exists)
-                                    {
-                                        ds = new List<DataStructure>();
-
-                                        globalsDict.Add(dataStructure.GetName(), ds);
-                                    }
-
-                                    // just insert if not already exists
-                                    bool alreadyExists = false;
-
-                                    foreach (DataStructure tmpDs in ds)
-                                    {
-                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
-                                        {
-                                            alreadyExists = true;
-
-                                            break;
-                                        }
-                                    }
-
-                                    if (!alreadyExists)
-                                        ds.Add(dataStructure);
+                                    globalsDict.Add(dataStructure.GetName(), ds);
                                 }
+
+                                // just insert if not already exists
+                                bool alreadyExists = false;
+
+                                foreach (DataStructure tmpDs in ds)
+                                {
+                                    if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                    {
+                                        alreadyExists = true;
+
+                                        break;
+                                    }
+                                }
+
+                                if (!alreadyExists)
+                                    ds.Add(dataStructure);
                             }
                         }
                     }
@@ -250,5 +264,9 @@ namespace NeoDoc
 
             return json.Remove(json.Length - 1, 1) + "}"; // remove last "," and close json
         }
-	}
+
+        private static void GenerateDocumentationData(List<WrapperParam> wrapperList, Dictionary<string, List<DataStructure>> globalsDict)
+        {
+        }
+    }
 }
