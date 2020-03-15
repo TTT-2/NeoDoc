@@ -108,7 +108,16 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetHTML()
         {
-            return "Function: " + FunctionData;
+            string html = @"
+<template>
+    <main-layout>
+        <p>Site of '" + Name + @"'</p>
+        <p>Function syntax: " + FunctionData + @"</p>
+    </main-layout>
+</template>
+";
+
+            return html;
         }
     }
 }

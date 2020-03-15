@@ -80,7 +80,15 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetHTML()
         {
-            return "ConVar: " + ConVarName;
+            string html = @"
+<template>
+    <main-layout>
+        <p>Site of '" + ConVarName + @"'</p>
+    </main-layout>
+</template>
+";
+
+            return html;
         }
     }
 }

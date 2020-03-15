@@ -1,5 +1,1 @@
-﻿<template>
-    <main-layout>
-        <p>Hooks site</p>
-    </main-layout>
-</template>
+<template><main-layout><p>hook site</p></main-layout></template>

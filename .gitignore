@@ -144,4 +144,5 @@ webfiles/build/*
 webfiles/css/output.css
 
 # output
-output/*
+webfiles/src/docu/
+webfiles/src/jsonList.json

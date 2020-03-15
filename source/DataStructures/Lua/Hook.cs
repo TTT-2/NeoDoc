@@ -77,7 +77,15 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetHTML()
         {
-            return "Hook: " + HookName;
+            string html = @"
+<template>
+    <main-layout>
+        <p>Site of '" + HookName + @"'</p>
+    </main-layout>
+</template>
+";
+
+            return html;
         }
     }
 }

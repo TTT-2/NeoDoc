@@ -15,7 +15,7 @@ const app = new Vue({
             try {
                 ret = require('.' + this.currentRoute + '.vue')
             } catch (e) {
-                ret = require('./docu/404.vue')
+                ret = require('./404.vue')
             }
 
             return ret

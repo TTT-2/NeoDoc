@@ -101,8 +101,6 @@
     <Folder Include="source\Params\Wrapper\" />
     <Folder Include="source\Params\BaseParams\" />
     <Folder Include="webfiles\src\layouts\" />
-    <Folder Include="webfiles\src\docu\" />
-    <Folder Include="webfiles\src\docu\createconvars\" />
     <Folder Include="webfiles\src\assets\" />
     <Folder Include="webfiles\src\assets\css\" />
   </ItemGroup>
@@ -114,18 +112,14 @@
     <None Include="webfiles\src\main.js" />
     <None Include="webfiles\src\layouts\Main.vue" />
     <None Include="webfiles\src\components\VLink.vue" />
-    <None Include="webfiles\src\docu\404.vue" />
-    <None Include="webfiles\src\docu\datastructures.vue" />
-    <None Include="webfiles\src\docu\hooks.vue" />
     <None Include="webfiles\index.html" />
     <None Include="webfiles\404.html" />
     <None Include="webfiles\webpack.config.js" />
-    <None Include="webfiles\src\docu\createconvars.vue" />
-    <None Include="webfiles\src\docu\createconvars\ttt_ban_type.vue" />
     <None Include="webfiles\src\home.vue" />
     <None Include="webfiles\src\globalComponents.js" />
     <None Include="webfiles\src\assets\css\tailwind.css" />
     <None Include="webfiles\postcss.config.js" />
+    <None Include="webfiles\src\404.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

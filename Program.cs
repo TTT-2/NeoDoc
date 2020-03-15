@@ -76,7 +76,7 @@ namespace NeoDoc
             CleanupEmptyDataKeeper(wrapperList); // remove empty sections and wrappers that were created e.g. because of hooks, ConVars or local functions
 
             // Generate Folders
-            string newDir = Directory.GetCurrentDirectory() + "../../../output";
+            string newDir = Directory.GetCurrentDirectory() + "../../../webfiles/src/docu";
 
             if (Directory.Exists(newDir))
                 Directory.Delete(newDir, true);
@@ -85,13 +85,8 @@ namespace NeoDoc
 
             string jsonString = GenerateJSONSearchIndex(wrapperList, globalsDict);
 
-            // add folder for docu data
-            newDir += "/json";
-
-            Directory.CreateDirectory(newDir);
-
             // Write JSON
-            File.WriteAllText(newDir + "/jsonList.json", jsonString);
+            File.WriteAllText(newDir + "/../jsonList.json", jsonString);
 
             GenerateDocumentationData(wrapperList, globalsDict);
         }
@@ -273,19 +268,22 @@ namespace NeoDoc
 
         private static void GenerateDocumentationData(List<WrapperParam> wrapperList, Dictionary<string, List<DataStructure>> globalsDict)
         {
-            string newDir = Directory.GetCurrentDirectory() + "../../../output/docu";
-
-            Directory.CreateDirectory(newDir);
-
+            string newDir = Directory.GetCurrentDirectory() + "../../../webfiles/src/docu";
             string dsDir = newDir + "/datastructures";
 
-            Directory.CreateDirectory(newDir);
+            Directory.CreateDirectory(dsDir);
+
+            // TODO create overview page
+            File.WriteAllText(dsDir + ".vue", "<template><main-layout><p>DataStructure site</p></main-layout></template>");
 
             foreach (WrapperParam wrapper in wrapperList)
             {
                 string wrapperDir = dsDir + "/" + wrapper.GetData();
 
                 Directory.CreateDirectory(wrapperDir);
+
+                // TODO create overview page
+                File.WriteAllText(wrapperDir + ".vue", "<template><main-layout><p>" + wrapper.GetData() + " site</p></main-layout></template>");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {
@@ -305,6 +303,9 @@ namespace NeoDoc
                 string globalDir = newDir + "/" + entry.Key + "s";
 
                 Directory.CreateDirectory(globalDir);
+
+                // TODO create overview page
+                File.WriteAllText(globalDir + ".vue", "<template><main-layout><p>" + entry.Key + " site</p></main-layout></template>");
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {

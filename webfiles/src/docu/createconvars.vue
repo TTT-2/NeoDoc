@@ -1,5 +1,1 @@
-﻿<template>
-    <main-layout>
-        <p>ConVars site</p>
-    </main-layout>
-</template>
+<template><main-layout><p>createconvar site</p></main-layout></template>
