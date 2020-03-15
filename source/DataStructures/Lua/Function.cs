@@ -8,6 +8,7 @@ namespace NeoDoc.DataStructures.Lua
     {
         private string Line { get; set; }
         private bool Local { get; set; }
+        private string FunctionData { get; set; }
         private string Name { get; set; }
 
         public override Regex GetRegex()
@@ -45,7 +46,8 @@ namespace NeoDoc.DataStructures.Lua
                 Local = match.Success;
             }
 
-            Name = GetRegex().Match(line).Value;
+            FunctionData = GetRegex().Match(line).Value.TrimStart('@');
+            Name = FunctionData.Replace("function ", "").Split('(')[0].Trim();
         }
 
         public bool IsLocal()
@@ -58,12 +60,17 @@ namespace NeoDoc.DataStructures.Lua
             return "function";
         }
 
+        public override string GetData()
+        {
+            return Name;
+        }
+
         public override string GetJSONData()
         {
             if (Local)
                 return null;
 
-            return "\"" + Name.TrimStart('@') + "\"";
+            return "\"" + Name + "\"";
         }
 
         public override DataStructure CheckDataStructureTransformation()
@@ -79,7 +86,7 @@ namespace NeoDoc.DataStructures.Lua
                     {
                         return new Hook
                         {
-                            HookName = Name.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
+                            HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
                         };
                     }
                 }
@@ -92,11 +99,16 @@ namespace NeoDoc.DataStructures.Lua
             {
                 return new Hook
                 {
-                    HookName = Name.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
+                    HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
                 };
             }
 
             return null;
+        }
+
+        public override string GetHTML()
+        {
+            return "Function: " + FunctionData;
         }
     }
 }

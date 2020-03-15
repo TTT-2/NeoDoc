@@ -68,14 +68,19 @@ namespace NeoDoc.DataStructures.Lua
             return "createconvar";
         }
 
-        public override string GetJSONData()
+        public override string GetData()
         {
-            return "\"" + ConVarName + "\"";
+            return ConVarName;
         }
 
         public override bool IsGlobal()
         {
             return true;
+        }
+
+        public override string GetHTML()
+        {
+            return "ConVar: " + ConVarName;
         }
     }
 }

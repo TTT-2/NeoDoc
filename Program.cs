@@ -4,6 +4,7 @@ using NeoDoc.Params;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 /* 
  * TODO inside of the TTT2 documentation (not in this project)
@@ -267,6 +268,55 @@ namespace NeoDoc
 
         private static void GenerateDocumentationData(List<WrapperParam> wrapperList, Dictionary<string, List<DataStructure>> globalsDict)
         {
+            string newDir = Directory.GetCurrentDirectory() + "../../../output";
+
+            foreach (WrapperParam wrapper in wrapperList)
+            {
+                string wrapperDir = newDir + "/" + wrapper.GetData();
+
+                Directory.CreateDirectory(wrapperDir);
+
+                foreach (SectionParam section in wrapper.SectionList)
+                {
+                    foreach (DataStructure dataStructure in section.DataStructureList)
+                    {
+                        File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".html", dataStructure.GetHTML());
+                    }
+                }
+            }
+
+            // add globals too
+            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            {
+                if (entry.Value.Count < 0)
+                    continue; // don't include empty globals
+
+                string globalDir = newDir + "/" + entry.Key + "s";
+
+                Directory.CreateDirectory(globalDir);
+
+                foreach (DataStructure dataStructure in entry.Value)
+                {
+                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".html", dataStructure.GetHTML());
+                }
+            }
+        }
+
+        public static string RemoveSpecialCharacters(this string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
+                {
+                    sb.Append(c);
+                }
+                else
+                {
+                    sb.Append("__");
+                }
+            }
+            return sb.ToString();
         }
     }
 }

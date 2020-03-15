@@ -11,7 +11,13 @@ namespace NeoDoc.DataStructures
         public abstract void Process(string line); // process data based on given line string
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
-        public abstract string GetJSONData(); // returns data
+        public abstract string GetData(); // returns data
+        public abstract string GetHTML(); // returns data in HTML for the doc frontend
+
+        public virtual string GetJSONData() // returns json data
+        {
+            return "\"" + GetData() + "\"";
+        }
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
         {
