@@ -1,5 +1,7 @@
 import Vue from 'vue'
 
+import './globalComponents.js'
+
 const app = new Vue({
     el: '#app',
     data: {

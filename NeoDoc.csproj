@@ -123,6 +123,7 @@
     <None Include="webfiles\src\docu\createconvars.vue" />
     <None Include="webfiles\src\docu\createconvars\ttt_ban_type.vue" />
     <None Include="webfiles\src\home.vue" />
+    <None Include="webfiles\src\globalComponents.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
