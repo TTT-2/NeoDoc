@@ -16,8 +16,6 @@ using System.IO;
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
  * (convert param[…] and return[default=…] into the doc pages too)
- *
- * Export Hooks and ConVars from Sections and Wrappers ! -> add IsGlobal var and extract them in the end
  * Remove @ in front of function's json extraction
  */
 
@@ -73,7 +71,7 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers));
+            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out Dictionary<string, List<DataStructure>> globalsDict));
 
             CleanupEmptyDataKeeper(wrapperList); // remove empty sections and wrappers that were created e.g. because of hooks, ConVars or local functions
 
@@ -83,7 +81,7 @@ namespace NeoDoc
             if (!Directory.Exists(newDir))
                 Directory.CreateDirectory(newDir);
 
-            string jsonString = GenerateJSONSearchIndex(wrapperList);
+            string jsonString = GenerateJSONSearchIndex(wrapperList, globalsDict);
 
             // Write JSON
             File.WriteAllText(newDir + "/jsonList.json", jsonString);
@@ -122,9 +120,11 @@ namespace NeoDoc
             }
         }
 
-        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers)
+        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out Dictionary<string, List<DataStructure>> globalsDict)
         {
             Dictionary<string, WrapperParam> wrapperParamsDict = new Dictionary<string, WrapperParam>();
+
+            globalsDict = new Dictionary<string, List<DataStructure>>();
 
             foreach (FileParser fileParser in fileParsers)
             {
@@ -166,14 +166,21 @@ namespace NeoDoc
                         {
                             foreach (DataStructure dataStructure in section.DataStructureList)
                             {
-                                if (dataStructure.IsGlobal())
+                                if (!dataStructure.IsGlobal())
+                                    finalSection.DataStructureList.Add(dataStructure);
+                                else
                                 {
-                                    // TODO add to global list
+                                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
 
-                                    continue;
+                                    if (!exists)
+                                    {
+                                        ds = new List<DataStructure>();
+
+                                        globalsDict.Add(dataStructure.GetName(), ds);
+                                    }
+
+                                    ds.Add(dataStructure);
                                 }
-
-                                finalSection.DataStructureList.Add(dataStructure);
                             }
                         }
                     }
@@ -187,7 +194,7 @@ namespace NeoDoc
             return wrapperParams;
         }
 
-        private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams)
+        private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams, Dictionary<string, List<DataStructure>> globalsDict)
         {
             string json = "{";
 
@@ -196,7 +203,23 @@ namespace NeoDoc
                 json += wrapper.GetJSONData() + ",";
             }
 
-            return json.Remove(json.Length - 1, 1) + "}"; // remove last ","
+            // add globals too
+            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            {
+                if (entry.Value.Count < 0)
+                    continue; // don't include empty globals
+
+                json += "\"" + entry.Key + "s\":[";
+
+                foreach (DataStructure dataStructure in entry.Value)
+                {
+                    json += dataStructure.GetJSONData() + ",";
+                }
+
+                json = json.Remove(json.Length - 1, 1) + "],"; // remove last "," and close data structure
+            }
+
+            return json.Remove(json.Length - 1, 1) + "}"; // remove last "," and close json
         }
 	}
 }

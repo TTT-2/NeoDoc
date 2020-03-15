@@ -60,6 +60,9 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetJSONData()
         {
+            if (Local)
+                return null;
+
             return "\"" + Name + "\"";
         }
 

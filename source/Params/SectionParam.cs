@@ -48,15 +48,24 @@ namespace NeoDoc.Params
             // data structures
             json += "\"dataStructures\":[";
 
+            bool entry = false;
+
             foreach (DataStructure dataStructure in DataStructureList)
             {
                 if (dataStructure.IsGlobal())
                     continue;
 
-                json += dataStructure.GetJSONData() + ",";
+                string tmpJSON = dataStructure.GetJSONData();
+
+                if (tmpJSON == null)
+                    continue;
+
+                json += tmpJSON + ",";
+
+                entry = true;
             }
 
-            return json.Remove(json.Length - 1, 1) + "]}"; // close dataStructures and section and remove last ","
+            return (entry ? json.Remove(json.Length - 1, 1) : json) + "]}"; // close dataStructures and section and remove last ","
         }
     }
 }

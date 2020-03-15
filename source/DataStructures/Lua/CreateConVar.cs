@@ -60,7 +60,7 @@ namespace NeoDoc.DataStructures.Lua
                 }
             }
 
-            ConVarName = name;
+            ConVarName = name.TrimEnd(')').Trim().Trim('"').Trim().Replace("\"", "\\\"");
         }
 
         public override string GetName()

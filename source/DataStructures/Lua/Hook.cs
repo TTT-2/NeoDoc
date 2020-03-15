@@ -57,7 +57,7 @@ namespace NeoDoc.DataStructures.Lua
                 }
             }
 
-            HookName = name;
+            HookName = name.TrimEnd(')').Trim().Trim('"').Trim().Replace("\"", "\\\"");
         }
 
         public override string GetName()
