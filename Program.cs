@@ -85,6 +85,11 @@ namespace NeoDoc
 
             string jsonString = GenerateJSONSearchIndex(wrapperList, globalsDict);
 
+            // add folder for docu data
+            newDir += "/json";
+
+            Directory.CreateDirectory(newDir);
+
             // Write JSON
             File.WriteAllText(newDir + "/jsonList.json", jsonString);
 
@@ -268,11 +273,17 @@ namespace NeoDoc
 
         private static void GenerateDocumentationData(List<WrapperParam> wrapperList, Dictionary<string, List<DataStructure>> globalsDict)
         {
-            string newDir = Directory.GetCurrentDirectory() + "../../../output";
+            string newDir = Directory.GetCurrentDirectory() + "../../../output/docu";
+
+            Directory.CreateDirectory(newDir);
+
+            string dsDir = newDir + "/datastructures";
+
+            Directory.CreateDirectory(newDir);
 
             foreach (WrapperParam wrapper in wrapperList)
             {
-                string wrapperDir = newDir + "/" + wrapper.GetData();
+                string wrapperDir = dsDir + "/" + wrapper.GetData();
 
                 Directory.CreateDirectory(wrapperDir);
 
@@ -280,7 +291,7 @@ namespace NeoDoc
                 {
                     foreach (DataStructure dataStructure in section.DataStructureList)
                     {
-                        File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".html", dataStructure.GetHTML());
+                        File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".vue", dataStructure.GetHTML());
                     }
                 }
             }
@@ -297,7 +308,7 @@ namespace NeoDoc
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
-                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".html", dataStructure.GetHTML());
+                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".vue", dataStructure.GetHTML());
                 }
             }
         }

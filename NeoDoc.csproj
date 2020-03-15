@@ -99,26 +99,33 @@
     <Folder Include="source\DataStructures\" />
     <Folder Include="source\DataStructures\Lua\" />
     <Folder Include="source\Params\Wrapper\" />
-    <Folder Include="webfiles\src\assets\css\" />
     <Folder Include="source\Params\BaseParams\" />
+    <Folder Include="webfiles\src\layouts\" />
+    <Folder Include="webfiles\src\docu\" />
+    <Folder Include="webfiles\src\docu\createconvars\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include=".gitignore" />
-    <None Include="webfiles\index.html" />
-    <None Include="webfiles\README.md" />
-    <None Include="webfiles\package-lock.json" />
+    <None Include="webfiles\babel.config.js" />
+    <None Include="webfiles\.gitignore" />
     <None Include="webfiles\package.json" />
-    <None Include="webfiles\config\dev.env.js" />
-    <None Include="webfiles\config\index.js" />
-    <None Include="webfiles\config\prod.env.js" />
-    <None Include="webfiles\config\test.env.js" />
-    <None Include="webfiles\src\App.vue" />
     <None Include="webfiles\src\main.js" />
-    <None Include="webfiles\src\components\HelloWorld.vue" />
-    <None Include="webfiles\src\router\index.js" />
-    <None Include="webfiles\postcss.config.js" />
-    <None Include="webfiles\src\assets\css\tailwind.css" />
+    <None Include="webfiles\src\assets\logo.png" />
+    <None Include="webfiles\src\routes.js" />
+    <None Include="webfiles\src\layouts\Main.vue" />
+    <None Include="webfiles\src\components\VLink.vue" />
+    <None Include="webfiles\src\docu\404.vue" />
+    <None Include="webfiles\src\docu\datastructures.vue" />
+    <None Include="webfiles\src\docu\hooks.vue" />
+    <None Include="webfiles\index.html" />
+    <None Include="webfiles\404.html" />
+    <None Include="webfiles\webpack.config.js" />
+    <None Include="webfiles\.babelrc" />
+    <None Include="webfiles\src\About.vue" />
+    <None Include="webfiles\src\Home.vue" />
+    <None Include="webfiles\src\docu\createconvars.vue" />
+    <None Include="webfiles\src\docu\createconvars\ttt_ban_type.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
