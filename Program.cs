@@ -5,18 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-/*
- * TODO
+/* 
+ * TODO inside of the TTT2 documentation (not in this project)
  *
- * @author
- * @register
- *
+ * Remove @register
  * Rework documentation: put @module and @function right below the previous param descriptions
  * Improve @function calls, e.g. add PANEL in front of function
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
+ *
+ * TODO for the doc generation part
  * (convert param[…] and return[default=…] into the doc pages too)
- * Remove @ in front of function's json extraction
  */
 
 namespace NeoDoc
@@ -167,7 +166,23 @@ namespace NeoDoc
                             foreach (DataStructure dataStructure in section.DataStructureList)
                             {
                                 if (!dataStructure.IsGlobal())
-                                    finalSection.DataStructureList.Add(dataStructure);
+                                {
+                                    // just insert if not already exists
+                                    bool alreadyExists = false;
+
+                                    foreach (DataStructure tmpDs in finalSection.DataStructureList)
+                                    {
+                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                        {
+                                            alreadyExists = true;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (!alreadyExists)
+                                        finalSection.DataStructureList.Add(dataStructure);
+                                }
                                 else
                                 {
                                     bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
@@ -179,7 +194,21 @@ namespace NeoDoc
                                         globalsDict.Add(dataStructure.GetName(), ds);
                                     }
 
-                                    ds.Add(dataStructure);
+                                    // just insert if not already exists
+                                    bool alreadyExists = false;
+
+                                    foreach (DataStructure tmpDs in ds)
+                                    {
+                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                        {
+                                            alreadyExists = true;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (!alreadyExists)
+                                        ds.Add(dataStructure);
                                 }
                             }
                         }

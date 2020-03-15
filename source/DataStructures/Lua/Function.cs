@@ -63,7 +63,7 @@ namespace NeoDoc.DataStructures.Lua
             if (Local)
                 return null;
 
-            return "\"" + Name + "\"";
+            return "\"" + Name.TrimStart('@') + "\"";
         }
 
         public override DataStructure CheckDataStructureTransformation()
@@ -79,7 +79,7 @@ namespace NeoDoc.DataStructures.Lua
                     {
                         return new Hook
                         {
-                            HookName = Name
+                            HookName = Name.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
                         };
                     }
                 }
@@ -92,7 +92,7 @@ namespace NeoDoc.DataStructures.Lua
             {
                 return new Hook
                 {
-                    HookName = Name
+                    HookName = Name.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
                 };
             }
 
