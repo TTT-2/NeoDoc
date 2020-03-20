@@ -69,23 +69,5 @@ namespace NeoDoc.DataStructures.Lua
         {
             return HookName;
         }
-
-        public override bool IsGlobal()
-        {
-            return true;
-        }
-
-        public override string GetHTML()
-        {
-            string html = @"
-<template>
-    <main-layout>
-        <p>Site of '" + HookName + @"'</p>
-    </main-layout>
-</template>
-";
-
-            return html;
-        }
     }
 }

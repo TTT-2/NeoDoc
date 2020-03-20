@@ -6,10 +6,5 @@
         {
             return "internal";
         }
-
-        public override string GetOutput()
-        {
-            return "INTERNAL"; // nothing to output
-        }
     }
 }

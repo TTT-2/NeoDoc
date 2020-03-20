@@ -12,11 +12,49 @@ namespace NeoDoc.DataStructures
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
         public abstract string GetData(); // returns data
-        public abstract string GetHTML(); // returns data in HTML for the doc frontend
 
         public virtual string GetJSONData() // returns json data
         {
             return "\"" + GetData() + "\"";
+        }
+
+        public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
+        {
+            string json = "{\"type\":\"" + GetName() + "\",\"data\":{";
+
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                // merge same datastructures together
+                Dictionary<string, List<Param>> paramsDict = new Dictionary<string, List<Param>>();
+
+                foreach (Param param in ParamsList)
+                {
+                    bool exists = paramsDict.TryGetValue(param.GetName(), out List<Param> paramsList);
+
+                    if (!exists)
+                    {
+                        paramsList = new List<Param>();
+
+                        paramsDict.Add(param.GetName(), paramsList);
+                    }
+
+                    paramsList.Add(param);
+                }
+
+                foreach (KeyValuePair<string, List<Param>> keyValuePair in paramsDict)
+                {
+                    json += "\"" + keyValuePair.Key + "\":[";
+
+                    foreach (Param param in keyValuePair.Value)
+                    {
+                        json += param.GetJSON() + ",";
+                    }
+
+                    json = json.Remove(json.Length - 1, 1) + "],";
+                }
+            }
+
+            return json.Remove(json.Length - 1, 1) + "}}";
         }
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed

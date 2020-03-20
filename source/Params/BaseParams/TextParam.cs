@@ -9,11 +9,6 @@
             return Text;
         }
 
-        public override string GetOutput()
-        {
-            return Text;
-        }
-
         public override void Process(string[] paramData)
         {
             if (paramData.Length < 1)

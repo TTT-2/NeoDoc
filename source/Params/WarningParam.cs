@@ -6,10 +6,5 @@
         {
             return "warning";
         }
-
-        public override string GetOutput()
-        {
-            return "Warning: " + Text;
-        }
     }
 }

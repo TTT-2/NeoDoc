@@ -6,10 +6,5 @@
         {
             return "usage";
         }
-
-        public override string GetOutput()
-        {
-            return Text;
-        }
     }
 }

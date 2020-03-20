@@ -25,3 +25,16 @@
         <slot></slot>
     </div>
 </template>
+
+<script>
+    import json from '../jsonList.json'
+
+    export default {
+        name: 'main-layout',
+        data() {
+            return {
+                jsonList: json
+            }
+        }
+    }
+</script>

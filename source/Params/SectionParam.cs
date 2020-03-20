@@ -6,21 +6,16 @@ namespace NeoDoc.Params
     public class SectionParam : Param
     {
         public string SectionName { get; set; } = "none";
-        public List<DataStructure> DataStructureList;
+        public Dictionary<string, List<DataStructure>> DataStructureDict;
 
         public SectionParam()
         {
-            DataStructureList = new List<DataStructure>();
+            DataStructureDict = new Dictionary<string, List<DataStructure>>();
         }
 
         public override string GetData()
         {
             return SectionName;
-        }
-
-        public override string GetOutput()
-        {
-            return ""; // nothing to output
         }
 
         public override void Process(string[] paramData)
@@ -45,27 +40,32 @@ namespace NeoDoc.Params
         {
             string json = "\"" + GetData() + "\":{";
 
-            // data structures
-            json += "\"dataStructures\":[";
 
-            bool entry = false;
-
-            foreach (DataStructure dataStructure in DataStructureList)
+            // loop through datastructure types
+            foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in DataStructureDict)
             {
-                if (dataStructure.IsGlobal())
-                    continue;
+                json += "\"" + keyValuePair.Key + "s\":["; // data structures
 
-                string tmpJSON = dataStructure.GetJSONData();
+                bool entry = false;
 
-                if (tmpJSON == null)
-                    continue;
+                foreach (DataStructure dataStructure in keyValuePair.Value)
+                {
+                    string tmpJSON = dataStructure.GetJSONData();
 
-                json += tmpJSON + ",";
+                    if (tmpJSON == null)
+                        continue;
 
-                entry = true;
+                    json += tmpJSON + ",";
+
+                    entry = true;
+                }
+
+                json = entry ? json.Remove(json.Length - 1, 1) : json;
+
+                json += "],";
             }
 
-            return (entry ? json.Remove(json.Length - 1, 1) : json) + "]}"; // close dataStructures and section and remove last ","
+            return (DataStructureDict.Count > 0 ? json.Remove(json.Length - 1, 1) : json) + "}"; // close dataStructures and section and remove last ","
         }
     }
 }

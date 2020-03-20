@@ -104,7 +104,16 @@ namespace NeoDoc
                         }
 
                         // now add the datastructure into the current section of the current container
-                        CurrentSection.DataStructureList.Add(dataStructure);
+                        bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
+
+                        if (!exists)
+                        {
+                            dsList = new List<DataStructure>();
+
+                            CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
+                        }
+
+                        dsList.Add(dataStructure);
                     }
 
                     // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
@@ -201,7 +210,16 @@ namespace NeoDoc
                         }
 
                         // now add the datastructure into the current section of the current container
-                        CurrentSection.DataStructureList.Add(dataStructure);
+                        bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
+
+                        if (!exists)
+                        {
+                            dsList = new List<DataStructure>();
+
+                            CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
+                        }
+
+                        dsList.Add(dataStructure);
 
                         // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
                         paramsList.Clear();

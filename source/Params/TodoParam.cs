@@ -6,10 +6,5 @@
         {
             return "todo";
         }
-
-        public override string GetOutput()
-        {
-            return "TODO: " + Text;
-        }
     }
 }

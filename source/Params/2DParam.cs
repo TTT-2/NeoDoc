@@ -6,10 +6,5 @@
         {
             return "2D";
         }
-
-        public override string GetOutput()
-        {
-            return "This is a 2D method"; // nothing to output
-        }
     }
 }

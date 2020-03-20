@@ -77,18 +77,5 @@ namespace NeoDoc.DataStructures.Lua
         {
             return true;
         }
-
-        public override string GetHTML()
-        {
-            string html = @"
-<template>
-    <main-layout>
-        <p>Site of '" + ConVarName + @"'</p>
-    </main-layout>
-</template>
-";
-
-            return html;
-        }
     }
 }

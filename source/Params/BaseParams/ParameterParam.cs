@@ -11,11 +11,6 @@
             return Name + " - " + Typ + " - " + Description;
         }
 
-        public override string GetOutput()
-        {
-            return GetData();
-        }
-
         public override void Process(string[] paramData)
         {
             if (paramData.Length < 1)

@@ -6,10 +6,5 @@
         {
             return "note";
         }
-
-        public override string GetOutput()
-        {
-            return "Note: " + Text;
-        }
     }
 }

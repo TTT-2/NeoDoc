@@ -24,11 +24,6 @@ namespace NeoDoc.Params
             return WrapperName;
         }
 
-        public override string GetOutput()
-        {
-            return ""; // nothing to output
-        }
-
         public override void Process(string[] paramData)
         {
             if (paramData.Length < 1)

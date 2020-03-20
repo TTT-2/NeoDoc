@@ -1,1 +1,0 @@
-<template><main-layout><p>createconvar site</p></main-layout></template>

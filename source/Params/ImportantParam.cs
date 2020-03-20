@@ -4,12 +4,7 @@
     {
         public override string GetName()
         {
-            return "Important";
-        }
-
-        public override string GetOutput()
-        {
-            return "Important: " + Text;
+            return "important";
         }
     }
 }

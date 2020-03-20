@@ -100,26 +100,42 @@ namespace NeoDoc
                 for (int i3 = 0; i3 < wrapper.SectionList.Count; i3++)
                 {
                     SectionParam section = wrapper.SectionList[i3];
+                    Dictionary<string, List<DataStructure>> newDict = new Dictionary<string, List<DataStructure>>(); // cleaned dict
 
-                    if (section.DataStructureList.Count < 1)
+                    foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
+                    {
+                        List<DataStructure> newDSList = new List<DataStructure>();
+
+                        foreach (DataStructure dataStructure in keyValuePair.Value)
+                        {
+                            if (dataStructure.IsGlobal())
+                                continue;
+
+                            string tmpJSON = dataStructure.GetJSONData();
+
+                            if (tmpJSON == null)
+                                continue;
+
+                            newDSList.Add(dataStructure); // just insert valid data
+                        }
+
+                        if (newDSList.Count > 0)
+                        {
+                            newDict.Add(keyValuePair.Key, newDSList); // just insert if not empty
+                        }
+                    }
+
+                    section.DataStructureDict = newDict;
+
+                    if (section.DataStructureDict.Count < 1)
                     {
                         wrapper.SectionList.Remove(section);
-
-                        i3 -= 1;
-
-                        if (i3 >= wrapper.SectionList.Count)
-                            break;
                     }
                 }
 
                 if (wrapper.SectionList.Count < 1)
                 {
                     wrapperParams.Remove(wrapper);
-
-                    i2 -= 1;
-
-                    if (i2 >= wrapperParams.Count)
-                        break;
                 }
             }
         }
@@ -179,52 +195,64 @@ namespace NeoDoc
                             finalSection = tmpSection;
                         }
 
-                        foreach (DataStructure dataStructure in section.DataStructureList)
+                        foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
                         {
-                            if (!dataStructure.IsGlobal())
+                            foreach (DataStructure dataStructure in keyValuePair.Value)
                             {
-                                // just insert if not already exists
-                                bool alreadyExists = false;
-
-                                foreach (DataStructure tmpDs in finalSection.DataStructureList)
+                                if (!dataStructure.IsGlobal())
                                 {
-                                    if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                    // just insert if not already exists
+                                    bool match = finalSection.DataStructureDict.TryGetValue(keyValuePair.Key, out List<DataStructure> finalDSList);
+
+                                    if (!match) // initialize if not already exists
                                     {
-                                        alreadyExists = true;
+                                        finalDSList = new List<DataStructure>();
 
-                                        break;
+                                        finalSection.DataStructureDict.Add(keyValuePair.Key, finalDSList);
                                     }
-                                }
 
-                                if (!alreadyExists)
-                                    finalSection.DataStructureList.Add(dataStructure);
-                            }
-                            else
-                            {
-                                bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+                                    bool alreadyExists = false;
 
-                                if (!exists)
-                                {
-                                    ds = new List<DataStructure>();
-
-                                    globalsDict.Add(dataStructure.GetName(), ds);
-                                }
-
-                                // just insert if not already exists
-                                bool alreadyExists = false;
-
-                                foreach (DataStructure tmpDs in ds)
-                                {
-                                    if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                    foreach (DataStructure tmpDs in finalDSList)
                                     {
-                                        alreadyExists = true;
+                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                        {
+                                            alreadyExists = true;
 
-                                        break;
+                                            break;
+                                        }
                                     }
-                                }
 
-                                if (!alreadyExists)
-                                    ds.Add(dataStructure);
+                                    if (!alreadyExists)
+                                        finalDSList.Add(dataStructure);
+                                }
+                                else
+                                {
+                                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+
+                                    if (!exists)
+                                    {
+                                        ds = new List<DataStructure>();
+
+                                        globalsDict.Add(dataStructure.GetName(), ds);
+                                    }
+
+                                    // just insert if not already exists
+                                    bool alreadyExists = false;
+
+                                    foreach (DataStructure tmpDs in ds)
+                                    {
+                                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                                        {
+                                            alreadyExists = true;
+
+                                            break;
+                                        }
+                                    }
+
+                                    if (!alreadyExists)
+                                        ds.Add(dataStructure);
+                                }
                             }
                         }
                     }
@@ -274,7 +302,7 @@ namespace NeoDoc
             Directory.CreateDirectory(dsDir);
 
             // TODO create overview page
-            File.WriteAllText(dsDir + ".vue", "<template><main-layout><p>DataStructure site</p></main-layout></template>");
+            File.WriteAllText(dsDir + ".json", "Overview");
 
             foreach (WrapperParam wrapper in wrapperList)
             {
@@ -283,13 +311,23 @@ namespace NeoDoc
                 Directory.CreateDirectory(wrapperDir);
 
                 // TODO create overview page
-                File.WriteAllText(wrapperDir + ".vue", "<template><main-layout><p>" + wrapper.GetData() + " site</p></main-layout></template>");
+                File.WriteAllText(wrapperDir + ".json", "{" + wrapper.GetJSONData() + "}");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {
-                    foreach (DataStructure dataStructure in section.DataStructureList)
+                    foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
                     {
-                        File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".vue", dataStructure.GetHTML());
+                        string dsEntDir = wrapperDir + "/" + RemoveSpecialCharacters(keyValuePair.Key) + "s";
+
+                        Directory.CreateDirectory(dsEntDir);
+
+                        // TODO create overview page
+                        File.WriteAllText(dsEntDir + ".json", keyValuePair.Key); // TODO just a list of current datastructure types
+
+                        foreach (DataStructure dataStructure in keyValuePair.Value)
+                        {
+                            File.WriteAllText(dsEntDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
+                        }
                     }
                 }
             }
@@ -305,11 +343,11 @@ namespace NeoDoc
                 Directory.CreateDirectory(globalDir);
 
                 // TODO create overview page
-                File.WriteAllText(globalDir + ".vue", "<template><main-layout><p>" + entry.Key + " site</p></main-layout></template>");
+                File.WriteAllText(globalDir + ".json", entry.Key); // TODO just a list of current datastructure types
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
-                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".vue", dataStructure.GetHTML());
+                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
                 }
             }
         }
