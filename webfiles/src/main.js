@@ -15,7 +15,13 @@ const app = new Vue({
             try {
                 ret = require('.' + this.currentRoute + '.vue')
             } catch (e) {
-                ret = require('./404.vue')
+                try {
+                    require('.' + this.currentRoute + '.json')
+
+                    ret = require('./json.vue')
+                } catch (e) {
+                    ret = require('./404.vue')
+                }
             }
 
             return ret
