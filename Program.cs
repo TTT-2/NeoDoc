@@ -301,17 +301,13 @@ namespace NeoDoc
 
             Directory.CreateDirectory(dsDir);
 
-            // TODO create overview page
-            File.WriteAllText(dsDir + ".json", "Overview");
-
             foreach (WrapperParam wrapper in wrapperList)
             {
                 string wrapperDir = dsDir + "/" + wrapper.GetData();
 
                 Directory.CreateDirectory(wrapperDir);
 
-                // TODO create overview page
-                File.WriteAllText(wrapperDir + ".json", "{" + wrapper.GetJSONData() + "}");
+                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"" + wrapper.GetName() + "\",\"data\":" + wrapper.GetJSONData() + "}");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {
@@ -321,13 +317,18 @@ namespace NeoDoc
 
                         Directory.CreateDirectory(dsEntDir);
 
-                        // TODO create overview page
-                        File.WriteAllText(dsEntDir + ".json", keyValuePair.Key); // TODO just a list of current datastructure types
+                        string overviewList = "{\"type\":\"overview\",\"name\":\"" + keyValuePair.Key + "\",\"data\":[";
 
                         foreach (DataStructure dataStructure in keyValuePair.Value)
                         {
                             File.WriteAllText(dsEntDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
+
+                            overviewList += dataStructure.GetJSONData() + ",";
                         }
+
+                        overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "]}";
+
+                        File.WriteAllText(dsEntDir + ".json", overviewList);
                     }
                 }
             }
@@ -342,19 +343,28 @@ namespace NeoDoc
 
                 Directory.CreateDirectory(globalDir);
 
-                // TODO create overview page
-                File.WriteAllText(globalDir + ".json", entry.Key); // TODO just a list of current datastructure types
+                string overviewList = "{\"type\":\"overview\",\"name\":\"" + entry.Key + "\",\"data\":[";
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
                     File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
+
+                    overviewList += dataStructure.GetJSONData() + ",";
                 }
+
+                overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "]}";
+
+                File.WriteAllText(globalDir + ".json", overviewList);
             }
+
+            // TODO create overview page
+            File.WriteAllText(dsDir + ".json", "Overview");
         }
 
         public static string RemoveSpecialCharacters(this string str)
         {
             StringBuilder sb = new StringBuilder();
+
             foreach (char c in str)
             {
                 if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
@@ -366,6 +376,7 @@ namespace NeoDoc
                     sb.Append("__");
                 }
             }
+
             return sb.ToString();
         }
     }
