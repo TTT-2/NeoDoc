@@ -311,6 +311,9 @@ namespace NeoDoc
             string newDir = Directory.GetCurrentDirectory() + "../../../webfiles/src/docu";
             string dsDir = newDir + "/datastructures";
 
+            // overview json
+            string overviewJson = "{\"type\":\"overview\",\"data\":[";
+
             Directory.CreateDirectory(dsDir);
 
             foreach (WrapperParam wrapper in wrapperList)
@@ -343,14 +346,17 @@ namespace NeoDoc
                         File.WriteAllText(dsEntDir + ".json", overviewList);
                     }
                 }
+
+                overviewJson += "\"" + wrapper.GetData() + "\",";
             }
+
+            overviewJson = overviewJson.Remove(overviewJson.Length - 1, 1) + "]}";
+
+            File.WriteAllText(dsDir + ".json", overviewJson);
 
             // add globals too
             foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
             {
-                if (entry.Value.Count < 0)
-                    continue; // don't include empty globals
-
                 string globalDir = newDir + "/" + entry.Key + "s";
 
                 Directory.CreateDirectory(globalDir);
@@ -368,9 +374,6 @@ namespace NeoDoc
 
                 File.WriteAllText(globalDir + ".json", overviewList);
             }
-
-            // TODO create overview page
-            File.WriteAllText(dsDir + ".json", "Overview");
         }
 
         public static string RemoveSpecialCharacters(this string str)
