@@ -27,78 +27,68 @@ const lightTheme = new Theme()
         'on-brand': '#ffffff',
         'on-brand-hover': '#eeeeee',
 
-        // Background colors, but not limited to `bg` utilities.
+        // Background colors, but not limited to `bg` utilities
         'background': '#f4f4f4',
-        'surface': '#ffffff',
         'on-background': '#585851',
-        'on-surface': '#3c3c3c',
 
-        // Event colors.
-        'error': '#b00020',
-        'on-error': '#ffffff',
+        // Event colors
+        'error-primary': '#b00020',
+        'on-error-primary': '#ffffff',
+        'error-secondary': '#a00010',
+        'on-error-secondary': '#dddddd',
 
-        'success': '#3ab577',
-        'on-success': '#ffffff',
+        'success-primary': '#3ab577',
+        'on-success-primary': '#ffffff',
+        'success-secondary': '#2aa567',
+        'on-success-secondary': '#dddddd',
 
         'warning-primary': '#e65100',
         'on-warning-primary': '#ffffff',
         'warning-secondary': '#d64100',
         'on-warning-secondary': '#dddddd',
 
-        'info': '#2481ea',
-        'on-info': '#ffffff',
+        'info-primary': '#2481ea',
+        'on-info-primary': '#ffffff',
+        'info-secondary': '#1471da',
+        'on-info-secondary': '#dddddd',
+
+        'code': '#cccccc',
+        'on-code': '#000000',
     })
+
+    // Color variants
+    .colorVariant('hover', 'white', ['on-navigation'])
 
     // Material variants
     .opacityVariant('high-emphasis', .87)
     .opacityVariant('medium-emphasis', .60)
-    .opacityVariant('muted', .38)
+    .opacityVariant('disabled', .38)
+    .opacityVariant('helper-emphasized', .87)
+    .opacityVariant('helper', .6)
+    .opacityVariant('inactive', .6)
 
     // Arbitrary variants
+    .opacityVariant('quote-border', .5)
+    .opacityVariant('muted', .38)
+    .opacityVariant('kinda-visible', .1)
     .opacityVariant('slightly-visible', .075)
-
-    // Custom variable
-    .variable('decoration', 'underline')
-
-    // Tailwind extension
-    .variable('dynamic', 'not-allowed', 'cursor')
-    ;
+;
 
 const darkTheme = new Theme()
     .name('dark')
     .colors({
-        // Brand colors
-        'brand': '#2196f3',
-        'on-brand': '#ffffff',
-
-        // Background colors, but not limited to `bg` utilities.
+        // Background colors, but not limited to `bg` utilities 
         'background': '#1f1f1f',
-        'surface': '#282828',
         'on-background': '#ffffff',
-        'on-surface': '#ffffff',
-
-        // Event colors.
-        'error': '#e67388',
-        'on-error': '#ffffff',
-        'success': '#3ab577',
-        'on-success': '#ffffff',
-        'warning': '#ffa777',
-        'on-warning': '#ffffff',
-        'info': '#83bdff',
-        'on-info': '#ffffff',
     })
 
-    // Material variants
-    .opacityVariant('slightly-visible', .040)
-
-    // Custom variable
-    .variable('decoration', 'none')
-
-    // Tailwind extension
-    .variable('dynamic', 'pointer', 'cursor')
-    ;
+    // Arbitrary variants
+    .opacityVariant('quote-border', .15)
+    .opacityVariant('kinda-visible', .038)
+    .opacityVariant('slightly-visible', .020)
+;
 
 module.exports = new ThemeBuilder()
-    .asClass()
+    .asDataThemeAttribute()
     .default(lightTheme)
     .dark(darkTheme);
