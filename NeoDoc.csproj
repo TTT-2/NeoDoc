@@ -128,6 +128,7 @@
     <None Include="webfiles\src\components\Success.vue" />
     <None Include="webfiles\src\components\Info.vue" />
     <None Include="webfiles\src\components\Error.vue" />
+    <None Include="webfiles\src\components\DocuParam.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

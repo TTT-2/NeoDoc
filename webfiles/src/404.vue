@@ -31,6 +31,9 @@
                     ply:WriteLine("tests")
                 }
             </pretty-code>
+
+            <docu-param name="test" type="string" text="Some description" />
+            <docu-param name="test" type="string" text="Some description" />
         </div>
     </main-layout>
 </template>

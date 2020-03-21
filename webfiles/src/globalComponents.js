@@ -4,6 +4,7 @@ import MainLayout from './layouts/Main.vue'
 import VLink from './components/VLink.vue'
 import PrettyCode from './components/PrettyCode.vue'
 import MainContainer from './components/MainContainer.vue'
+import DocuParam from './components/DocuParam.vue'
 
 import Error from './components/Error.vue'
 import Info from './components/Info.vue'
@@ -14,6 +15,7 @@ Vue.component('main-layout', MainLayout)
 Vue.component('v-link', VLink)
 Vue.component('pretty-code', PrettyCode)
 Vue.component('main-container', MainContainer)
+Vue.component('docu-param', DocuParam)
 
 Vue.component('error', Error)
 Vue.component('info', Info)
