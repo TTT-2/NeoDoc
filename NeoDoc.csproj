@@ -120,6 +120,8 @@
     <None Include="webfiles\src\assets\css\tailwind.css" />
     <None Include="webfiles\postcss.config.js" />
     <None Include="webfiles\src\404.vue" />
+    <None Include="webfiles\theme.config.js" />
+    <None Include="webfiles\tailwind.config.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
