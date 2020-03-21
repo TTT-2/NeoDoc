@@ -6,11 +6,11 @@ namespace NeoDoc.Params
     public class SectionParam : Param
     {
         public string SectionName { get; set; } = "none";
-        public Dictionary<string, List<DataStructure>> DataStructureDict;
+        public SortedDictionary<string, List<DataStructure>> DataStructureDict;
 
         public SectionParam()
         {
-            DataStructureDict = new Dictionary<string, List<DataStructure>>();
+            DataStructureDict = new SortedDictionary<string, List<DataStructure>>();
         }
 
         public override string GetData()

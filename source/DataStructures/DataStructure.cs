@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
 
@@ -25,7 +26,7 @@ namespace NeoDoc.DataStructures
             if (ParamsList != null && ParamsList.Length > 0)
             {
                 // merge same datastructures together
-                Dictionary<string, List<Param>> paramsDict = new Dictionary<string, List<Param>>();
+                SortedDictionary<string, List<Param>> paramsDict = new SortedDictionary<string, List<Param>>();
 
                 foreach (Param param in ParamsList)
                 {
@@ -65,6 +66,25 @@ namespace NeoDoc.DataStructures
         public virtual bool IsGlobal() // whether the DataStructure should be excluded from the sections / wrappers data structuring
         {
             return false;
+        }
+
+        internal int CompareTo(DataStructure y)
+        {
+            return GetData().CompareTo(y.GetData());
+        }
+    }
+
+    class DataStructureComparator : IComparer<DataStructure>
+    {
+        public int Compare(DataStructure x, DataStructure y)
+        {
+            if (x == null || y == null)
+            {
+                return 0;
+            }
+
+            // "CompareTo()" method 
+            return x.CompareTo(y);
         }
     }
 }

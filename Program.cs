@@ -71,7 +71,7 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out Dictionary<string, List<DataStructure>> globalsDict));
+            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, List<DataStructure>> globalsDict));
 
             CleanupEmptyDataKeeper(wrapperList); // remove empty sections and wrappers that were created e.g. because of hooks, ConVars or local functions
 
@@ -100,7 +100,7 @@ namespace NeoDoc
                 for (int i3 = 0; i3 < wrapper.SectionList.Count; i3++)
                 {
                     SectionParam section = wrapper.SectionList[i3];
-                    Dictionary<string, List<DataStructure>> newDict = new Dictionary<string, List<DataStructure>>(); // cleaned dict
+                    SortedDictionary<string, List<DataStructure>> newDict = new SortedDictionary<string, List<DataStructure>>(); // cleaned dict
 
                     foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
                     {
@@ -121,6 +121,10 @@ namespace NeoDoc
 
                         if (newDSList.Count > 0)
                         {
+                            DataStructureComparator dataStructureComparator = new DataStructureComparator();
+
+                            newDSList.Sort(dataStructureComparator);
+
                             newDict.Add(keyValuePair.Key, newDSList); // just insert if not empty
                         }
                     }
@@ -140,11 +144,11 @@ namespace NeoDoc
             }
         }
 
-        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out Dictionary<string, List<DataStructure>> globalsDict)
+        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, List<DataStructure>> globalsDict)
         {
-            Dictionary<string, WrapperParam> wrapperParamsDict = new Dictionary<string, WrapperParam>();
+            SortedDictionary<string, WrapperParam> wrapperParamsDict = new SortedDictionary<string, WrapperParam>();
 
-            globalsDict = new Dictionary<string, List<DataStructure>>();
+            globalsDict = new SortedDictionary<string, List<DataStructure>>();
 
             foreach (FileParser fileParser in fileParsers)
             {
@@ -259,6 +263,14 @@ namespace NeoDoc
                 }
             }
 
+            // sort globals list
+            DataStructureComparator dataStructureComparator = new DataStructureComparator();
+
+            foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in globalsDict)
+            {
+                keyValuePair.Value.Sort(dataStructureComparator);
+            }
+
             WrapperParam[] wrapperParams = new WrapperParam[wrapperParamsDict.Count];
 
             wrapperParamsDict.Values.CopyTo(wrapperParams, 0);
@@ -266,7 +278,7 @@ namespace NeoDoc
             return wrapperParams;
         }
 
-        private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams, Dictionary<string, List<DataStructure>> globalsDict)
+        private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
         {
             string json = "{";
 
@@ -294,7 +306,7 @@ namespace NeoDoc
             return json.Remove(json.Length - 1, 1) + "}"; // remove last "," and close json
         }
 
-        private static void GenerateDocumentationData(List<WrapperParam> wrapperList, Dictionary<string, List<DataStructure>> globalsDict)
+        private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, List<DataStructure>> globalsDict)
         {
             string newDir = Directory.GetCurrentDirectory() + "../../../webfiles/src/docu";
             string dsDir = newDir + "/datastructures";
@@ -307,7 +319,7 @@ namespace NeoDoc
 
                 Directory.CreateDirectory(wrapperDir);
 
-                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"" + wrapper.GetName() + "\",\"data\":" + wrapper.GetJSONData() + "}");
+                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"" + wrapper.GetName() + "\",\"data\":{" + wrapper.GetJSONData() + "}}");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {

@@ -9,8 +9,8 @@ namespace NeoDoc
 {
     public class LangMatcher
     {
-        private readonly Dictionary<string, Lang> cachedTypes;
-        private readonly Dictionary<Lang, DataStructure[]> documentationTypes;
+        private readonly SortedDictionary<string, Lang> cachedTypes;
+        private readonly SortedDictionary<Lang, DataStructure[]> documentationTypes;
 
         public LangMatcher()
         {
@@ -28,11 +28,11 @@ namespace NeoDoc
                 select t;
         }
 
-        private Dictionary<string, Lang> GenerateLangTypesList()
+        private SortedDictionary<string, Lang> GenerateLangTypesList()
         {
             IEnumerable<Type> q = GetTypesInNamespace("NeoDoc.Langs");
 
-            Dictionary<string, Lang> dict = new Dictionary<string, Lang>();
+            SortedDictionary<string, Lang> dict = new SortedDictionary<string, Lang>();
 
             // now create the dict with <fileExtension, class>
             foreach (Type type in q.ToList())
@@ -45,9 +45,9 @@ namespace NeoDoc
             return dict;
         }
 
-        private Dictionary<Lang, T[]> GenerateStructureTypesList<T>(Lang[] langs)
+        private SortedDictionary<Lang, T[]> GenerateStructureTypesList<T>(Lang[] langs)
         {
-            Dictionary<Lang, T[]> langDict = new Dictionary<Lang, T[]>();
+            SortedDictionary<Lang, T[]> langDict = new SortedDictionary<Lang, T[]>();
 
             foreach (Lang lang in langs)
             {

@@ -11,7 +11,7 @@ namespace NeoDoc
     public class ParamMatcher
     {
         private readonly Lang lang;
-        private readonly Dictionary<string, Param> cachedParams;
+        private readonly SortedDictionary<string, Param> cachedParams;
         private readonly Regex commentStartRegex, commentRegex, paramRegex;
 
         public ParamMatcher(Lang lang)
@@ -28,14 +28,14 @@ namespace NeoDoc
             paramRegex = new Regex(commentRegexStr + @"\s*@\w+"); // e.g. check for "-- @param" or "//// @param"
         }
 
-        private Dictionary<string, Param> GenerateParamsList()
+        private SortedDictionary<string, Param> GenerateParamsList()
         {
             // Get each class in the "NeoDoc.Params" namespace, that is not abstract
             IEnumerable<Type> q = from t in Assembly.GetExecutingAssembly().GetTypes()
                 where t.IsClass && t.Namespace == "NeoDoc.Params" && !t.IsAbstract
                 select t;
 
-            Dictionary<string, Param> dict = new Dictionary<string, Param>();
+            SortedDictionary<string, Param> dict = new SortedDictionary<string, Param>();
 
             // now create the dict with <paramName, class>
             foreach (Type type in q.ToList())
