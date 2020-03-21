@@ -4,6 +4,7 @@
             <nav class="flex items-center justify-between flex-wrap bg-brand p-6">
                 <div class="flex items-center flex-shrink-0 text-on-brand mr-6">
                     <span class="font-semibold text-xl tracking-tight">NeoDoc</span>
+                    <Burger />
                 </div>
                 <div class="block lg:hidden">
                     <button class="flex items-center px-3 py-2 border rounded text-on-brand border-brand hover:text-on-brand-hover hover:border-on-brand-hover">
@@ -38,6 +39,14 @@
                     </li>
                 </ol>
             </nav>
+
+            <Sidebar>
+                <ul class="sidebar-panel-nav">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </Sidebar>
         </header>
 
         <main-container>
@@ -58,6 +67,8 @@
 
 <script>
     import json from '../jsonList.json'
+    import Burger from '../components/menu/Burger.vue';
+    import Sidebar from '../components/menu/Sidebar.vue';
 
     export default {
         name: 'main-layout',
@@ -81,6 +92,24 @@
             recaptchaScript.setAttribute('src', 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js')
 
             document.head.appendChild(recaptchaScript)
+        },
+        components: {
+            Burger,
+            Sidebar
         }
     }
 </script>
+
+<style scoped>
+    ul.sidebar-panel-nav {
+        list-style-type: none;
+    }
+
+    ul.sidebar-panel-nav > li > a {
+        color: rgb(var(--color-on-brand));
+        text-decoration: none;
+        font-size: 1.5rem;
+        display: block;
+        padding-bottom: 0.5em;
+    }
+</style>

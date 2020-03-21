@@ -103,6 +103,8 @@
     <Folder Include="webfiles\src\layouts\" />
     <Folder Include="webfiles\src\assets\" />
     <Folder Include="webfiles\src\assets\css\" />
+    <Folder Include="webfiles\src\components\container\" />
+    <Folder Include="webfiles\src\components\menu\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -123,12 +125,16 @@
     <None Include="webfiles\theme.config.js" />
     <None Include="webfiles\tailwind.config.js" />
     <None Include="webfiles\src\components\PrettyCode.vue" />
-    <None Include="webfiles\src\components\MainContainer.vue" />
     <None Include="webfiles\src\components\Warning.vue" />
     <None Include="webfiles\src\components\Success.vue" />
     <None Include="webfiles\src\components\Info.vue" />
     <None Include="webfiles\src\components\Error.vue" />
     <None Include="webfiles\src\components\DocuParam.vue" />
+    <None Include="webfiles\src\components\container\MainContainer.vue" />
+    <None Include="webfiles\src\components\menu\Burger.vue" />
+    <None Include="webfiles\src\components\menu\Sidebar.vue" />
+    <None Include="webfiles\src\store.js" />
+    <None Include="webfiles\ressources.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
