@@ -123,6 +123,7 @@
     <None Include="webfiles\theme.config.js" />
     <None Include="webfiles\tailwind.config.js" />
     <None Include="webfiles\src\components\PrettyCode.vue" />
+    <None Include="webfiles\src\components\MainContainer.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

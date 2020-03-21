@@ -31,6 +31,9 @@ const lightTheme = new Theme()
         'background': '#f4f4f4',
         'on-background': '#585851',
 
+        'main': '#eeeeee',
+        'on-main': '#333333',
+
         // Event colors
         'error-primary': '#b00020',
         'on-error-primary': '#ffffff',
@@ -80,6 +83,9 @@ const darkTheme = new Theme()
         // Background colors, but not limited to `bg` utilities 
         'background': '#1f1f1f',
         'on-background': '#ffffff',
+
+        'main': '#333333',
+        'on-main': '#eeeeee',
     })
 
     // Arbitrary variants
