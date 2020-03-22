@@ -81,12 +81,14 @@ const lightTheme = new Theme()
 const darkTheme = new Theme()
     .name('dark')
     .colors({
-        // Background colors, but not limited to `bg` utilities 
+        // Background colors, but not limited to `bg` utilities
         'background': '#1f1f1f',
-        'on-background': '#ffffff',
+        'on-background': '#dddddd',
+
+        'on-brand': '#dddddd',
 
         'main': '#333333',
-        'on-main': '#eeeeee',
+        'on-main': '#dddddd',
     })
 
     // Arbitrary variants

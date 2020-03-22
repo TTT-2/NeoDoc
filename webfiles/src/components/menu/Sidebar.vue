@@ -26,7 +26,6 @@
 </script>
 
 <style scoped>
-
     .slide-enter-active,
     .slide-leave-active {
         transition: transform 0.2s ease;

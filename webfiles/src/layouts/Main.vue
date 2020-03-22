@@ -1,7 +1,7 @@
 ﻿<template>
     <div class="container bg-background text-on-background transition duration-500">
         <header>
-            <nav class="flex items-center justify-between flex-wrap bg-brand p-6">
+            <nav class="navbar flex items-center justify-between flex-wrap bg-brand p-6">
                 <div class="flex items-center flex-shrink-0 text-on-brand mr-6">
                     <span class="font-semibold text-xl tracking-tight">NeoDoc</span>
                     <Burger />
@@ -119,5 +119,9 @@
         font-size: 1.5rem;
         display: block;
         padding-bottom: 0.5em;
+    }
+
+    header > nav.navbar .active {
+        color: rgb(var(--color-highlight-on-brand));
     }
 </style>

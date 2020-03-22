@@ -39,9 +39,3 @@
         }
     }
 </script>
-
-<style scoped>
-  .active {
-    color: cornflowerblue;
-  }
-</style>
