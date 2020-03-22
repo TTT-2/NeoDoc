@@ -5,7 +5,18 @@
 </template>
 
 <script>
-    export default {
+    import { store, mutations } from '../../store.js'
 
+    export default {
+        computed: {
+            isBurgerActive() {
+                return store.isNavOpen
+            }
+        },
+        methods: {
+            toggle() {
+                mutations.toggleNav()
+            }
+        }
     }
 </script>

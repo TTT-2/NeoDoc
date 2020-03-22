@@ -15,11 +15,11 @@
 
     export default {
         methods: {
-            closeSidebarPanel: mutations.toggleNav
+            closeSidebarPanel: mutations.toggleSideNav
         },
         computed: {
             isPanelOpen() {
-                return store.isNavOpen
+                return store.isSideNavOpen
             }
         }
     }

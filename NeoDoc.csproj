@@ -137,6 +137,7 @@
     <None Include="webfiles\ressources.txt" />
     <None Include="webfiles\src\json.vue" />
     <None Include="webfiles\src\components\CookieConsent.vue" />
+    <None Include="webfiles\src\components\menu\NavBar.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

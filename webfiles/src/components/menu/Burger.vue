@@ -1,5 +1,5 @@
 ﻿<template>
-    <div id="burger" :class="{ 'active' : isBurgerActive }" @click.prevent="toggle">
+    <div id="burger" :class="{ 'active' : isBurgerActive }" @click.prevent="toggleSideNav">
         <slot>
             <button type="button" class="burger-button" title="Menu">
                 <span class="hidden">Toggle menu</span>
@@ -17,12 +17,12 @@
     export default {
         computed: {
             isBurgerActive() {
-                return store.isNavOpen
+                return store.isSideNavOpen
             }
         },
         methods: {
-            toggle() {
-                mutations.toggleNav()
+            toggleSideNav() {
+                mutations.toggleSideNav()
             }
         }
     }
