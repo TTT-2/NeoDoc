@@ -4,6 +4,8 @@ import VueCookie from 'vue-cookie'
 import './assets/css/tailwind.css';
 import './globalComponents.js'
 
+import { store } from './store.js'
+
 Vue.use(VueCookie);
 
 const app = new Vue({
@@ -26,6 +28,8 @@ const app = new Vue({
                     ret = require('./404.vue')
                 }
             }
+
+            store.currentRoute = this.currentRoute
 
             return ret
         }

@@ -146,3 +146,5 @@ webfiles/css/output.css
 # output
 webfiles/src/docu/
 webfiles/src/jsonList.json
+
+webfiles/report.*.json
