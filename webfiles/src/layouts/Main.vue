@@ -1,5 +1,5 @@
 ﻿<template>
-    <div class="container bg-background text-on-background transition duration-500">
+    <div class="container min-h-screen flex flex-col">
         <header>
             <nav class="navbar flex items-center justify-between flex-wrap bg-brand p-6">
                 <div class="flex items-center flex-shrink-0 text-on-brand mr-6">
@@ -49,7 +49,7 @@
             </Sidebar>
         </header>
 
-        <main-container>
+        <main-container class="flex-grow">
             <slot></slot>
         </main-container>
 
