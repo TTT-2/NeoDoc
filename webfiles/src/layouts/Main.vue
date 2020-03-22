@@ -1,6 +1,6 @@
 ﻿<template>
     <div class="page-container min-h-screen flex flex-col">
-        <header>
+        <header class="border-b-2 border-brand">
             <nav-bar>
                 <div slot="title" class="flex items-center flex-shrink-0 text-on-brand mr-6">
                     <span class="font-semibold text-xl tracking-tight">NeoDoc</span>
