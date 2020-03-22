@@ -26,6 +26,7 @@ const lightTheme = new Theme()
         'brand': '#2196f3',
         'on-brand': '#ffffff',
         'on-brand-hover': '#eeeeee',
+        'highlight-on-brand': '#f66110',
 
         // Background colors, but not limited to `bg` utilities
         'background': '#f4f4f4',
