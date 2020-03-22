@@ -30,8 +30,11 @@
             </Sidebar>
         </header>
 
-        <main-container class="flex-grow">
+        <main-container class="flex-grow" v-if="!getJsonData">
             <slot></slot>
+        </main-container>
+        <main-container class="flex-grow" v-else>
+            <overview :jsonData="getJsonData" v-if="getJsonDataType && getJsonDataType == 'overview'" />
         </main-container>
 
         <footer class="flex justify-around bg-brand p-2 text-on-brand">
@@ -55,6 +58,7 @@
     import Burger from '../components/menu/Burger.vue';
     import Sidebar from '../components/menu/Sidebar.vue';
     import CookieConsent from '../components/CookieConsent.vue';
+    import Overview from '../components/Overview.vue';
 
     import { store } from '../store.js';
 
@@ -90,11 +94,18 @@
             Breadcrumb,
             Burger,
             Sidebar,
-            CookieConsent
+            CookieConsent,
+            Overview
         },
         computed: {
             getPathSplits() {
                 return store.currentRoute.substring(1).split('/')
+            },
+            getJsonData() {
+                return store.jsonData
+            },
+            getJsonDataType() {
+                return store.jsonData.type
             }
         }
     }

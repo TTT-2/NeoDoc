@@ -50,7 +50,8 @@
 
     .sidebar-panel {
         overflow-y: auto;
-        background-color: rgb(var(--color-brand));
+        background-color: rgb(var(--color-background));
+        color: rgb(var(--color-on-background));
         position: fixed;
         left: 0;
         top: 0;

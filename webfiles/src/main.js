@@ -17,11 +17,15 @@ const app = new Vue({
         ViewComponent() {
             var ret
 
+            store.jsonData = null
+
             try {
                 ret = require('.' + this.currentRoute + '.vue')
             } catch (e) {
                 try {
-                    require('.' + this.currentRoute + '.json')
+                    var jsonData = require('.' + this.currentRoute + '.json')
+
+                    store.jsonData = jsonData
 
                     ret = require('./json.vue')
                 } catch (e) {

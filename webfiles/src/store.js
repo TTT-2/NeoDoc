@@ -3,7 +3,8 @@
 export const store = Vue.observable({
     isSideNavOpen: false,
     isNavBarOpen: false,
-    currentRoute: ""
+    jsonData: "",
+    currentRoute: "",
 });
 
 export const mutations = {
