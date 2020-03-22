@@ -140,6 +140,7 @@
     <None Include="webfiles\src\components\menu\NavBar.vue" />
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
     <None Include="webfiles\src\components\Overview.vue" />
+    <None Include="webfiles\src\components\Wrapper.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

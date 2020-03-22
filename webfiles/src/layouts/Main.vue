@@ -35,6 +35,7 @@
         </main-container>
         <main-container class="flex-grow" v-else>
             <overview :jsonData="getJsonData" v-if="getJsonDataType && getJsonDataType == 'overview'" />
+            <wrapper :jsonData="getJsonData" v-else />
         </main-container>
 
         <footer class="flex justify-around bg-brand p-2 text-on-brand">
@@ -59,6 +60,7 @@
     import Sidebar from '../components/menu/Sidebar.vue';
     import CookieConsent from '../components/CookieConsent.vue';
     import Overview from '../components/Overview.vue';
+    import Wrapper from '../components/Wrapper.vue';
 
     import { store } from '../store.js';
 
@@ -88,6 +90,8 @@
             document.head.appendChild(recaptchaScript)
 
             this.theme(this.$cookie.get('theme'))
+
+            console.log(store.jsonData)
         },
         components: {
             NavBar,
@@ -95,7 +99,8 @@
             Burger,
             Sidebar,
             CookieConsent,
-            Overview
+            Overview,
+            Wrapper
         },
         computed: {
             getPathSplits() {
