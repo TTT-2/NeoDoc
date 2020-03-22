@@ -1,7 +1,10 @@
 import Vue from 'vue'
+import VueCookie from 'vue-cookie'
 
 import './assets/css/tailwind.css';
 import './globalComponents.js'
+
+Vue.use(VueCookie);
 
 const app = new Vue({
     el: '#app',

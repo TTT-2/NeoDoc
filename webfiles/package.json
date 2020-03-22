@@ -10,7 +10,8 @@
     "deploy": "surge --project . --domain vue-2-simple-routing-example.surge.sh"
   },
   "dependencies": {
-    "vue": "^2.3.3"
+    "vue": "^2.3.3",
+    "vue-cookie": "^1.1.4"
   },
   "devDependencies": {
     "autoprefixer": "^9.7.4",

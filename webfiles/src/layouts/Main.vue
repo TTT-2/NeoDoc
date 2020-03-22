@@ -75,15 +75,17 @@
         data() {
             return {
                 jsonList: json,
-                themes: ["light", "dark"]
+                themes: ["light", "dark"],
             }
         },
         methods: {
             theme(name) {
-                document.body.removeAttribute('data-theme');
+                document.body.removeAttribute('data-theme')
+                this.$cookie.delete('theme')
 
                 if (name) {
                     document.body.setAttribute('data-theme', name)
+                    this.$cookie.set('theme', name, { expires: '1Y' }) // expires after 1 year
                 }
             }
         },
@@ -92,6 +94,8 @@
             recaptchaScript.setAttribute('src', 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js')
 
             document.head.appendChild(recaptchaScript)
+
+            this.theme(this.$cookie.get('theme'))
         },
         components: {
             Burger,
