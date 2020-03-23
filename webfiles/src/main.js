@@ -44,6 +44,8 @@ const app = new Vue({
                         jsonData = require('.' + this.currentRoute + '.json');
                     }
 
+                    console.log(jsonData)
+
                     resolve(jsonData);
                 } catch (e) {
                     resolve(require('./404.json'));

@@ -101,8 +101,6 @@
             document.head.appendChild(recaptchaScript)
 
             this.theme(this.$cookie.get('theme'))
-
-            console.log(store.jsonData)
         },
         components: {
             NavBar,
