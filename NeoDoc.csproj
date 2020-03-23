@@ -132,7 +132,7 @@
     <None Include="webfiles\src\components\menu\Sidebar.vue" />
     <None Include="webfiles\src\store.js" />
     <None Include="webfiles\ressources.txt" />
-    <None Include="webfiles\src\template.vue" />
+    <None Include="webfiles\src\app.vue" />
     <None Include="webfiles\src\components\CookieConsent.vue" />
     <None Include="webfiles\src\components\menu\NavBar.vue" />
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
