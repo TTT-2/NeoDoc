@@ -1,4 +1,6 @@
-﻿namespace NeoDoc.Params
+﻿using Newtonsoft.Json;
+
+namespace NeoDoc.Params
 {
     public abstract class Param
     {
@@ -12,7 +14,7 @@
 
         public virtual string GetJSON() // returns the json output used for the website
         {
-            return "\"" + GetData() + "\"";
+            return JsonConvert.SerializeObject(GetData());
         }
 
         public void ProcessSettings(string[] paramSettings) // paramData = everything except the @param prefix part

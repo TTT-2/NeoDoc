@@ -53,9 +53,11 @@ namespace NeoDoc.DataStructures
 
                     json = json.Remove(json.Length - 1, 1) + "],";
                 }
+
+                json = (paramsDict.Count > 0) ? json.Remove(json.Length - 1, 1) : json;
             }
 
-            return json.Remove(json.Length - 1, 1) + "}}";
+            return json + "}}";
         }
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
