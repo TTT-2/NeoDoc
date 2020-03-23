@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import VueCookie from 'vue-cookie'
+import GlobalMethods from './global-methods.js'
 
 import './assets/css/tailwind.css';
-import './globalComponents.js'
+import './global-components.js'
 
 import { store } from './store.js'
 
 Vue.use(VueCookie);
+Vue.use(GlobalMethods);
 
 const app = new Vue({
     el: '#app',
@@ -15,27 +17,33 @@ const app = new Vue({
     },
     computed: {
         ViewComponent() {
-            var ret
-
+            store.currentRoute = this.currentRoute
             store.jsonData = null
 
             try {
-                ret = require('.' + this.currentRoute + '.vue')
+                return require('.' + this.currentRoute + '.vue')
             } catch (e) {
-                try {
-                    var jsonData = require('.' + this.currentRoute + '.json')
+                new Promise((resolve) => {
+                    try {
+                        var jsonData;
 
-                    store.jsonData = jsonData
+                        if (this.currentRoute == '/home' || this.currentRoute == '/') {
+                            jsonData = require('./jsonList.json');
+                        }
+                        else {
+                            jsonData = require('.' + this.currentRoute + '.json');
+                        }
 
-                    ret = require('./json.vue')
-                } catch (e) {
-                    ret = require('./404.vue')
-                }
+                        resolve(jsonData);
+                    } catch (e) {
+                        resolve(require('./404.json'));
+                    }
+                }).then((data) => {
+                    store.jsonData = data
+                });
+
+                return require('./json.vue')
             }
-
-            store.currentRoute = this.currentRoute
-
-            return ret
         }
     },
     render(h) {

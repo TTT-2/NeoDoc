@@ -1,11 +1,11 @@
 ﻿<template>
     <div class="page-container min-h-screen flex flex-col">
-        <header class="border-b-2 border-brand">
+        <header>
             <nav-bar>
                 <div slot="title" class="flex items-center flex-shrink-0 text-on-brand mr-6">
                     <span class="font-semibold text-xl tracking-tight">NeoDoc</span>
-                    <Burger />
                 </div>
+
                 <div slot="content" class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
                     <div class="text-sm lg:flex-grow">
                         <v-link href="/home" class="block mt-4 lg:inline-block lg:mt-0 text-on-brand hover:text-on-brand-hover mr-4">Home</v-link>
@@ -20,23 +20,32 @@
             </nav-bar>
 
             <breadcrumb :paths="getPathSplits" />
+        </header>
 
-            <Sidebar>
+        <div class="flex flex-row sm:flex-none">
+            <sidebar>
                 <ul class="sidebar-panel-nav">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-            </Sidebar>
-        </header>
+            </sidebar>
 
-        <main-container class="flex-grow" v-if="!getJsonData">
-            <slot></slot>
-        </main-container>
-        <main-container class="flex-grow" v-else>
-            <overview :jsonData="getJsonData" v-if="getJsonDataType && getJsonDataType == 'overview'" />
-            <wrapper :jsonData="getJsonData" v-else />
-        </main-container>
+            <main-container class="flex-grow">
+                <slot v-if="!getJsonData"></slot>
+                <overview :jsonData="getJsonData" v-else-if="getJsonDataType && getJsonDataType == 'overview'" />
+                <div v-else-if="getJsonDataType && getJsonDataType == 'error'">
+                    <div class="flex flex-col">
+                        <error>
+                            <p class="leading-tight">
+                                File not found. Try another URL...
+                            </p>
+                        </error>
+                    </div>
+                </div>
+                <wrapper :jsonData="getJsonData" v-else />
+            </main-container>
+        </div>
 
         <footer class="flex justify-around bg-brand p-2 text-on-brand">
             <v-link href="/impressum" class="block pb-4 mt-4 lg:inline-block hover:text-on-brand-hover">Impressum</v-link>
@@ -53,10 +62,8 @@
 </template>
 
 <script>
-    import json from '../jsonList.json';
     import NavBar from '../components/menu/NavBar.vue';
     import Breadcrumb from '../components/menu/Breadcrumb.vue';
-    import Burger from '../components/menu/Burger.vue';
     import Sidebar from '../components/menu/Sidebar.vue';
     import CookieConsent from '../components/CookieConsent.vue';
     import Overview from '../components/Overview.vue';
@@ -68,7 +75,6 @@
         name: 'main-layout',
         data() {
             return {
-                jsonList: json,
                 themes: ["light", "dark"]
             }
         },
@@ -96,7 +102,6 @@
         components: {
             NavBar,
             Breadcrumb,
-            Burger,
             Sidebar,
             CookieConsent,
             Overview,
@@ -111,24 +116,15 @@
             },
             getJsonDataType() {
                 return store.jsonData.type
+            },
+            isMobile() {
+                return this.$globalMethods.IsMobile();
             }
         }
     }
 </script>
 
 <style scoped>
-    ul.sidebar-panel-nav {
-        list-style-type: none;
-    }
-
-    ul.sidebar-panel-nav > li > a {
-        color: rgb(var(--color-on-brand));
-        text-decoration: none;
-        font-size: 1.5rem;
-        display: block;
-        padding-bottom: 0.5em;
-    }
-
     header > nav.navbar .active {
         color: rgb(var(--color-highlight-on-brand));
     }

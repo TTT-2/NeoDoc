@@ -108,12 +108,7 @@ namespace NeoDoc
 
                         foreach (DataStructure dataStructure in keyValuePair.Value)
                         {
-                            if (dataStructure.IsGlobal())
-                                continue;
-
-                            string tmpJSON = dataStructure.GetJSONData();
-
-                            if (tmpJSON == null)
+                            if (dataStructure.IsGlobal() || dataStructure.GetJSONData() == null)
                                 continue;
 
                             newDSList.Add(dataStructure); // just insert valid data
@@ -280,7 +275,7 @@ namespace NeoDoc
 
         private static string GenerateJSONSearchIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
         {
-            string json = "{";
+            string json = "{\"type\":\"overview\",\"name\":\"Overview\",\"data\":{";
 
             foreach (WrapperParam wrapper in wrapperParams)
             {
@@ -303,7 +298,7 @@ namespace NeoDoc
                 json = json.Remove(json.Length - 1, 1) + "],"; // remove last "," and close data structure
             }
 
-            return json.Remove(json.Length - 1, 1) + "}"; // remove last "," and close json
+            return json.Remove(json.Length - 1, 1) + "}}"; // remove last "," and close json
         }
 
         private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, List<DataStructure>> globalsDict)
@@ -312,7 +307,7 @@ namespace NeoDoc
             string dsDir = newDir + "/datastructures";
 
             // overview json
-            string overviewJson = "{\"type\":\"overview\",\"data\":[";
+            string overviewJson = "{\"type\":\"overview\",\"name\":\"datastructure\",\"data\":[";
 
             Directory.CreateDirectory(dsDir);
 
@@ -322,7 +317,7 @@ namespace NeoDoc
 
                 Directory.CreateDirectory(wrapperDir);
 
-                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"" + wrapper.GetName() + "\",\"data\":{" + wrapper.GetJSONData() + "}}");
+                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"overview\",\"name\":\"" + wrapper.GetName() + "\",\"data\":{" + wrapper.GetJSONData() + "}}");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {
@@ -388,7 +383,7 @@ namespace NeoDoc
                 }
                 else
                 {
-                    sb.Append("__");
+                    sb.Append("_");
                 }
             }
 

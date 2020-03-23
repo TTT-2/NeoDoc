@@ -48,7 +48,7 @@
         height: 30px;
         width: 32px;
         display: block;
-        z-index: 999;
+        z-index: 99999;
         border: 0;
         border-radius: 0;
         background-color: transparent;
@@ -108,5 +108,9 @@
 
     #burger.active .burger-bar--3 {
         transform: rotate(-45deg)
+    }
+
+    #burger.active {
+        z-index: 9999;
     }
 </style>

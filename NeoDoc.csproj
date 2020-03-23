@@ -117,11 +117,10 @@
     <None Include="webfiles\index.html" />
     <None Include="webfiles\404.html" />
     <None Include="webfiles\webpack.config.js" />
-    <None Include="webfiles\src\home.vue" />
-    <None Include="webfiles\src\globalComponents.js" />
+    <None Include="webfiles\src\global-components.js" />
     <None Include="webfiles\src\assets\css\tailwind.css" />
     <None Include="webfiles\postcss.config.js" />
-    <None Include="webfiles\src\404.vue" />
+    <None Include="webfiles\src\404.json" />
     <None Include="webfiles\theme.config.js" />
     <None Include="webfiles\tailwind.config.js" />
     <None Include="webfiles\src\components\PrettyCode.vue" />
@@ -141,6 +140,8 @@
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
     <None Include="webfiles\src\components\Overview.vue" />
     <None Include="webfiles\src\components\Wrapper.vue" />
+    <None Include="webfiles\src\components\menu\Sidebar_old.vue" />
+    <None Include="webfiles\src\global-methods.js" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

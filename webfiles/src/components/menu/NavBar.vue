@@ -1,34 +1,42 @@
 ﻿<template>
     <nav class="navbar flex items-center justify-between flex-wrap bg-brand p-6">
-        <div :class="{ 'active' : !isNavBarOpen }" class="title">
-            <slot name="title"></slot>
+        <div :class="{ 'active' : !isNavBarOpen }">
+            <div v-if="isMobile">
+                <button @click="toggleNavBar" class="title">
+                    <slot name="title"></slot>
+                </button>
+
+                <burger v-if="isMobile" class="fixed right-0 top-0 mt-5 mr-5" />
+            </div>
+            <slot name="title" v-else></slot>
         </div>
 
         <div :class="{ 'active' : isNavBarOpen }" class="content">
             <slot name="content"></slot>
-        </div>
-
-        <div class="block lg:hidden">
-            <button @click="toggleNavBar" class="flex items-center px-3 py-2 border rounded text-on-brand border-brand hover:text-on-brand-hover hover:border-on-brand-hover">
-                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" /></svg>
-            </button>
         </div>
     </nav>
 </template>
 
 <script>
     import { store, mutations } from '../../store.js'
+    import Burger from './Burger.vue';
 
     export default {
         computed: {
             isNavBarOpen() {
                 return store.isNavBarOpen
+            },
+            isMobile() {
+                return this.$globalMethods.IsMobile()
             }
         },
         methods: {
             toggleNavBar() {
                 mutations.toggleNavBar()
             }
+        },
+        components: {
+            Burger
         }
     }
 </script>

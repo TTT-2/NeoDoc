@@ -1,12 +1,17 @@
 ﻿<template>
-    <div class="sidebar">
-        <div class="sidebar-backdrop" @click="closeSidebarPanel" v-if="isPanelOpen"></div>
+    <div class="sidebar mobile" v-if="isMobile">
+        <div class="sidebar-backdrop fixed left-0 top-0 w-full h-full" @click="closeSidebarPanel" v-if="isPanelOpen"></div>
 
         <transition name="slide">
-            <div v-if="isPanelOpen" class="sidebar-panel">
+            <div v-if="isPanelOpen" class="sidebar-panel bg-background text-on-background left-0 top-0 fixed h-full p-2 transition-colors duration-500 w-screen">
                 <slot></slot>
             </div>
         </transition>
+    </div>
+    <div class="sidebar border-r-2 border-brand md:max-w-xs" v-else>
+        <div class="sidebar-panel p-2">
+            <slot></slot>
+        </div>
     </div>
 </template>
 
@@ -20,6 +25,9 @@
         computed: {
             isPanelOpen() {
                 return store.isSideNavOpen
+            },
+            isMobile() {
+                return this.$globalMethods.IsMobile();
             }
         }
     }
@@ -39,25 +47,15 @@
 
     .sidebar-backdrop {
         background-color: rgba(0,0,0,.5);
-        width: 100vw;
-        height: 100vh;
-        position: fixed;
-        z-index: 9998;
-        top: 0;
-        left: 0;
+        z-index: 9997;
         cursor: pointer;
     }
 
     .sidebar-panel {
         overflow-y: auto;
-        background-color: rgb(var(--color-background));
-        color: rgb(var(--color-on-background));
-        position: fixed;
-        left: 0;
-        top: 0;
-        height: 100vh;
-        z-index: 9999;
-        padding: 3rem 20px 2rem 20px;
-        width: 300px;
+    }
+
+    .sidebar-panel {
+        z-index: 9998;
     }
 </style>

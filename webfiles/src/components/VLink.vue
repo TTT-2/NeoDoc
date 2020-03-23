@@ -9,6 +9,8 @@
 </template>
 
 <script>
+    import { store } from '../store.js'
+
     export default {
         props: {
             href: {
@@ -35,6 +37,9 @@
                     this.href,
                     this.href
                 )
+
+                store.isSideNavOpen = false;
+                store.isNavBarOpen = false;
             }
         }
     }

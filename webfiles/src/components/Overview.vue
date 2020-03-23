@@ -2,7 +2,7 @@
     <div>
         <ul>
             <li v-for="entry in jsonData.data">
-                <v-link :href="'/docu/' + jsonData.name + '/' + entry">{{ entry }}</v-link>
+                <v-link :href="'/docu/' + encodeURIComponent(jsonData.name) + 's/' + encodeURIComponent(entry)">{{ entry }}</v-link>
             </li>
         </ul>
     </div>
