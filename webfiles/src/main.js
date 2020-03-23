@@ -41,7 +41,7 @@ const app = new Vue({
                 store.loading = false;
             });
 
-            return require('./json.vue');
+            return require('./template.vue');
         }
     },
     render(h) {

@@ -65,18 +65,17 @@
 </template>
 
 <script>
-    import NavBar from '../components/menu/NavBar.vue';
-    import Breadcrumb from '../components/menu/Breadcrumb.vue';
-    import Sidebar from '../components/menu/Sidebar.vue';
-    import CookieConsent from '../components/CookieConsent.vue';
-    import Overview from '../components/Overview.vue';
-    import Wrapper from '../components/Wrapper.vue';
-    import LoadingSpinner from '../components/LoadingSpinner.vue';
+    import NavBar from './components/menu/NavBar.vue';
+    import Breadcrumb from './components/menu/Breadcrumb.vue';
+    import Sidebar from './components/menu/Sidebar.vue';
+    import CookieConsent from './components/CookieConsent.vue';
+    import Overview from './components/Overview.vue';
+    import Wrapper from './components/Wrapper.vue';
+    import LoadingSpinner from './components/LoadingSpinner.vue';
 
-    import { store } from '../store.js';
+    import { store } from './store.js';
 
     export default {
-        name: 'main-layout',
         data() {
             return {
                 themes: ["light", "dark"]

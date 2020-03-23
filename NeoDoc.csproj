@@ -100,7 +100,6 @@
     <Folder Include="source\DataStructures\Lua\" />
     <Folder Include="source\Params\Wrapper\" />
     <Folder Include="source\Params\BaseParams\" />
-    <Folder Include="webfiles\src\layouts\" />
     <Folder Include="webfiles\src\assets\" />
     <Folder Include="webfiles\src\assets\css\" />
     <Folder Include="webfiles\src\components\container\" />
@@ -112,7 +111,6 @@
     <None Include="webfiles\.gitignore" />
     <None Include="webfiles\package.json" />
     <None Include="webfiles\src\main.js" />
-    <None Include="webfiles\src\layouts\Main.vue" />
     <None Include="webfiles\src\components\VLink.vue" />
     <None Include="webfiles\index.html" />
     <None Include="webfiles\404.html" />
@@ -134,7 +132,7 @@
     <None Include="webfiles\src\components\menu\Sidebar.vue" />
     <None Include="webfiles\src\store.js" />
     <None Include="webfiles\ressources.txt" />
-    <None Include="webfiles\src\json.vue" />
+    <None Include="webfiles\src\template.vue" />
     <None Include="webfiles\src\components\CookieConsent.vue" />
     <None Include="webfiles\src\components\menu\NavBar.vue" />
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
