@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures
 {
@@ -16,12 +16,17 @@ namespace NeoDoc.DataStructures
 
         public virtual string GetJSONData() // returns json data
         {
-            return "\"" + GetData() + "\"";
+            return JsonConvert.SerializeObject(GetData());
         }
 
         public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
         {
-            string json = "{\"type\":\"" + GetName() + "\",\"data\":{";
+            string jsonData = GetJSONData();
+
+            if (jsonData == null)
+                jsonData = "\"\"";
+
+            string json = "{\"type\":\"datastructure\",\"subtype\":\"" + GetName() + "\",\"name\":" + jsonData + ",\"data\":{";
 
             if (ParamsList != null && ParamsList.Length > 0)
             {

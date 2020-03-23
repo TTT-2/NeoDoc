@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures.Lua
 {
@@ -70,7 +71,7 @@ namespace NeoDoc.DataStructures.Lua
             if (Local)
                 return null;
 
-            return "\"" + Name + "\"";
+            return JsonConvert.SerializeObject(Name);
         }
 
         public override DataStructure CheckDataStructureTransformation()
