@@ -7,6 +7,8 @@ import './global-components.js';
 
 import { store } from './store.js';
 
+var App = require('./app.vue');
+
 Vue.use(VueCookie);
 Vue.use(GlobalMethods);
 
@@ -16,7 +18,7 @@ const app = new Vue({
         currentRoute: window.location.pathname
     },
     computed: {
-        ViewComponent() {
+        UpdateComponent() {
             store.currentRoute = this.currentRoute;
             store.jsonData = null;
             store.loading = true;
@@ -40,12 +42,12 @@ const app = new Vue({
                 store.jsonData = data;
                 store.loading = false;
             });
-
-            return require('./app.vue');
         }
     },
     render(h) {
-        return h(this.ViewComponent);
+        this.UpdateComponent;
+
+        return h(App);
     }
 });
 
