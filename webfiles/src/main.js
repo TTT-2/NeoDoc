@@ -29,6 +29,8 @@ const app = new Vue({
     },
     computed: {
         UpdateComponent() {
+            this.currentRoute = window.location.pathname; // update relative paths
+
             store.currentRoute = this.currentRoute;
             store.jsonData = null;
             store.loading = true;
@@ -61,8 +63,4 @@ const app = new Vue({
 
         return h(App);
     }
-});
-
-window.addEventListener('popstate', () => {
-    app.currentRoute = window.location.pathname;
 });
