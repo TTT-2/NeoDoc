@@ -43,7 +43,8 @@
                 <div v-else-if="getJsonDataType && getJsonDataType == 'error'" class="flex flex-grow flex-col">
                     <error>
                         <p class="leading-tight">
-                            File not found. Try another URL...
+                            <p><b>Error 404 - File not found.</b></p>
+                            <p>Please try another URL...</p>
                         </p>
                     </error>
                 </div>

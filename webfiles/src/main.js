@@ -2,6 +2,10 @@ import Vue from 'vue';
 import VueCookie from 'vue-cookie';
 import GlobalMethods from './global-methods.js';
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faExclamationTriangle, faTimes, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 import './assets/css/tailwind.css';
 import './global-components.js';
 
@@ -11,6 +15,12 @@ var App = require('./app.vue');
 
 Vue.use(VueCookie);
 Vue.use(GlobalMethods);
+
+// font-awesome;
+library.add(faExclamationTriangle, faTimes, faCheck, faInfo)
+
+// font-awesome-icon;
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 const app = new Vue({
     el: '#app',
