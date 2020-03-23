@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <div>
-            <realm-param :realm="jsonData.data.realm" class="inline realm px-2 mr-2 client" />
+            <realm-param :realm="jsonData.data.realm || 'shared'" class="inline" />
             <span class="inline">{{ jsonData.name }}</span>
         </div>
 

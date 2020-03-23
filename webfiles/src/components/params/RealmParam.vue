@@ -1,5 +1,5 @@
 ﻿<template>
-    <div :class="realm" class="realm"></div>
+    <div :class="realm" class="realm px-2 mr-2 rounded"></div>
 </template>
 
 <script>

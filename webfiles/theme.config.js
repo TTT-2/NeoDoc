@@ -59,9 +59,9 @@ const lightTheme = new Theme()
         'code': '#cccccc',
         'on-code': '#000000',
 
-        'client': '#00FF00',
-        'server': '#FFFF00',
-        'shared': '#FFFF66',
+        'client': '#e3ab4b',
+        'server': '#2488d4',
+        'shared': '#5ae34b',
     })
 
     // Color variants

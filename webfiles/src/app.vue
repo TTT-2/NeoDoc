@@ -22,9 +22,7 @@
         <div class="flex flex-grow">
             <sidebar>
                 <ul class="sidebar-panel-nav">
-                    <li>
-                        <v-link href="/docu/hooks" class="block mt-4 lg:inline-block lg:mt-0 mr-4">Hooks</v-link>
-                    </li>
+                    <!-- TODO autogenerate -->
                     <li>
                         <v-link href="/docu/createconvars" class="block mt-4 lg:inline-block lg:mt-0 mr-4">ConVars</v-link>
                     </li>
