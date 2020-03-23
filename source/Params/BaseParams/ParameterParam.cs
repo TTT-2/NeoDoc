@@ -1,4 +1,6 @@
-﻿namespace NeoDoc.Params
+﻿using Newtonsoft.Json;
+
+namespace NeoDoc.Params
 {
     public abstract class ParameterParam : Param
     {
@@ -9,6 +11,17 @@
         public override string GetData()
         {
             return Name + " - " + Typ + " - " + Description;
+        }
+
+        public override string GetJSON()
+        {
+            string json = "{";
+
+            json += "\"name\":" + JsonConvert.SerializeObject(Name) + ",";
+            json += "\"type\":" + JsonConvert.SerializeObject(Typ) + ",";
+            json += "\"description\":" + JsonConvert.SerializeObject(Description) + "}";
+
+            return json;
         }
 
         public override void Process(string[] paramData)
