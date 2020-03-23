@@ -23,7 +23,7 @@
                         </li>
                     </ul>
                 </div>
-                <v-link v-else :href="'/docu/' + transformURI(jsonData.name) + 's/' + transformURI(entry)">{{ entry }}</v-link>
+                <v-link v-else :href="'./' + transformURI(jsonData.name) + 's/' + transformURI(entry)">{{ entry }}</v-link>
             </li>
         </ul>
     </div>

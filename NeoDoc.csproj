@@ -104,6 +104,7 @@
     <Folder Include="webfiles\src\assets\css\" />
     <Folder Include="webfiles\src\components\container\" />
     <Folder Include="webfiles\src\components\menu\" />
+    <Folder Include="webfiles\src\components\params\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -126,7 +127,6 @@
     <None Include="webfiles\src\components\Success.vue" />
     <None Include="webfiles\src\components\Info.vue" />
     <None Include="webfiles\src\components\Error.vue" />
-    <None Include="webfiles\src\components\DocuParam.vue" />
     <None Include="webfiles\src\components\container\MainContainer.vue" />
     <None Include="webfiles\src\components\menu\Burger.vue" />
     <None Include="webfiles\src\components\menu\Sidebar.vue" />
@@ -137,9 +137,11 @@
     <None Include="webfiles\src\components\menu\NavBar.vue" />
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
     <None Include="webfiles\src\components\Overview.vue" />
-    <None Include="webfiles\src\components\Wrapper.vue" />
+    <None Include="webfiles\src\components\EntryFunction.vue" />
     <None Include="webfiles\src\global-methods.js" />
     <None Include="webfiles\src\components\LoadingSpinner.vue" />
+    <None Include="webfiles\src\components\params\DocuParam.vue" />
+    <None Include="webfiles\src\components\params\RealmParam.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

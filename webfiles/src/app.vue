@@ -42,13 +42,17 @@
                 <overview :jsonData="getJsonData" v-else-if="getJsonDataType && getJsonDataType == 'overview'" />
                 <div v-else-if="getJsonDataType && getJsonDataType == 'error'" class="flex flex-grow flex-col">
                     <error>
-                        <p class="leading-tight">
-                            <p><b>Error 404 - File not found.</b></p>
-                            <p>Please try another URL...</p>
-                        </p>
+                        <p><b>Error 404 - File not found.</b></p>
+                        <p>Please try another URL...</p>
                     </error>
                 </div>
-                <wrapper :jsonData="getJsonData" v-else />
+                <entry-function :jsonData="getJsonData" v-else-if="getJsonDataSubType && getJsonDataSubType == 'function'" />
+                <div v-else class="flex flex-grow flex-col">
+                    <warning>
+                        <p><b>Error 400 - Bad request.</b></p>
+                        <p>We are sorry, but your request failed...</p>
+                    </warning>
+                </div>
             </main-container>
         </div>
 
@@ -72,7 +76,7 @@
     import Sidebar from './components/menu/Sidebar.vue';
     import CookieConsent from './components/CookieConsent.vue';
     import Overview from './components/Overview.vue';
-    import Wrapper from './components/Wrapper.vue';
+    import EntryFunction from './components/EntryFunction.vue';
     import LoadingSpinner from './components/LoadingSpinner.vue';
 
     import { store } from './store.js';
@@ -108,7 +112,7 @@
             Sidebar,
             CookieConsent,
             Overview,
-            Wrapper,
+            EntryFunction,
             LoadingSpinner
         },
         computed: {
@@ -120,6 +124,9 @@
             },
             getJsonDataType() {
                 return store.jsonData.type
+            },
+            getJsonDataSubType() {
+                return store.jsonData.subtype
             },
             isMobile() {
                 return this.$globalMethods.IsMobile();
