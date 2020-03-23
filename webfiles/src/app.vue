@@ -19,17 +19,17 @@
             <breadcrumb :paths="getPathSplits" />
         </header>
 
-        <div class="flex flex-row sm:flex-none">
+        <div class="flex flex-grow">
             <sidebar>
                 <ul class="sidebar-panel-nav">
                     <li>
-                        <v-link href="/docu/hooks" class="block mt-4 lg:inline-block lg:mt-0 text-on-brand hover:text-on-brand-hover mr-4">Hooks</v-link>
+                        <v-link href="/docu/hooks" class="block mt-4 lg:inline-block lg:mt-0 mr-4">Hooks</v-link>
                     </li>
                     <li>
-                        <v-link href="/docu/createconvars" class="block mt-4 lg:inline-block lg:mt-0 text-on-brand hover:text-on-brand-hover mr-4">ConVars</v-link>
+                        <v-link href="/docu/createconvars" class="block mt-4 lg:inline-block lg:mt-0 mr-4">ConVars</v-link>
                     </li>
                     <li>
-                        <v-link href="/docu/datastructures" class="block mt-4 lg:inline-block lg:mt-0 text-on-brand hover:text-on-brand-hover mr-4">Functions</v-link>
+                        <v-link href="/docu/datastructures" class="block mt-4 lg:inline-block lg:mt-0 mr-4">Functions</v-link>
                     </li>
                 </ul>
             </sidebar>
@@ -37,17 +37,15 @@
             <main-container class="flex flex-grow justify-center" v-if="isLoading">
                 <loading-spinner :isLoading="isLoading" />
             </main-container>
-            <main-container class="flex-grow" v-else>
+            <main-container class="flex flex-grow" v-else>
                 <slot v-if="!getJsonData"></slot>
                 <overview :jsonData="getJsonData" v-else-if="getJsonDataType && getJsonDataType == 'overview'" />
-                <div v-else-if="getJsonDataType && getJsonDataType == 'error'">
-                    <div class="flex flex-col">
-                        <error>
-                            <p class="leading-tight">
-                                File not found. Try another URL...
-                            </p>
-                        </error>
-                    </div>
+                <div v-else-if="getJsonDataType && getJsonDataType == 'error'" class="flex flex-grow flex-col">
+                    <error>
+                        <p class="leading-tight">
+                            File not found. Try another URL...
+                        </p>
+                    </error>
                 </div>
                 <wrapper :jsonData="getJsonData" v-else />
             </main-container>
