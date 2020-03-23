@@ -140,8 +140,8 @@
     <None Include="webfiles\src\components\menu\Breadcrumb.vue" />
     <None Include="webfiles\src\components\Overview.vue" />
     <None Include="webfiles\src\components\Wrapper.vue" />
-    <None Include="webfiles\src\components\menu\Sidebar_old.vue" />
     <None Include="webfiles\src\global-methods.js" />
+    <None Include="webfiles\src\components\LoadingSpinner.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

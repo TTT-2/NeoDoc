@@ -5,6 +5,7 @@ export const store = Vue.observable({
     isNavBarOpen: false,
     jsonData: "",
     currentRoute: "",
+    loading: false,
 });
 
 export const mutations = {

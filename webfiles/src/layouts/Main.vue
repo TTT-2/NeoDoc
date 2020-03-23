@@ -31,7 +31,10 @@
                 </ul>
             </sidebar>
 
-            <main-container class="flex-grow">
+            <main-container class="flex flex-grow justify-center" v-if="isLoading">
+                <loading-spinner :isLoading="isLoading" />
+            </main-container>
+            <main-container class="flex-grow" v-else>
                 <slot v-if="!getJsonData"></slot>
                 <overview :jsonData="getJsonData" v-else-if="getJsonDataType && getJsonDataType == 'overview'" />
                 <div v-else-if="getJsonDataType && getJsonDataType == 'error'">
@@ -68,6 +71,7 @@
     import CookieConsent from '../components/CookieConsent.vue';
     import Overview from '../components/Overview.vue';
     import Wrapper from '../components/Wrapper.vue';
+    import LoadingSpinner from '../components/LoadingSpinner.vue';
 
     import { store } from '../store.js';
 
@@ -105,7 +109,8 @@
             Sidebar,
             CookieConsent,
             Overview,
-            Wrapper
+            Wrapper,
+            LoadingSpinner
         },
         computed: {
             getPathSplits() {
@@ -119,6 +124,9 @@
             },
             isMobile() {
                 return this.$globalMethods.IsMobile();
+            },
+            isLoading() {
+                return store.loading;
             }
         }
     }

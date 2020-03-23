@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import VueCookie from 'vue-cookie'
-import GlobalMethods from './global-methods.js'
+import Vue from 'vue';
+import VueCookie from 'vue-cookie';
+import GlobalMethods from './global-methods.js';
 
 import './assets/css/tailwind.css';
-import './global-components.js'
+import './global-components.js';
 
-import { store } from './store.js'
+import { store } from './store.js';
 
 Vue.use(VueCookie);
 Vue.use(GlobalMethods);
@@ -17,40 +17,38 @@ const app = new Vue({
     },
     computed: {
         ViewComponent() {
-            store.currentRoute = this.currentRoute
-            store.jsonData = null
+            store.currentRoute = this.currentRoute;
+            store.jsonData = null;
+            store.loading = true;
 
-            try {
-                return require('.' + this.currentRoute + '.vue')
-            } catch (e) {
-                new Promise((resolve) => {
-                    try {
-                        var jsonData;
+            new Promise((resolve) => {
+                try {
+                    var jsonData;
 
-                        if (this.currentRoute == '/home' || this.currentRoute == '/') {
-                            jsonData = require('./jsonList.json');
-                        }
-                        else {
-                            jsonData = require('.' + this.currentRoute + '.json');
-                        }
-
-                        resolve(jsonData);
-                    } catch (e) {
-                        resolve(require('./404.json'));
+                    if (this.currentRoute == '/home' || this.currentRoute == '/') {
+                        jsonData = require('./jsonList.json');
                     }
-                }).then((data) => {
-                    store.jsonData = data
-                });
+                    else {
+                        jsonData = require('.' + this.currentRoute + '.json');
+                    }
 
-                return require('./json.vue')
-            }
+                    resolve(jsonData);
+                } catch (e) {
+                    resolve(require('./404.json'));
+                }
+            }).then((data) => {
+                store.jsonData = data;
+                store.loading = false;
+            });
+
+            return require('./json.vue');
         }
     },
     render(h) {
-        return h(this.ViewComponent)
+        return h(this.ViewComponent);
     }
-})
+});
 
 window.addEventListener('popstate', () => {
-    app.currentRoute = window.location.pathname
-})
+    app.currentRoute = window.location.pathname;
+});
