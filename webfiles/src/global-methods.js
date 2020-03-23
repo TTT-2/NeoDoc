@@ -35,6 +35,22 @@
             },
             IsMobile() {
                 return this.IsScreenWidth('sm') || this.IsScreenWidth('xs');
+            },
+            transformURI(uri) {
+                var res = "";
+
+                for (var i = 0; i < uri.length; i++) {
+                    var c = uri[i];
+
+                    if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') {
+                        res += c;
+                    }
+                    else {
+                        res += '_';
+                    }
+                }
+
+                return res;
             }
         }
 
