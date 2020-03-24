@@ -5,12 +5,12 @@ namespace NeoDoc.Params
     public abstract class ParameterParam : Param
     {
         public string Name { get; set; }
-        public string Typ { get; set; }
+        public string[] Typs { get; set; }
         public string Description { get; set; } = "";
 
         public override string GetData()
         {
-            return Name + " - " + Typ + " - " + Description;
+            return Name + " - " + string.Join(", ", Typs) + " - " + Description;
         }
 
         public override string GetJSON()
@@ -18,7 +18,7 @@ namespace NeoDoc.Params
             string json = "{";
 
             json += "\"name\":" + JsonConvert.SerializeObject(Name) + ",";
-            json += "\"type\":" + JsonConvert.SerializeObject(Typ) + ",";
+            json += "\"type\":" + JsonConvert.SerializeObject(Typs) + ",";
             json += "\"description\":" + JsonConvert.SerializeObject(Description);
 
             if (Default != null && Default != "")
@@ -35,7 +35,7 @@ namespace NeoDoc.Params
             if (paramData.Length < 1)
                 return;
 
-            Typ = paramData[0];
+            Typs = paramData[0].Split('|');
 
             if (paramData.Length < 2)
                 return;

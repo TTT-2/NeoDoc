@@ -15,6 +15,7 @@ using System.Text;
  * Improve @function calls, e.g. add PANEL in front of function
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
+ * put [opt] and [default] directly after the param (not the type)
  *
  * TODO for the doc generation part
  * (convert param[…] and return[default=…] into the doc pages too)
