@@ -3,7 +3,7 @@ import VueCookie from 'vue-cookie';
 import GlobalMethods from './global-methods.js';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare, faSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // globally import code prettify css
@@ -20,7 +20,7 @@ Vue.use(VueCookie);
 Vue.use(GlobalMethods);
 
 // font-awesome;
-library.add(faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare)
+library.add(faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare, faSlash)
 
 // font-awesome-icon;
 Vue.component('font-awesome-icon', FontAwesomeIcon)

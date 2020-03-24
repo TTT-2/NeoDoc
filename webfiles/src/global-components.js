@@ -3,20 +3,14 @@
 
 // components
 import VLink from './components/VLink.vue';
+import TitleText from './components/TitleText.vue';
 import PrettyCode from './components/PrettyCode.vue';
 import MainContainer from './components/container/MainContainer.vue';
 
 Vue.component('v-link', VLink)
+Vue.component('title-text', TitleText)
 Vue.component('pretty-code', PrettyCode)
 Vue.component('main-container', MainContainer)
-
-
-// params
-import DocuParam from './components/params/DocuParam.vue';
-import RealmParam from './components/params/RealmParam.vue';
-
-Vue.component('docu-param', DocuParam);
-Vue.component('realm-param', RealmParam);
 
 
 // hints

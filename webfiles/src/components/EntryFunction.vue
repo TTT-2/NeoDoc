@@ -1,9 +1,11 @@
 ﻿<template>
     <div class="flex flex-grow flex-col">
         <div class="flex justify-center flex-wrap flex-row mb-2 break-normal">
-            <realm-param :realm="jsonData.params.realm[0].data || 'shared'" class="inline" />
+            <realm-param :realm="(jsonData.params.realm && jsonData.params.realm[0].data) || 'shared'" class="inline" />
             <span class="inline text-2xl">{{ jsonData.name }}</span>
         </div>
+
+        <deprecated-param v-if="jsonData.params.deprecated" />
 
         <twod-param v-if="jsonData.params['2D']" />
 
@@ -11,26 +13,16 @@
 
         <pretty-code>{{ jsonData.data[0] }} { ... }</pretty-code>
 
-        <ul v-if="jsonData.params.param">
-            <li v-for="entry in jsonData.params.param">
-                <docu-param :name="entry.name" :type="entry.type" :description="entry.description" />
-            </li>
-        </ul>
+        <param-param v-if="jsonData.params.param" :params="jsonData.params.param" title="Parameter" />
 
-        <div v-if="jsonData.params.return">
-            <h2>Returns:</h2>
+        <param-param v-if="jsonData.params.return" :params="jsonData.params.return" title="Returns" />
 
-            <ul>
-                <li v-for="entry in jsonData.params.return">
-                    <docu-param :name="entry.name" :type="entry.type" :description="entry.description" />
-                </li>
-            </ul>
-        </div>
+        <div v-if="jsonData.params.desc && jsonData.params.desc[0].data != ''" class="mt-4">
+            <title-text>Description:</title-text>
 
-        <div v-if="jsonData.params.desc && jsonData.params.desc[0].data != ''">
-            <h2>Description:</h2>
-
-            {{ jsonData.params.desc[0].data }}
+            <div class="ml-8 mt-2">
+                {{ jsonData.params.desc[0].data }}
+            </div>
         </div>
     </div>
 </template>
@@ -38,12 +30,18 @@
 <script>
     import TwodParam from '@/components/params/2DParam.vue';
     import ThreedParam from '@/components/params/3DParam.vue';
+    import DeprecatedParam from '@/components/params/DeprecatedParam.vue';
+    import ParamParam from '@/components/params/ParamParam.vue';
+    import RealmParam from '@/components/params/RealmParam.vue';
 
     export default {
         props: ['jsonData'],
         components: {
             TwodParam,
-            ThreedParam
+            ThreedParam,
+            DeprecatedParam,
+            ParamParam,
+            RealmParam
         }
     }
 </script>
