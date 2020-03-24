@@ -142,6 +142,8 @@
     <None Include="webfiles\src\components\LoadingSpinner.vue" />
     <None Include="webfiles\src\components\params\DocuParam.vue" />
     <None Include="webfiles\src\components\params\RealmParam.vue" />
+    <None Include="webfiles\src\components\params\2DParam.vue" />
+    <None Include="webfiles\src\components\params\3DParam.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
