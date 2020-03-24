@@ -1,5 +1,5 @@
 ﻿<template>
-    <div :class="realm" class="realm p-8 mr-6 rounded"></div>
+    <div :class="realm" class="realm p-4 mr-4 mt-1 h-2 rounded"></div>
 </template>
 
 <script>

@@ -19,7 +19,7 @@
             <breadcrumb :paths="getPathSplits" />
         </header>
 
-        <div class="flex flex-grow">
+        <div class="flex flex-grow sm:flex-col md:flex-row">
             <sidebar>
                 <ul class="sidebar-panel-nav">
                     <!-- TODO autogenerate -->
@@ -32,10 +32,10 @@
                 </ul>
             </sidebar>
 
-            <main-container class="flex flex-grow justify-center" v-if="isLoading">
+            <main-container class="flex flex-grow flex-col justify-center" v-if="isLoading">
                 <loading-spinner isLoading="true" />
             </main-container>
-            <main-container class="flex flex-grow" v-else>
+            <main-container class="flex flex-grow flex-col" v-else>
                 <slot v-if="!getJsonData"></slot>
                 <overview :jsonData="getJsonData" v-else-if="getJsonDataType && getJsonDataType == 'overview'" />
                 <div v-else-if="getJsonDataType && getJsonDataType == 'error'" class="flex flex-grow flex-col">
