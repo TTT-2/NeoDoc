@@ -33,7 +33,7 @@
             </sidebar>
 
             <main-container class="flex flex-grow justify-center" v-if="isLoading">
-                <loading-spinner :isLoading="isLoading" />
+                <loading-spinner isLoading="true" />
             </main-container>
             <main-container class="flex flex-grow" v-else>
                 <slot v-if="!getJsonData"></slot>

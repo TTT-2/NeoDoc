@@ -6,12 +6,12 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faExclamationTriangle, faTimes, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import './assets/css/tailwind.css';
-import './global-components.js';
+import '@/assets/css/tailwind.css';
+import '@/global-components.js';
 
-import { store } from './store.js';
+import { store } from '@/store.js';
 
-var App = require('./app.vue');
+var App = require('@/app.vue');
 
 Vue.use(VueCookie);
 Vue.use(GlobalMethods);
@@ -29,28 +29,30 @@ const app = new Vue({
     },
     computed: {
         UpdateComponent() {
+            store.loading = true;
+
             this.currentRoute = window.location.pathname; // update relative paths
 
             store.currentRoute = this.currentRoute;
             store.jsonData = null;
-            store.loading = true;
 
             new Promise((resolve) => {
                 try {
                     var jsonData;
 
                     if (this.currentRoute == '/home' || this.currentRoute == '/') {
-                        jsonData = require('./jsonList.json');
+                        jsonData = require('@/jsonList.json');
                     }
                     else {
-                        jsonData = require('.' + this.currentRoute + '.json');
+                        jsonData = require('.' + this.currentRoute + '.json'); // TODO fix this routing
+                        console.log("INFO?---", jsonData)
                     }
 
                     console.log(jsonData)
 
                     resolve(jsonData);
                 } catch (e) {
-                    resolve(require('./404.json'));
+                    resolve(require('@/404.json'));
                 }
             }).then((data) => {
                 store.jsonData = data;
