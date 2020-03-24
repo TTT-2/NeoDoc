@@ -1,6 +1,6 @@
 ﻿<template>
     <div class="flex flex-grow flex-col">
-        <div class="flex justify-center flex-wrap flex-row mb-2 break-normal">
+        <div class="flex break-all justify-center flex-wrap flex-row mb-2 break-normal">
             <realm-param :realm="(jsonData.params.realm && jsonData.params.realm[0].data) || 'shared'" class="inline" />
             <span class="inline text-2xl">{{ jsonData.name }}</span>
         </div>
