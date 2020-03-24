@@ -97,11 +97,6 @@
             }
         },
         mounted() {
-            let recaptchaScript = document.createElement('script')
-            recaptchaScript.setAttribute('src', 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js')
-
-            document.head.appendChild(recaptchaScript)
-
             this.theme(this.$cookie.get('theme'))
         },
         components: {

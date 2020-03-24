@@ -3,8 +3,11 @@ import VueCookie from 'vue-cookie';
 import GlobalMethods from './global-methods.js';
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faExclamationTriangle, faTimes, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+// globally import code prettify css
+import 'color-themes-for-google-code-prettify/dist/themes/tomorrow.min.css';
 
 import '@/assets/css/tailwind.css';
 import '@/global-components.js';
@@ -17,7 +20,7 @@ Vue.use(VueCookie);
 Vue.use(GlobalMethods);
 
 // font-awesome;
-library.add(faExclamationTriangle, faTimes, faCheck, faInfo)
+library.add(faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare)
 
 // font-awesome-icon;
 Vue.component('font-awesome-icon', FontAwesomeIcon)
@@ -45,7 +48,6 @@ const app = new Vue({
                     }
                     else {
                         jsonData = require('.' + this.currentRoute + '.json'); // TODO fix this routing
-                        console.log("INFO?---", jsonData)
                     }
 
                     console.log(jsonData)
