@@ -14,7 +14,17 @@ namespace NeoDoc.Params
 
         public virtual string GetJSON() // returns the json output used for the website
         {
-            return JsonConvert.SerializeObject(GetData());
+            string json = "{";
+
+            json += "\"data\":" + JsonConvert.SerializeObject(GetData());
+
+            if (Default != null && Default != "")
+                json += ",\"default\":" + JsonConvert.SerializeObject(Default);
+
+            if (Optional)
+                json += ",\"optional\":\"true\"";
+
+            return json + "}";
         }
 
         public void ProcessSettings(string[] paramSettings) // paramData = everything except the @param prefix part

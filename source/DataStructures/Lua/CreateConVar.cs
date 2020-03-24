@@ -77,5 +77,10 @@ namespace NeoDoc.DataStructures.Lua
         {
             return true;
         }
+
+        public override string GetDatastructureName()
+        {
+            return ConVarName;
+        }
     }
 }

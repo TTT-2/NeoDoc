@@ -12,21 +12,27 @@ namespace NeoDoc.DataStructures
         public abstract void Process(string line); // process data based on given line string
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
+        public abstract string GetDatastructureName(); // returns the individual name of the matched datasctructure
         public abstract string GetData(); // returns data
 
         public virtual string GetJSONData() // returns json data
         {
-            return JsonConvert.SerializeObject(GetData());
+            string data = GetData();
+
+            if (data == null)
+                return null;
+
+            return JsonConvert.SerializeObject(data);
         }
 
         public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
         {
-            string jsonData = GetJSONData();
+            string dsName = JsonConvert.SerializeObject(GetDatastructureName());
 
-            if (jsonData == null)
-                jsonData = "\"\"";
+            if (dsName == null)
+                dsName = "\"\"";
 
-            string json = "{\"type\":\"datastructure\",\"subtype\":\"" + GetName() + "\",\"name\":" + jsonData + ",\"data\":{";
+            string json = "{\"type\":\"datastructure\",\"subtype\":\"" + GetName() + "\",\"name\":" + dsName + ",\"params\":{";
 
             if (ParamsList != null && ParamsList.Length > 0)
             {
@@ -49,7 +55,7 @@ namespace NeoDoc.DataStructures
 
                 foreach (KeyValuePair<string, List<Param>> keyValuePair in paramsDict)
                 {
-                    json += "\"" + keyValuePair.Key + "\":[";
+                    json += JsonConvert.SerializeObject(keyValuePair.Key) + ":[";
 
                     foreach (Param param in keyValuePair.Value)
                     {
@@ -62,7 +68,14 @@ namespace NeoDoc.DataStructures
                 json = (paramsDict.Count > 0) ? json.Remove(json.Length - 1, 1) : json;
             }
 
-            return json + "}}";
+            json += "}";
+
+            string jsonData = GetJSONData();
+
+            if (jsonData != null)
+                json += ",\"data\":[" + jsonData + "]";
+
+            return json + "}";
         }
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
@@ -77,7 +90,7 @@ namespace NeoDoc.DataStructures
 
         internal int CompareTo(DataStructure y)
         {
-            return GetData().CompareTo(y.GetData());
+            return GetDatastructureName().CompareTo(y.GetDatastructureName());
         }
     }
 

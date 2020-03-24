@@ -63,6 +63,11 @@ namespace NeoDoc.DataStructures.Lua
 
         public override string GetData()
         {
+            return FunctionData;
+        }
+
+        public override string GetDatastructureName()
+        {
             return Name;
         }
 
@@ -71,7 +76,7 @@ namespace NeoDoc.DataStructures.Lua
             if (Local)
                 return null;
 
-            return JsonConvert.SerializeObject(Name);
+            return base.GetJSONData();
         }
 
         public override DataStructure CheckDataStructureTransformation()

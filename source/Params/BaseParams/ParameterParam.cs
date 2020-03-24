@@ -19,9 +19,15 @@ namespace NeoDoc.Params
 
             json += "\"name\":" + JsonConvert.SerializeObject(Name) + ",";
             json += "\"type\":" + JsonConvert.SerializeObject(Typ) + ",";
-            json += "\"description\":" + JsonConvert.SerializeObject(Description) + "}";
+            json += "\"description\":" + JsonConvert.SerializeObject(Description);
 
-            return json;
+            if (Default != null && Default != "")
+                json += ",\"default\":" + JsonConvert.SerializeObject(Default);
+
+            if (Optional)
+                json += ",\"optional\":\"true\"";
+
+            return json + "}";
         }
 
         public override void Process(string[] paramData)

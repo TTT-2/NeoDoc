@@ -69,5 +69,10 @@ namespace NeoDoc.DataStructures.Lua
         {
             return HookName;
         }
+
+        public override string GetDatastructureName()
+        {
+            return HookName;
+        }
     }
 }

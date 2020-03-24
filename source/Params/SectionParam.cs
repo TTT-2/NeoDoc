@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NeoDoc.DataStructures;
+using Newtonsoft.Json;
 
 namespace NeoDoc.Params
 {
@@ -38,19 +39,19 @@ namespace NeoDoc.Params
 
         public string GetJSONData()
         {
-            string json = "\"" + GetData() + "\":{";
+            string json = JsonConvert.SerializeObject(GetData()) + ":{";
 
 
             // loop through datastructure types
             foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in DataStructureDict)
             {
-                json += "\"" + keyValuePair.Key + "s\":["; // data structures
+                json += JsonConvert.SerializeObject(keyValuePair.Key + "s") + ":["; // data structures
 
                 bool entry = false;
 
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
-                    string tmpJSON = dataStructure.GetJSONData();
+                    string tmpJSON = JsonConvert.SerializeObject(dataStructure.GetDatastructureName());
 
                     if (tmpJSON == null)
                         continue;

@@ -1,6 +1,7 @@
 ﻿using NeoDoc.DataStructures;
 using NeoDoc.Langs;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -288,7 +289,7 @@ namespace NeoDoc
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
-                json += "\"" + entry.Key + "s\":[";
+                json += JsonConvert.SerializeObject(entry.Key + "s") + ":[";
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
@@ -313,7 +314,7 @@ namespace NeoDoc
 
             foreach (WrapperParam wrapper in wrapperList)
             {
-                string wrapperDir = dsDir + "/" + wrapper.GetData();
+                string wrapperDir = dsDir + "/" + RemoveSpecialCharacters(wrapper.GetData());
 
                 Directory.CreateDirectory(wrapperDir);
 
@@ -327,13 +328,13 @@ namespace NeoDoc
 
                         Directory.CreateDirectory(dsEntDir);
 
-                        string overviewList = "{\"type\":\"overview\",\"name\":\"" + keyValuePair.Key + "\",\"data\":[";
-
+                        string overviewList = "{\"type\":\"overview\",\"name\":" + JsonConvert.SerializeObject(keyValuePair.Key) + ",\"data\":[";
+                        
                         foreach (DataStructure dataStructure in keyValuePair.Value)
                         {
-                            File.WriteAllText(dsEntDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
+                            File.WriteAllText(dsEntDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
 
-                            overviewList += dataStructure.GetJSONData() + ",";
+                            overviewList += JsonConvert.SerializeObject(dataStructure.GetDatastructureName()) + ",";
                         }
 
                         overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "]}";
@@ -352,15 +353,15 @@ namespace NeoDoc
             // add globals too
             foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
             {
-                string globalDir = newDir + "/" + entry.Key + "s";
+                string globalDir = newDir + "/" + RemoveSpecialCharacters(entry.Key) + "s";
 
                 Directory.CreateDirectory(globalDir);
 
-                string overviewList = "{\"type\":\"overview\",\"name\":\"" + entry.Key + "\",\"data\":[";
+                string overviewList = "{\"type\":\"overview\",\"name\":" + JsonConvert.SerializeObject(entry.Key) + ",\"data\":[";
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
-                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetData()) + ".json", dataStructure.GetFullJSONData());
+                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
 
                     overviewList += dataStructure.GetJSONData() + ",";
                 }

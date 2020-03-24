@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace NeoDoc.Params
 {
@@ -61,11 +62,11 @@ namespace NeoDoc.Params
 
         public string GetJSONData()
         {
-            string json = "\"" + GetData() + "\":{";
+            string json = JsonConvert.SerializeObject(GetData()) + ":{";
 
             // add auhtors
             if (Authors.Count > 0)
-                json += "\"authors\":{\"" + string.Join("\",", Authors) + "\"},";
+                json += "\"authors\":{" + JsonConvert.SerializeObject(string.Join("\",", Authors)) + "},";
 
             // sections
             json += "\"sections\":{";
