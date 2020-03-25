@@ -1,5 +1,5 @@
 ﻿<template>
-    <div class="page-container min-h-screen flex flex-col">
+    <div class="page-container h-screen flex flex-col">
         <header>
             <nav-bar>
                 <div slot="title" class="flex items-center flex-shrink-0 text-on-brand mr-6">
@@ -19,14 +19,16 @@
             <breadcrumb :paths="getPathSplits" />
         </header>
 
-        <div class="flex flex-grow sm:flex-col md:flex-row">
-            <sidebar>
-                <input class="autocomplete-input bg-background focus:outline-none focus:shadow-outline border border-on-background rounded-lg py-2 px-4 block w-full appearance-none leading-normal text-on-background"
-                        placeholder="Search..."
-                        aria-label="Search..."
-                        v-model="searchQuery">
+        <div class="flex flex-grow sm:flex-col md:flex-row h-full overflow-auto">
+            <sidebar class="md:max-w-xs md:w-full">
+                <div slot="searchbar" class="p-2">
+                    <input class="autocomplete-input bg-background focus:outline-none focus:shadow-outline border border-on-background rounded-lg py-1 px-2 block w-full flex-grow appearance-none leading-normal text-on-background"
+                           placeholder="Search..."
+                           aria-label="Search..."
+                           v-model="searchQuery">
+                </div>
 
-                <ul class="sidebar-panel-nav">
+                <ul class="sidebar-panel-nav" slot="content">
                     <li v-for="(wrapperData, wrapperName) in resultQuery.data">
                         <accordion :title="wrapperName" :forceActive="searchQuery != null">
                             <v-link slot="title" :href="'/docu/' + transformURI(wrapperName)">{{ wrapperName }}</v-link>

@@ -1,16 +1,22 @@
 ﻿<template>
-    <div class="sidebar mobile" v-if="isMobile">
-        <div class="sidebar-backdrop fixed left-0 top-0 w-full h-full" @click="closeSidebarPanel" v-if="isPanelOpen"></div>
+    <div class="flex flex-col flex-grow">
+        <slot name="searchbar" v-if="!isMobile" />
 
-        <transition name="slide">
-            <div v-if="isPanelOpen" class="sidebar-panel bg-background text-on-background left-0 top-0 fixed h-full p-2 transition-colors duration-500 w-screen">
-                <slot />
+        <div class="sidebar mobile overflow-auto" v-if="isMobile">
+            <div class="sidebar-backdrop fixed left-0 top-0 w-full h-full" @click="closeSidebarPanel" v-if="isPanelOpen"></div>
+
+            <transition name="slide">
+                <div v-if="isPanelOpen" class="sidebar-panel bg-background text-on-background left-0 top-0 fixed h-full p-2 transition-colors duration-500 w-screen">
+                    <slot name="searchbar" />
+
+                    <slot name="content" />
+                </div>
+            </transition>
+        </div>
+        <div class="sidebar border-r-2 border-brand overflow-auto" v-else>
+            <div class="sidebar-panel p-2 overflow-y-visible">
+                <slot name="content" />
             </div>
-        </transition>
-    </div>
-    <div class="sidebar border-r-2 border-brand md:max-w-xs md:w-full" v-else>
-        <div class="sidebar-panel p-2">
-            <slot />
         </div>
     </div>
 </template>
