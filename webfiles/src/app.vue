@@ -29,22 +29,22 @@
                 </div>
 
                 <ul class="sidebar-panel-nav" slot="content">
-                    <li v-for="(wrapperData, wrapperName) in resultQuery.data">
+                    <li v-for="(wrapperData, wrapperName) in resultQuery.data" :key="wrapperName">
                         <accordion :title="wrapperName" :forceActive="searchQuery != null">
                             <v-link slot="title" :href="'/docu/' + transformURI(wrapperName)">{{ wrapperName }}</v-link>
 
                             <ul slot="content" v-if="wrapperData.sections" class="ml-4">
-                                <li v-for="(sectionEntry, sectionName) in wrapperData.sections">
-                                    <div v-for="(dsList, ds) in sectionEntry">
-                                        <v-link v-for="dsEntry in dsList" :href="'/docu/' + transformURI(wrapperName) + '/' + transformURI(dsEntry)" class="block mt-4 lg:mt-0 mr-4">{{ dsEntry }}</v-link>
+                                <li v-for="(sectionEntry, sectionName) in wrapperData.sections" :key="sectionName">
+                                    <div v-for="(dsList, ds) in sectionEntry" :key="ds">
+                                        <v-link v-for="dsEntry in dsList" :key="dsEntry" :href="'/docu/' + transformURI(wrapperName) + '/' + transformURI(dsEntry)" class="block mt-4 lg:mt-0 mr-4">{{ dsEntry }}</v-link>
                                     </div>
                                 </li>
                             </ul>
-                            <accordion slot="content" v-else-if="wrapperName == '_globals'" v-for="(dsList, dsEntry) in wrapperData" :forceActive="searchQuery != null">
+                            <accordion slot="content" v-else-if="wrapperName == '_globals'" v-for="(dsList, dsEntry) in wrapperData" :key="dsEntry" :forceActive="searchQuery != null">
                                 <v-link slot="title" :href="'/docu/' + transformURI(wrapperName) + '/' + transformURI(dsEntry)">{{ dsEntry }}</v-link>
 
                                 <ul slot="content" class="ml-4">
-                                    <li v-for="singleEntry in dsList">
+                                    <li v-for="singleEntry in dsList" :key="singleEntry">
                                         <v-link :href="'/docu/_globals/' + transformURI(singleEntry)">{{ singleEntry }}</v-link>
                                     </li>
                                 </ul>
