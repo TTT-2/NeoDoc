@@ -147,6 +147,7 @@
     <None Include="webfiles\src\components\params\DeprecatedParam.vue" />
     <None Include="webfiles\src\components\params\ParamParam.vue" />
     <None Include="webfiles\src\components\TitleText.vue" />
+    <None Include="webfiles\src\components\Accordion.vue" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

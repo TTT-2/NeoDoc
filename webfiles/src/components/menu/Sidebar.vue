@@ -4,13 +4,13 @@
 
         <transition name="slide">
             <div v-if="isPanelOpen" class="sidebar-panel bg-background text-on-background left-0 top-0 fixed h-full p-2 transition-colors duration-500 w-screen">
-                <slot></slot>
+                <slot />
             </div>
         </transition>
     </div>
-    <div class="sidebar border-r-2 border-brand md:max-w-xs" v-else>
+    <div class="sidebar border-r-2 border-brand md:max-w-xs md:w-full" v-else>
         <div class="sidebar-panel p-2">
-            <slot></slot>
+            <slot />
         </div>
     </div>
 </template>

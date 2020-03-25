@@ -3,16 +3,16 @@
         <div :class="{ 'active' : !isNavBarOpen }">
             <div v-if="isMobile">
                 <button @click="toggleNavBar" class="title">
-                    <slot name="title"></slot>
+                    <slot name="title" />
                 </button>
 
                 <burger v-if="isMobile" class="fixed right-0 top-0 mt-5 mr-5" />
             </div>
-            <slot name="title" v-else></slot>
+            <slot name="title" v-else />
         </div>
 
         <div :class="{ 'active' : isNavBarOpen }" class="content">
-            <slot name="content"></slot>
+            <slot name="content" />
         </div>
     </nav>
 </template>

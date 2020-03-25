@@ -21,13 +21,36 @@
 
         <div class="flex flex-grow sm:flex-col md:flex-row">
             <sidebar>
+                <input class="autocomplete-input bg-background focus:outline-none focus:shadow-outline border border-on-background rounded-lg py-2 px-4 block w-full appearance-none leading-normal text-on-background"
+                        placeholder="Search..."
+                        aria-label="Search..."
+                        v-model="searchQuery">
+
                 <ul class="sidebar-panel-nav">
-                    <!-- TODO autogenerate -->
-                    <li>
-                        <v-link href="/docu/createconvars" class="block mt-4 lg:inline-block lg:mt-0 mr-4">ConVars</v-link>
-                    </li>
-                    <li>
-                        <v-link href="/docu/datastructures" class="block mt-4 lg:inline-block lg:mt-0 mr-4">Functions</v-link>
+                    <li v-for="(wrapperData, wrapperName) in resultQuery.data">
+                        <accordion :title="wrapperName" :forceActive="searchQuery != null">
+                            <v-link slot="title" :href="'/docu/' + transformURI(wrapperName)">{{ wrapperName }}</v-link>
+
+                            <ul slot="content" v-if="wrapperData.sections" class="ml-4">
+                                <li v-for="(sectionEntry, sectionName) in wrapperData.sections">
+                                    <div v-for="(dsList, ds) in sectionEntry">
+                                        <v-link v-for="dsEntry in dsList" :href="'/docu/' + transformURI(wrapperName) + '/' + transformURI(dsEntry)" class="block mt-4 lg:mt-0 mr-4">{{ dsEntry }}</v-link>
+                                    </div>
+                                </li>
+                            </ul>
+                            <accordion slot="content" v-else-if="wrapperName == '_globals'" v-for="(dsList, dsEntry) in wrapperData" :forceActive="searchQuery != null">
+                                <v-link slot="title" :href="'/docu/' + transformURI(wrapperName) + '/' + transformURI(dsEntry)">{{ dsEntry }}</v-link>
+
+                                <ul slot="content" class="ml-4">
+                                    <li v-for="singleEntry in dsList">
+                                        <v-link :href="'/docu/_globals/' + transformURI(singleEntry)">{{ singleEntry }}</v-link>
+                                    </li>
+                                </ul>
+                            </accordion>
+                            <div slot="content" v-else>
+                                Unknown: {{ wrapperData }}
+                            </div>
+                        </accordion>
                     </li>
                 </ul>
             </sidebar>
@@ -82,7 +105,8 @@
     export default {
         data() {
             return {
-                themes: ["light", "dark"]
+                themes: ["light", "dark"],
+                searchQuery: null
             }
         },
         methods: {
@@ -94,6 +118,20 @@
                     document.body.setAttribute('data-theme', name)
                     this.$cookie.set('theme', name, { expires: '1Y' }) // expires after 1 year
                 }
+            },
+            transformURI(uri) {
+                return this.$globalMethods.transformURI(uri)
+            },
+            getSize(obj) {
+                var size = 0, key;
+
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        size++;
+                    }
+                }
+
+                return size;
             }
         },
         mounted() {
@@ -126,6 +164,88 @@
             },
             isLoading() {
                 return store.loading;
+            },
+            resultQuery() {
+                if (this.searchQuery) {
+                    var retObj = {
+                        data: {}
+                    };
+
+                    for (var wrapper in store.jsonList.data) {
+                        var wrapperData = store.jsonList.data[wrapper];
+
+                        // initialize wrapper data
+                        retObj.data[wrapper] = {};
+
+                        if (wrapperData.sections) {
+                            retObj.data[wrapper].sections = {};
+
+                            for (var sectionName in wrapperData.sections) {
+                                retObj.data[wrapper].sections[sectionName] = {};
+
+                                var nextList = wrapperData.sections[sectionName];
+
+                                for (var dataStructure in nextList) {
+                                    retObj.data[wrapper].sections[sectionName][dataStructure] = [];
+
+                                    var tmpResult = nextList[dataStructure].filter((item) => {
+                                        return this.searchQuery.toLowerCase().split(' ').every(v => item.toLowerCase().includes(v))
+                                    });
+
+                                    // set or merge
+                                    if (retObj.data[wrapper].sections[sectionName][dataStructure]) {
+                                        retObj.data[wrapper].sections[sectionName][dataStructure] = retObj.data[wrapper].sections[sectionName][dataStructure].concat(tmpResult);
+                                    }
+                                    else {
+                                        retObj.data[wrapper].sections[sectionName][dataStructure] = tmpResult;
+                                    }
+
+                                    // clear empty lists
+                                    if (retObj.data[wrapper].sections[sectionName][dataStructure].length == 0) {
+                                        delete retObj.data[wrapper].sections[sectionName][dataStructure];
+                                    }
+                                }
+
+                                // clear empty lists
+                                if (this.getSize(retObj.data[wrapper].sections[sectionName]) == 0) {
+                                    delete retObj.data[wrapper].sections[sectionName];
+                                }
+                            }
+
+                            // clear empty lists
+                            if (this.getSize(retObj.data[wrapper].sections) == 0) {
+                                delete retObj.data[wrapper].sections;
+                            }
+                        }
+                        else {
+                            for (var dataStructure in wrapperData) {
+                                retObj.data[wrapper][dataStructure] = [];
+
+                                retObj.data[wrapper][dataStructure] = wrapperData[dataStructure].filter((item) => {
+                                    return this.searchQuery.toLowerCase().split(' ').every(v => item.toLowerCase().includes(v))
+                                });
+
+                                // clear empty lists
+                                if (retObj.data[wrapper][dataStructure].length == 0) {
+                                    delete retObj.data[wrapper][dataStructure];
+                                }
+                            }
+                        }
+
+                        // clear empty lists
+                        if (this.getSize(retObj.data[wrapper]) == 0) {
+                            delete retObj.data[wrapper];
+                        }
+                    }
+
+                    console.log(retObj);
+
+                    return retObj;
+                } else {
+                    this.searchQuery = null;
+
+                    return store.jsonList;
+                }
             }
         }
     }

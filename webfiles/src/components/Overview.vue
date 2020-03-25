@@ -3,7 +3,7 @@
         <ul>
             <li v-for="(entry, name) in jsonData.data">
                 <div v-if="entry.sections">
-                    <v-link :href="'./' + transformURI(name)">{{ name }}</v-link>
+                    <v-link :href="'/docu/' + transformURI(name)">{{ name }}</v-link>
 
                     <ul class="ml-8">
                         <li v-for="(sectionEntry, sectionName) in entry.sections">
@@ -11,11 +11,11 @@
 
                             <ul class="ml-8">
                                 <li v-for="(dsList, ds) in sectionEntry">
-                                    <v-link :href="'./' + transformURI(name) + '/' + transformURI(ds)">{{ ds }}</v-link>
+                                    <h2>{{ ds }}</h2>
 
                                     <ul class="ml-8">
                                         <li v-for="dsEntry in dsList">
-                                            <v-link :href="'./' + transformURI(name) + '/' + transformURI(ds) + '/' + transformURI(dsEntry)">{{ dsEntry }}</v-link>
+                                            <v-link :href="'/docu/' + transformURI(name) + '/' + transformURI(dsEntry)">{{ dsEntry }}</v-link>
                                         </li>
                                     </ul>
                                 </li>
@@ -23,7 +23,7 @@
                         </li>
                     </ul>
                 </div>
-                <v-link v-else :href="'./' + transformURI(jsonData.name) + 's/' + transformURI(entry)">{{ entry }}</v-link>
+                <v-link v-else :href="'/docu/' + transformURI(jsonData.name) + '/' + transformURI(entry)">{{ entry }}</v-link>
             </li>
         </ul>
     </div>

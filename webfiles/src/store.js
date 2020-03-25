@@ -3,7 +3,8 @@
 export const store = Vue.observable({
     isSideNavOpen: false,
     isNavBarOpen: false,
-    jsonData: "",
+    jsonData: "", /* the dynamic data based on the current path */
+    jsonList: "", /* static list of e.g. all functions, e.g. for the sidebar */
     currentRoute: "",
     loading: false,
 });

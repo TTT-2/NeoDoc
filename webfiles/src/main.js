@@ -15,14 +15,15 @@ import '@/global-components.js';
 import { store } from '@/store.js';
 
 var App = require('@/app.vue');
+var JsonList = require('@/jsonList.json');
 
 Vue.use(VueCookie);
 Vue.use(GlobalMethods);
 
-// font-awesome;
+// font-awesome
 library.add(faExclamationTriangle, faTimes, faCheck, faInfo, faCube, faSquare, faSlash)
 
-// font-awesome-icon;
+// font-awesome-icon
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 const app = new Vue({
@@ -43,8 +44,8 @@ const app = new Vue({
                 try {
                     var jsonData;
 
-                    if (this.currentRoute == '/home' || this.currentRoute == '/') {
-                        jsonData = require('@/jsonList.json');
+                    if (this.currentRoute == '/docu' || this.currentRoute == '/') {
+                    //    jsonData = JsonList;
                     }
                     else {
                         jsonData = require('.' + this.currentRoute + '.json'); // TODO fix this routing
@@ -61,6 +62,9 @@ const app = new Vue({
                 store.loading = false;
             });
         }
+    },
+    mounted() {
+        store.jsonList = JsonList;
     },
     render(h) {
         this.UpdateComponent;
