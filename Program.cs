@@ -285,12 +285,14 @@ namespace NeoDoc
             }
 
             // add globals too
+            json += "\"_globals\":{";
+
             foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
             {
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
-                json += JsonConvert.SerializeObject(entry.Key + "s") + ":[";
+                json += JsonConvert.SerializeObject(entry.Key) + ":[";
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
@@ -300,77 +302,55 @@ namespace NeoDoc
                 json = json.Remove(json.Length - 1, 1) + "],"; // remove last "," and close data structure
             }
 
-            return json.Remove(json.Length - 1, 1) + "}}"; // remove last "," and close json
+            return json.Remove(json.Length - 1, 1) + "}}}"; // remove last "," and close json
         }
 
         private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, List<DataStructure>> globalsDict)
         {
             string newDir = Directory.GetCurrentDirectory() + "../../../webfiles/src/docu";
-            string dsDir = newDir + "/datastructures";
-
-            // overview json
-            string overviewJson = "{\"type\":\"overview\",\"name\":\"datastructure\",\"data\":[";
-
-            Directory.CreateDirectory(dsDir);
 
             foreach (WrapperParam wrapper in wrapperList)
             {
-                string wrapperDir = dsDir + "/" + RemoveSpecialCharacters(wrapper.GetData());
+                string wrapperDir = newDir + "/" + RemoveSpecialCharacters(wrapper.GetData());
 
                 Directory.CreateDirectory(wrapperDir);
-
-                File.WriteAllText(wrapperDir + ".json", "{\"type\":\"overview\",\"name\":\"" + wrapper.GetName() + "\",\"data\":{" + wrapper.GetJSONData() + "}}");
 
                 foreach (SectionParam section in wrapper.SectionList)
                 {
                     foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
                     {
-                        string dsEntDir = wrapperDir + "/" + RemoveSpecialCharacters(keyValuePair.Key) + "s";
-
-                        Directory.CreateDirectory(dsEntDir);
-
-                        string overviewList = "{\"type\":\"overview\",\"name\":" + JsonConvert.SerializeObject(keyValuePair.Key) + ",\"data\":[";
-                        
                         foreach (DataStructure dataStructure in keyValuePair.Value)
                         {
-                            File.WriteAllText(dsEntDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
-
-                            overviewList += JsonConvert.SerializeObject(dataStructure.GetDatastructureName()) + ",";
+                            File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
                         }
-
-                        overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "]}";
-
-                        File.WriteAllText(dsEntDir + ".json", overviewList);
                     }
                 }
-
-                overviewJson += "\"" + wrapper.GetData() + "\",";
             }
 
-            overviewJson = overviewJson.Remove(overviewJson.Length - 1, 1) + "]}";
-
-            File.WriteAllText(dsDir + ".json", overviewJson);
-
             // add globals too
+            string globalDir = newDir + "/_globals";
+
+            Directory.CreateDirectory(globalDir);
+
+            string overviewList = "{\"type\":\"overview\",\"name\":\"_globals\",\"data\":{";
+
             foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
             {
-                string globalDir = newDir + "/" + RemoveSpecialCharacters(entry.Key) + "s";
-
-                Directory.CreateDirectory(globalDir);
-
-                string overviewList = "{\"type\":\"overview\",\"name\":" + JsonConvert.SerializeObject(entry.Key) + ",\"data\":[";
+                overviewList += JsonConvert.SerializeObject(entry.Key) + ":[";
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
                     File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
 
-                    overviewList += dataStructure.GetJSONData() + ",";
+                    overviewList += JsonConvert.SerializeObject(dataStructure.GetDatastructureName()) + ",";
                 }
 
-                overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "]}";
-
-                File.WriteAllText(globalDir + ".json", overviewList);
+                overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "],";
             }
+
+            overviewList = overviewList.Remove(overviewList.Length - 1, 1) + "}}";
+
+            File.WriteAllText(globalDir + ".json", overviewList);
         }
 
         public static string RemoveSpecialCharacters(this string str)
