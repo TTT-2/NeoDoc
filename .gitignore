@@ -150,4 +150,5 @@ webfiles/src/jsonList.json
 webfiles/report.*.json
 
 overview.json
+search.json
 output/*

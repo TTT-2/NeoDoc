@@ -86,6 +86,9 @@ namespace NeoDoc
             // Write overview JSON
             File.WriteAllText(newDir + "/overview.json", GenerateJSONIndex(wrapperList, globalsDict));
 
+            // Write search JSON
+            File.WriteAllText(newDir + "/search.json", GenerateJSONSearch(wrapperList, globalsDict));
+
             GenerateDocumentationData(wrapperList, globalsDict);
         }
 
@@ -167,6 +170,76 @@ namespace NeoDoc
             {
                 { "type", "overview" },
                 { "name", "Overview" },
+                { "data", wrapperDict },
+                { "_globals", globalsShortDict }
+            },
+            Formatting.None,
+            new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+        }
+
+        private static string GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
+        {
+            // transform into structure "WRAPPER -> TYPE[] -> DATASTRUCTURES[]"
+            Dictionary<string, Dictionary<string, List<string>>> wrapperDict = new Dictionary<string, Dictionary<string, List<string>>>();
+
+            foreach (WrapperParam wrapper in wrapperParams)
+            {
+                Dictionary<string, List<string>> typesDict = new Dictionary<string, List<string>>();
+
+                wrapperDict.Add(wrapper.WrapperName, typesDict);
+
+                foreach (SectionParam section in wrapper.SectionDict.Values)
+                {
+                    foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
+                    {
+                        bool exists = typesDict.TryGetValue(keyValuePair.Key, out List<string> foundList);
+
+                        if (!exists)
+                        {
+                            foundList = new List<string>();
+
+                            typesDict.Add(keyValuePair.Key, foundList);
+                        }
+
+                        foreach (DataStructure ds in keyValuePair.Value)
+                        {
+                            if (ds.Ignore)
+                                continue;
+
+                            foundList.Add(ds.GetDatastructureName());
+                        }
+                    }
+                }
+            }
+
+            Dictionary<string, object> globalsShortDict = new Dictionary<string, object>();
+
+            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            {
+                if (entry.Value.Count < 0)
+                    continue; // don't include empty globals
+
+                List<string> dsList = new List<string>();
+
+                foreach (DataStructure dataStructure in entry.Value)
+                {
+                    if (dataStructure.Ignore)
+                        continue;
+
+                    dsList.Add(dataStructure.GetDatastructureName());
+                }
+
+                if (dsList.Count > 0)
+                    globalsShortDict.Add(entry.Key, dsList);
+            }
+
+            return JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                { "type", "overview" },
+                { "name", "Search" },
                 { "data", wrapperDict },
                 { "_globals", globalsShortDict }
             },
