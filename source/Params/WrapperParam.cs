@@ -41,7 +41,8 @@ namespace NeoDoc.Params
         {
             return new Dictionary<string, object>
             {
-                { "name", WrapperName }
+                { "name", WrapperName },
+                { "type", GetName() }
             };
         }
 
