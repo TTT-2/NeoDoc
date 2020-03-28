@@ -7,6 +7,8 @@ namespace NeoDoc.DataStructures
 {
     public abstract class DataStructure
     {
+        public bool Ignore { get; set; } = false;
+
         public Param[] ParamsList;
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
         public abstract void Process(string line); // process data based on given line string
@@ -22,60 +24,52 @@ namespace NeoDoc.DataStructures
             if (data == null)
                 return null;
 
-            return JsonConvert.SerializeObject(data);
+            return JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
         }
 
         public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
         {
-            string dsName = JsonConvert.SerializeObject(GetDatastructureName());
-
-            if (dsName == null)
-                dsName = "\"\"";
-
-            string json = "{\"type\":\"datastructure\",\"subtype\":\"" + GetName() + "\",\"name\":" + dsName + ",\"params\":{";
-
-            if (ParamsList != null && ParamsList.Length > 0)
+            Dictionary<string, object> jsonDict = new Dictionary<string, object>
             {
-                // merge same datastructures together
-                SortedDictionary<string, List<Param>> paramsDict = new SortedDictionary<string, List<Param>>();
-
-                foreach (Param param in ParamsList)
-                {
-                    bool exists = paramsDict.TryGetValue(param.GetName(), out List<Param> paramsList);
-
-                    if (!exists)
-                    {
-                        paramsList = new List<Param>();
-
-                        paramsDict.Add(param.GetName(), paramsList);
-                    }
-
-                    paramsList.Add(param);
-                }
-
-                foreach (KeyValuePair<string, List<Param>> keyValuePair in paramsDict)
-                {
-                    json += JsonConvert.SerializeObject(keyValuePair.Key) + ":[";
-
-                    foreach (Param param in keyValuePair.Value)
-                    {
-                        json += param.GetJSON() + ",";
-                    }
-
-                    json = json.Remove(json.Length - 1, 1) + "],";
-                }
-
-                json = (paramsDict.Count > 0) ? json.Remove(json.Length - 1, 1) : json;
-            }
-
-            json += "}";
+                { "type", "datastructure" },
+                { "subtype", GetName() },
+                { "name", GetDatastructureName() }
+            };
 
             string jsonData = GetJSONData();
 
             if (jsonData != null)
-                json += ",\"data\":[" + jsonData + "]";
+                jsonDict.Add("data", jsonData);
 
-            return json + "}";
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                // merge same datastructures together
+                SortedDictionary<string, List<object>> paramsDict = new SortedDictionary<string, List<object>>();
+
+                foreach (Param param in ParamsList)
+                {
+                    bool exists = paramsDict.TryGetValue(param.GetName(), out List<object> paramsJSONList);
+
+                    if (!exists)
+                    {
+                        paramsJSONList = new List<object>();
+
+                        paramsDict.Add(param.GetName(), paramsJSONList);
+                    }
+
+                    paramsJSONList.Add(param.GetJSONData());
+                }
+
+                jsonDict.Add("params", paramsDict);
+            }
+
+            return JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
         }
 
         public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed

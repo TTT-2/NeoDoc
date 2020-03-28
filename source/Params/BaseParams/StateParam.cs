@@ -1,12 +1,19 @@
-﻿namespace NeoDoc.Params
+﻿using System.Collections.Generic;
+
+namespace NeoDoc.Params
 {
     public abstract class StateParam : Param
     {
-        public string Name { get; set; } = "";
+        public string Value { get; set; } = "";
 
-        public override string GetData()
+        public override Dictionary<string, object> GetData()
         {
-            return Name;
+            Dictionary<string, object> tmpDict = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(Value))
+                tmpDict.Add("value", Value);
+
+            return tmpDict;
         }
 
         public override void Process(string[] paramData)
@@ -14,7 +21,7 @@
             if (paramData.Length < 1)
                 return;
 
-            Name = paramData[0];
+            Value = paramData[0];
         }
 
         public override void ProcessAddition(string[] paramData)

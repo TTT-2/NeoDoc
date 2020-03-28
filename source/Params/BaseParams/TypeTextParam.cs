@@ -2,9 +2,8 @@
 
 namespace NeoDoc.Params
 {
-    public abstract class ParameterParam : Param
+    public abstract class TypeTextParam : Param
     {
-        public string Name { get; set; }
         public string[] Typs { get; set; }
         public string Description { get; set; } = "";
 
@@ -12,7 +11,6 @@ namespace NeoDoc.Params
         {
             Dictionary<string, object> tmpDict = new Dictionary<string, object>
             {
-                { "name", Name },
                 { "typs", Typs }
             };
 
@@ -32,12 +30,7 @@ namespace NeoDoc.Params
             if (paramData.Length < 2)
                 return;
 
-            Name = paramData[1];
-
-            if (paramData.Length < 3)
-                return;
-
-            for (int i = 2; i < paramData.Length; i++)
+            for (int i = 1; i < paramData.Length; i++)
             {
                 Description += paramData[i] + " ";
             }

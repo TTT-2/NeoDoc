@@ -148,3 +148,6 @@ webfiles/src/docu/
 webfiles/src/jsonList.json
 
 webfiles/report.*.json
+
+overview.json
+output/*

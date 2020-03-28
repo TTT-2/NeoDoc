@@ -1,12 +1,19 @@
-﻿namespace NeoDoc.Params
+﻿using System.Collections.Generic;
+
+namespace NeoDoc.Params
 {
     public abstract class TextParam : Param
     {
         public string Text { get; set; } = "";
 
-        public override string GetData()
+        public override Dictionary<string, object> GetData()
         {
-            return Text;
+            Dictionary<string, object> tmpDict = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(Text))
+                tmpDict.Add("text", Text);
+
+            return tmpDict;
         }
 
         public override void Process(string[] paramData)

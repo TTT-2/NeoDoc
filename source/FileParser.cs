@@ -22,7 +22,7 @@ namespace NeoDoc
         private readonly string path;
         private readonly ParamMatcher paramMatcher;
 
-        public List<WrapperParam> WrapperList { get; set; }
+        public SortedDictionary<string, WrapperParam> WrapperDict { get; set; }
 
         private WrapperParam CurrentWrapper { get; set; }
         private SectionParam CurrentSection { get; set; }
@@ -39,15 +39,17 @@ namespace NeoDoc
 
             Lines = File.ReadAllLines(path); // Load each line of the file in the buffer
 
+            ModuleParam moduleParam = new ModuleParam(); // adds a new wrapper with default "none" data
+
             // initialize wrapper list
-            WrapperList = new List<WrapperParam>
+            WrapperDict = new SortedDictionary<string, WrapperParam>
             {
-                new ModuleParam() // adds a new wrapper with default "none" data
+                { moduleParam.WrapperName, moduleParam }
             };
 
             // initializes the current vars for easy and fast access
-            CurrentWrapper = WrapperList.Last();
-            CurrentSection = CurrentWrapper.SectionList.Last();
+            CurrentWrapper = moduleParam;
+            CurrentSection = CurrentWrapper.GetSectionNone();
         }
 
         public void CleanUp()
@@ -174,20 +176,45 @@ namespace NeoDoc
 
                     if (lineParam is WrapperParam || lineParam is SectionParam)
                     {
-                        if (lineParam is WrapperParam)
+                        if (lineParam is WrapperParam) // TODO what if Wrapper already exists
                         {
-                            CurrentWrapper = (WrapperParam)lineParam; // updates the new wrapper
-                            CurrentWrapper.ProcessParamsList(paramsList); // e.g. add @author to the wrapper's data
+                            WrapperParam tmpWrapperParam = (WrapperParam) lineParam;
+                            tmpWrapperParam.ProcessParamsList(paramsList); // e.g. add @author to the wrapper's data
 
-                            WrapperList.Add(CurrentWrapper); // adds the new wrapper into the list
+                            bool exists = WrapperDict.TryGetValue(tmpWrapperParam.WrapperName, out WrapperParam foundWrapperParam);
 
-                            CurrentSection = CurrentWrapper.SectionList.Last(); // reset the section
+                            if (!exists)
+                            {
+                                foundWrapperParam = tmpWrapperParam;
+
+                                WrapperDict.Add(foundWrapperParam.WrapperName, foundWrapperParam); // adds the new wrapper into the list
+                            }
+                            else
+                            {
+                                foundWrapperParam.Merge(tmpWrapperParam);
+                            }
+
+                            CurrentWrapper = foundWrapperParam; // updates the new wrapper
+                            CurrentSection = CurrentWrapper.GetSectionNone(); // reset the section
                         }
                         else
                         {
-                            CurrentSection = (SectionParam)lineParam; // update the section
+                            SectionParam tmpSectionParam = (SectionParam)lineParam;
 
-                            CurrentWrapper.SectionList.Add(CurrentSection); // adds the new section into the list
+                            bool exists = CurrentWrapper.SectionDict.TryGetValue(tmpSectionParam.SectionName, out SectionParam foundSectionParam);
+
+                            if (!exists)
+                            {
+                                foundSectionParam = tmpSectionParam;
+
+                                CurrentWrapper.SectionDict.Add(foundSectionParam.SectionName, foundSectionParam); // adds the new section into the list
+                            }
+                            else
+                            {
+                                foundSectionParam.Merge(tmpSectionParam);
+                            }
+
+                            CurrentSection = foundSectionParam; // update the section
                         }
 
                         // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match

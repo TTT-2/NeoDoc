@@ -47,6 +47,8 @@ namespace NeoDoc.DataStructures.Lua
                 Local = match.Success;
             }
 
+            Ignore = Local;
+
             FunctionData = GetRegex().Match(line).Value.TrimStart('@');
             Name = FunctionData.Replace("function ", "").Split('(')[0].Trim();
         }

@@ -1,10 +1,12 @@
-﻿namespace NeoDoc.Params
+﻿using System.Collections.Generic;
+
+namespace NeoDoc.Params
 {
     public abstract class MarkParam : Param
     {
-        public override string GetData()
+        public override Dictionary<string, object> GetData()
         {
-            return "";
+            return null;
         }
 
         public override void Process(string[] paramData)

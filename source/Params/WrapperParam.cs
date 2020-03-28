@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NeoDoc.DataStructures;
 using Newtonsoft.Json;
 
 namespace NeoDoc.Params
@@ -8,21 +11,38 @@ namespace NeoDoc.Params
         public List<string> Authors { get; set; }
 
         public string WrapperName { get; set; } = "none";
-        public List<SectionParam> SectionList { get; set; }
+        public SortedDictionary<string, SectionParam> SectionDict { get; set; }
 
         public WrapperParam()
         {
-            SectionList = new List<SectionParam>
+            SectionDict = new SortedDictionary<string, SectionParam>
             {
-                new SectionParam() // adds a new section with default "none" data
+                { "none", new SectionParam() } // adds a new section with default "none" data
             };
 
             Authors = new List<string>();
         }
 
-        public override string GetData()
+        public SectionParam GetSection(string name)
         {
-            return WrapperName;
+            SectionDict.TryGetValue(name, out SectionParam tmpSection);
+
+            return tmpSection;
+        }
+
+        public SectionParam GetSectionNone()
+        {
+            SectionDict.TryGetValue("none", out SectionParam tmpSection);
+
+            return tmpSection;
+        }
+
+        public override Dictionary<string, object> GetData()
+        {
+            return new Dictionary<string, object>
+            {
+                { "name", WrapperName }
+            };
         }
 
         public override void Process(string[] paramData)
@@ -44,39 +64,78 @@ namespace NeoDoc.Params
             {
                 if (param is AuthorParam)
                 {
-                    Authors.Add(param.GetData());
+                    Authors.Add(((AuthorParam)param).Text);
                 }
             }
         }
 
-        public void MergeData(WrapperParam wrapper)
+        public Dictionary<string, object> GetDataDict()
         {
-            foreach (string author in wrapper.Authors)
-            {
-                if (Authors.Contains(author))
-                    continue;
+            Dictionary<string, object> jsonDict = GetData();
 
-                Authors.Add(author);
+            if (Authors.Count > 0)
+                jsonDict.Add("authors", Authors);
+
+            Dictionary<string, object> sectionsDict = new Dictionary<string, object>();
+
+            foreach (KeyValuePair<string, SectionParam> keyValuePair in SectionDict)
+            {
+                sectionsDict.Add(keyValuePair.Key, keyValuePair.Value.GetDataDict());
+            }
+
+            jsonDict.Add("sections", sectionsDict);
+
+            return jsonDict;
+        }
+
+        public void Merge(WrapperParam wrapperParam)
+        {
+            foreach (string author in wrapperParam.Authors)
+            {
+                if (!Authors.Contains(author))
+                    Authors.Add(author);
+            }
+
+            foreach (KeyValuePair<string, SectionParam> keyValuePair in wrapperParam.SectionDict)
+            {
+                // now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
+                foreach (SectionParam section in wrapperParam.SectionDict.Values)
+                {
+                    // section already exists?
+                    SectionParam finalSection = null;
+
+                    foreach (SectionParam tmpSection in SectionDict.Values)
+                    {
+                        if (tmpSection.SectionName == section.SectionName)
+                        {
+                            finalSection = tmpSection;
+
+                            break;
+                        }
+                    }
+
+                    if (finalSection == null)
+                    {
+                        // create a new section of the same type
+                        SectionParam tmpSection = (SectionParam) Activator.CreateInstance(section.GetType());
+                        tmpSection.SectionName = section.SectionName;
+
+                        SectionDict.Add(tmpSection.SectionName, tmpSection); // add this section as new section into the wrappers section list
+
+                        finalSection = tmpSection;
+                    }
+
+                    finalSection.Merge(section);
+                }
             }
         }
 
-        public string GetJSONData()
+        internal void ProcessGlobals(SortedDictionary<string, List<DataStructure>> globalsDict)
         {
-            string json = JsonConvert.SerializeObject(GetData()) + ":{";
-
-            // add auhtors
-            if (Authors.Count > 0)
-                json += "\"authors\":{" + JsonConvert.SerializeObject(string.Join("\",", Authors)) + "},";
-
-            // sections
-            json += "\"sections\":{";
-
-            foreach (SectionParam section in SectionList)
+            foreach (SectionParam section in SectionDict.Values)
             {
-                json += section.GetJSONData() + ",";
+                section.ProcessGlobals(globalsDict);
             }
-
-            return json.Remove(json.Length - 1, 1) + "}}"; // close sections and wrapper and remove last ","
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NeoDoc.DataStructures;
 using Newtonsoft.Json;
 
@@ -14,9 +15,12 @@ namespace NeoDoc.Params
             DataStructureDict = new SortedDictionary<string, List<DataStructure>>();
         }
 
-        public override string GetData()
+        public override Dictionary<string, object> GetData()
         {
-            return SectionName;
+            return new Dictionary<string, object>
+            {
+                { "name", SectionName }
+            };
         }
 
         public override void Process(string[] paramData)
@@ -37,36 +41,110 @@ namespace NeoDoc.Params
             return "section";
         }
 
-        public string GetJSONData()
+        public Dictionary<string, object> GetDataDict()
         {
-            string json = JsonConvert.SerializeObject(GetData()) + ":{";
+            Dictionary<string, object> jsonDict = new Dictionary<string, object>();
 
-
-            // loop through datastructure types
             foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in DataStructureDict)
             {
-                json += JsonConvert.SerializeObject(keyValuePair.Key + "s") + ":["; // data structures
-
-                bool entry = false;
+                List<string> dsNames = new List<string>();
 
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
-                    string tmpJSON = JsonConvert.SerializeObject(dataStructure.GetDatastructureName());
-
-                    if (tmpJSON == null)
+                    if (dataStructure.Ignore)
                         continue;
 
-                    json += tmpJSON + ",";
-
-                    entry = true;
+                    dsNames.Add(dataStructure.GetDatastructureName());
                 }
 
-                json = entry ? json.Remove(json.Length - 1, 1) : json;
-
-                json += "],";
+                jsonDict.Add(keyValuePair.Key, dsNames);
             }
 
-            return (DataStructureDict.Count > 0 ? json.Remove(json.Length - 1, 1) : json) + "}"; // close dataStructures and section and remove last ","
+            return jsonDict;
+        }
+
+        public void Merge(SectionParam sectionParam)
+        {
+            foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in sectionParam.DataStructureDict)
+            {
+                foreach (DataStructure dataStructure in keyValuePair.Value)
+                {
+                    // just insert if not already exists
+                    bool match = DataStructureDict.TryGetValue(keyValuePair.Key, out List<DataStructure> finalDSList);
+
+                    if (!match) // initialize if not already exists
+                    {
+                        finalDSList = new List<DataStructure>();
+
+                        DataStructureDict.Add(keyValuePair.Key, finalDSList);
+                    }
+
+                    bool alreadyExists = false;
+
+                    foreach (DataStructure tmpDs in finalDSList)
+                    {
+                        if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName())
+                        {
+                            alreadyExists = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!alreadyExists)
+                        finalDSList.Add(dataStructure);
+                }
+            }
+        }
+
+        public void ProcessGlobals(SortedDictionary<string, List<DataStructure>> globalsDict)
+        {
+            SortedDictionary<string, List<DataStructure>> finalDict = new SortedDictionary<string, List<DataStructure>>();
+
+            foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in DataStructureDict)
+            {
+                List<DataStructure> finalDSList = new List<DataStructure>();
+
+                foreach (DataStructure dataStructure in keyValuePair.Value)
+                {
+                    if (!dataStructure.IsGlobal())
+                    {
+                        finalDSList.Add(dataStructure);
+
+                        continue;
+                    }
+
+                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+
+                    if (!exists)
+                    {
+                        ds = new List<DataStructure>();
+
+                        globalsDict.Add(dataStructure.GetName(), ds);
+                    }
+
+                    // just insert if not already exists
+                    bool alreadyExists = false;
+
+                    foreach (DataStructure tmpDs in ds)
+                    {
+                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                        {
+                            alreadyExists = true;
+
+                            break;
+                        }
+                    }
+
+                    if (!alreadyExists)
+                        ds.Add(dataStructure);
+                }
+
+                if (finalDSList.Count > 0)
+                    finalDict.Add(keyValuePair.Key, finalDSList);
+            }
+
+            DataStructureDict = finalDict;
         }
     }
 }

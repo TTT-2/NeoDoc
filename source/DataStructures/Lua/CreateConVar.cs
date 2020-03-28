@@ -31,7 +31,7 @@ namespace NeoDoc.DataStructures.Lua
                 {
                     if (param is NameParam)
                     {
-                        name = param.GetData();
+                        name = ((NameParam)param).Value;
 
                         break;
                     }

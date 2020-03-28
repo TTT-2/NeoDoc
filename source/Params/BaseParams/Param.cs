@@ -1,34 +1,30 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace NeoDoc.Params
 {
     public abstract class Param
     {
-        public string Default { get; set; }
-        public bool Optional { get; set; } = false;
-        public bool OptionalChain { get; set; } = false;
+        public Dictionary<string, string> SettingsDict { get; set; }
 
         public abstract string GetName(); // returns the name of the param
         public abstract void Process(string[] paramData); // paramData = everything except the @param prefix part
         public abstract void ProcessAddition(string[] paramData); // paramData = everything of the line that already hadn't a param part
-        public abstract string GetData(); // returns the data that should get returned, e.g. Name, Text, etc.
+        public abstract Dictionary<string, object> GetData(); // returns the data that should get returned, e.g. Name, Text, etc.
 
-        public virtual string GetJSON() // returns the json output used for the website
+        public virtual Dictionary<string, object> GetJSONData() // returns the json output used for the website
         {
-            string json = "{";
+            Dictionary<string, object> tmpDict = new Dictionary<string, object>();
 
-            json += "\"data\":" + JsonConvert.SerializeObject(GetData());
+            Dictionary<string, object> tmpData = GetData();
 
-            if (Default != null && Default != "")
-                json += ",\"default\":" + JsonConvert.SerializeObject(Default);
+            if (tmpData != null && tmpData.Count > 0)
+                tmpDict.Add("data", tmpData);
 
-            if (Optional)
-                json += ",\"optional\":\"true\"";
+            if (SettingsDict != null && SettingsDict.Count > 0)
+                tmpDict.Add("settings", SettingsDict);
 
-            if (OptionalChain)
-                json += ",\"optionalchain\":\"true\"";
-
-            return json + "}";
+            return tmpDict;
         }
 
         public virtual void ProcessSettings(string[] paramSettings) // paramData = everything except the @param prefix part
@@ -36,23 +32,13 @@ namespace NeoDoc.Params
             if (paramSettings.Length < 1)
                 return;
 
+            SettingsDict = new Dictionary<string, string>();
+
             foreach (string settingConstruct in paramSettings)
             {
                 string[] settingSplit = settingConstruct.Trim().Split('='); // split e.g. "default=true"
-                string settingStart = settingSplit[0].Trim();
 
-                if (settingStart == "default")
-                {
-                    Default = settingSplit[1].Trim();
-                }
-                else if (settingStart == "opt")
-                {
-                    Optional = true;
-                }
-                else if (settingStart == "optchain")
-                {
-                    OptionalChain = true;
-                }
+                SettingsDict.Add(settingSplit[0].Trim(), settingSplit.Length > 1 ? settingSplit[1].Trim() : "");
             }
         }
     }
