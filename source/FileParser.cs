@@ -251,6 +251,16 @@ namespace NeoDoc
                         // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
                         paramsList.Clear();
                     }
+                    else if (lineParam is IgnoreParam)
+                    {
+                        i++; // ignore the next line
+
+                        paramsList.Clear(); // and clean the current params list
+
+                        lastParam = null; // and the last param too
+
+                        continue;
+                    }
                     else
                     {
                         lastParam = lineParam; // update the last param

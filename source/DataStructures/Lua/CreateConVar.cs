@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
 
@@ -8,6 +9,7 @@ namespace NeoDoc.DataStructures.Lua
     {
         private string Line { get; set; }
         public string ConVarName { get; set; }
+        private string[] ConVarData { get; set; }
 
         public override Regex GetRegex()
         {
@@ -38,29 +40,11 @@ namespace NeoDoc.DataStructures.Lua
                 }
             }
 
-            if (name == null)
-            {
-                Regex splitRegex1 = GetRegex();
-                Match splitMatch1 = splitRegex1.Match(line);
-                int splitPos1 = splitMatch1.Index + splitMatch1.Length;
+            Match splitMatch = GetRegex().Match(line);
+            string result = line.Substring(splitMatch.Index, line.Length - splitMatch.Index);
 
-                Match splitMatch2 = Regex.Match(line, @"\)", RegexOptions.RightToLeft);
-                int splitPos2 = splitMatch2.Index;
-
-                string result = line.Substring(splitPos1, splitPos2 - splitPos1);
-                string[] splits = result.Split(',');
-
-                if (splits.Length > 0)
-                {
-                    name = splits[0];
-                }
-                else
-                {
-                    name = result;
-                }
-            }
-
-            ConVarName = name.TrimEnd(')').Trim().Trim('"').Trim().Replace("\"", "\\\"");
+            ConVarData = GetVarsFromFunction(result).ToArray();
+            ConVarName = (name ?? ConVarData[0]).Trim('"');
         }
 
         public override string GetName()
@@ -68,9 +52,31 @@ namespace NeoDoc.DataStructures.Lua
             return "createconvar";
         }
 
-        public override string GetData()
+        public override object GetData()
         {
-            return ConVarName;
+            // ConVar CreateConVar( string name, string value, number flags = FCVAR_NONE, string helptext, number min = nil, number max = nil )
+            Dictionary<string, string> retDict = new Dictionary<string, string>();
+
+            int length = ConVarData.Length;
+
+            if (length < 2)
+                return null;
+            else
+                retDict.Add("value", ConVarData[1]);
+
+            if (length > 2)
+                retDict.Add("flags", ConVarData[2]);
+
+            if (length > 3)
+                retDict.Add("helptext", ConVarData[3]);
+
+            if (length > 4)
+                retDict.Add("min", ConVarData[4]);
+
+            if (length > 5)
+                retDict.Add("max", ConVarData[5]);
+
+            return retDict;
         }
 
         public override bool IsGlobal()

@@ -15,20 +15,7 @@ namespace NeoDoc.DataStructures
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
         public abstract string GetName(); // returns an identification name
         public abstract string GetDatastructureName(); // returns the individual name of the matched datasctructure
-        public abstract string GetData(); // returns data
-
-        public virtual string GetJSONData() // returns json data
-        {
-            string data = GetData();
-
-            if (data == null)
-                return null;
-
-            return JsonConvert.SerializeObject(data, Formatting.None, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-        }
+        public abstract object GetData(); // returns data
 
         public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
         {
@@ -39,7 +26,7 @@ namespace NeoDoc.DataStructures
                 { "name", GetDatastructureName() }
             };
 
-            string jsonData = GetJSONData();
+            object jsonData = GetData();
 
             if (jsonData != null)
                 jsonDict.Add("data", jsonData);
@@ -85,6 +72,72 @@ namespace NeoDoc.DataStructures
         internal int CompareTo(DataStructure y)
         {
             return GetDatastructureName().CompareTo(y.GetDatastructureName());
+        }
+
+        internal List<string> GetVarsFromFunction(string result)
+        {
+            int bracketsDeepness = 0;
+            string finalString = "";
+            string tmpString = "";
+
+            List<string> varsList = new List<string>();
+
+            foreach (char c in result)
+            {
+                switch (c)
+                {
+                    case '(':
+                    case '{':
+                        if (bracketsDeepness > 0) // if we are in the function hook
+                            tmpString += c;
+
+                        bracketsDeepness++;
+
+                        break;
+                    case ')':
+                    case '}':
+                        bracketsDeepness--;
+
+                        if (bracketsDeepness > 0)
+                            tmpString += c;
+
+                        break;
+                    case ',':
+                        if (bracketsDeepness == 1) // if we are directly in the function hook's instance
+                        {
+                            varsList.Add(tmpString);
+
+                            tmpString = "";
+                        }
+                        else
+                        {
+                            tmpString += c;
+                        }
+
+                        break;
+                    default:
+                        if (bracketsDeepness > 0) // if we are in the function hook
+                            tmpString += c;
+
+                        break;
+                }
+
+                if (bracketsDeepness < 0) // don't continue, even if the line hasn't ended yet
+                    break;
+
+                finalString += c;
+            }
+
+            varsList.Add(tmpString);
+
+            List<string> finalList = new List<string>();
+
+            for (int i = 0; i < varsList.Count; i++)
+            {
+                finalList.Add(varsList[i].Trim());
+            }
+
+            return finalList;
         }
     }
 

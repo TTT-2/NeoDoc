@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
 
@@ -8,10 +9,11 @@ namespace NeoDoc.DataStructures.Lua
     {
         private string Line { get; set; }
         public string HookName { get; set; }
+        public string HookData { get; set; }
 
         public override Regex GetRegex()
         {
-            return new Regex(@"^\s*hook\.(Run|Call)\s*\("); // RegEx matches "hook.Run(" or "hook.Call("
+            return new Regex(@"\s*hook\.(Run|Call)\s*\("); // RegEx matches "hook.Run(" or "hook.Call("
         }
 
         public override bool Check(string line)
@@ -38,26 +40,17 @@ namespace NeoDoc.DataStructures.Lua
                 }
             }
 
-            if (name == null)
-            {
-                Regex splitRegex1 = GetRegex();
-                Match splitMatch1 = splitRegex1.Match(line);
-                int splitPos1 = splitMatch1.Index + splitMatch1.Length;
+            Match splitMatch = GetRegex().Match(line);
 
-                string result = line.Substring(splitPos1, line.Length - splitPos1);
-                string[] splits = result.Split(',');
+            string result = line.Substring(splitMatch.Index, line.Length - splitMatch.Index);
 
-                if (splits.Length > 0)
-                {
-                    name = splits[0];
-                }
-                else
-                {
-                    name = result;
-                }
-            }
+            bool mode = new Regex(@"\s*hook\.Call\s*\(").Match(Line).Success; // if false, "hook.Run(" is found
 
-            HookName = name.TrimEnd(')').Trim().Trim('"').Trim().Replace("\"", "\\\"");
+            List<string> tmpData = GetVarsFromFunction(result);
+
+            HookName = (name ?? tmpData[0]).Trim('"');
+
+            HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 2 : 1, tmpData.Count - (mode ? 2 : 1)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
         }
 
         public override string GetName()
@@ -65,9 +58,9 @@ namespace NeoDoc.DataStructures.Lua
             return "hook";
         }
 
-        public override string GetData()
+        public override object GetData()
         {
-            return HookName;
+            return HookData;
         }
 
         public override string GetDatastructureName()

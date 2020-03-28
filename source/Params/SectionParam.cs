@@ -128,7 +128,7 @@ namespace NeoDoc.Params
 
                     foreach (DataStructure tmpDs in ds)
                     {
-                        if (tmpDs.GetJSONData() == dataStructure.GetJSONData())
+                        if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName())
                         {
                             alreadyExists = true;
 

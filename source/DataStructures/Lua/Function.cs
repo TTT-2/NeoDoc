@@ -63,7 +63,7 @@ namespace NeoDoc.DataStructures.Lua
             return "function";
         }
 
-        public override string GetData()
+        public override object GetData()
         {
             return FunctionData;
         }
@@ -71,14 +71,6 @@ namespace NeoDoc.DataStructures.Lua
         public override string GetDatastructureName()
         {
             return Name;
-        }
-
-        public override string GetJSONData()
-        {
-            if (Local)
-                return null;
-
-            return base.GetJSONData();
         }
 
         public override DataStructure CheckDataStructureTransformation()
@@ -94,7 +86,8 @@ namespace NeoDoc.DataStructures.Lua
                     {
                         return new Hook
                         {
-                            HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
+                            HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim(),
+                            HookData = FunctionData
                         };
                     }
                 }
@@ -107,7 +100,8 @@ namespace NeoDoc.DataStructures.Lua
             {
                 return new Hook
                 {
-                    HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim()
+                    HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim(),
+                    HookData = FunctionData
                 };
             }
 
