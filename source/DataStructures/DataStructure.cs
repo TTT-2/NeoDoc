@@ -77,7 +77,6 @@ namespace NeoDoc.DataStructures
         internal List<string> GetVarsFromFunction(string result)
         {
             int bracketsDeepness = 0;
-            string finalString = "";
             string tmpString = "";
 
             List<string> varsList = new List<string>();
@@ -124,8 +123,6 @@ namespace NeoDoc.DataStructures
 
                 if (bracketsDeepness < 0) // don't continue, even if the line hasn't ended yet
                     break;
-
-                finalString += c;
             }
 
             varsList.Add(tmpString);
