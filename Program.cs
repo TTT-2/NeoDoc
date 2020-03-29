@@ -7,7 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-/* 
+/*
+ * TODO
+ * FIX multiple hooks (multiple hook.Run / hook.Call of the same hook)
+ * FIX multiple functions (server and client realm created (same) functions)
+ * 
  * TODO inside of the TTT2 documentation (not in this project)
  *
  * Remove @register
@@ -138,11 +142,24 @@ namespace NeoDoc
 
         private static string GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
         {
-            Dictionary<string, object> wrapperDict = new Dictionary<string, object>();
+            Dictionary<string, object> jsonDict = new Dictionary<string, object>
+            {
+                { "type", "overview" },
+                { "name", "Overview" }
+            };
 
             foreach (WrapperParam wrapper in wrapperParams)
             {
-                wrapperDict.Add(wrapper.WrapperName, wrapper.GetDataDict());
+                bool exists = jsonDict.TryGetValue(wrapper.GetName(), out object wrapperDict);
+
+                if (!exists)
+                {
+                    wrapperDict = new Dictionary<string, object>();
+
+                    jsonDict.Add(wrapper.GetName(), wrapperDict);
+                }
+
+                ((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapper.GetDataDict());
             }
 
             Dictionary<string, object> globalsShortDict = new Dictionary<string, object>();
@@ -166,15 +183,9 @@ namespace NeoDoc
                     globalsShortDict.Add(entry.Key, dsList);
             }
 
-            return JsonConvert.SerializeObject(new Dictionary<string, object>
-            {
-                { "type", "overview" },
-                { "name", "Overview" },
-                { "data", wrapperDict },
-                { "_globals", globalsShortDict }
-            },
-            Formatting.None,
-            new JsonSerializerSettings
+            jsonDict.Add("_globals", globalsShortDict);
+
+            return JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
