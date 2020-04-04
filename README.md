@@ -83,7 +83,7 @@ Param | File | Utilization
 `@ignore` | [IgnoreParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/IgnoreParam.cs) | Used to ignore the next line. To ignore a `Datastructure`, this needs to be placed directly the line before!
 `@important` | [ImportantParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/ImportantParam.cs) | Mark a `Datastructure` as important
 `@internal` | [InternalParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/InternalParam.cs) | Mark a `Datastructure` as internal
-`@local` | [LocalParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/LocalParam.cs) | Mark a `Datastructure` as local. Currently just used by Lua, but can be used for `private` functions too
+`@local` | [LocalParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/LocalParam.cs) | Mark a `Datastructure` as local. Currently just used by Lua, but can be used for `private` functions too. **`Datastructure`s marked as `local` are excluded from any documentation output (json file)!**
 `@predicted` | [PredictedParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/PredictedParam.cs) | Mark a `Datastructure` as predicted (used in Lua)
 
 ##### [TextParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/BaseParams/TextParam.cs)
