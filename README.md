@@ -151,6 +151,9 @@ Param Setting | Utilization | Value | Example
 `optchain` | Used to mark an `Param` as optional chain | × | `@param[optchain] Entity inflictor ...`
 
 Most of all, these `Param Settings` just makes sense in the `ReturnParam` or `ParamParam`.
+
+Multiple `Param Settings` needs to be seperated from another with a `,`, e.g. `@param[default="Test", anotherSetting] string|number x ...`.
+
 Anyways, you can use **any** string as a `Param Setting` you want. It's exported in the json entry `settings`.
 
 # Examples
