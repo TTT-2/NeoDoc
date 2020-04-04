@@ -126,8 +126,8 @@ The data is structured in differnt layers. The order is the following:
 3. `Datastructure`
 4. `Param`
 
-If there is no `Wrapper` or `Section` given, the default `Wrapper` or `Section` have the name "none". If you wanna add `Datastructures` into a `Wrapper` or `Section` and later switch back to the default `Wrapper` or `Section`, type `@wrapper none` or `@section none`.
-Globals (global `Datastructures`) are placed in the `_globals` `W`rapper. They are **not** assigned to any `Section`!
+If there is no `Wrapper` or `Section` given, the default `Wrapper` or `Section` have the name "none". If you wanna add `Datastructure`s into a `Wrapper` or `Section` and later switch back to the default `Wrapper` or `Section`, type `@wrapper none` or `@section none`.
+Globals (global `Datastructure`s) are placed in the `_globals` `Wrapper`. They are **not** assigned to any `Section`!
 
 ### How to add a custom Param?
 1. At first, you need to decide for a `BaseParam`. If there is no matching `BaseParam`, feel free to add your own one (It needs to be derived from the `BaseParam` [Param](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/BaseParams/Param.cs) and to be placed in the [BaseParams folder](https://github.com/TTT-2/NeoDoc/tree/master/source/Params/BaseParams)) :)
