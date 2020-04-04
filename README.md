@@ -50,7 +50,7 @@ IsGlobal (optional) | Return true to move these Datastructure out of the current
 
 If you wanna get more data, take a look into [this file](https://github.com/TTT-2/NeoDoc/blob/master/source/DataStructures/DataStructure.cs)
 
-### How to add custom Params?
+### Parameter list
 Params are used for any language, so you don't need to create a Param for any single language.
 
 #### BaseParams
@@ -91,7 +91,7 @@ Param | File | Utilization
 --- | --- | ---
 `@author` | [AuthorParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/AuthorParam.cs) | Reference the creator of this function or module
 `@desc` | [DescParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/DescParam.cs) | Automatically created if starting a comment block with e.g. `---` in Lua. Used to add a desciption to the Datastructure
-`@function` | [FunctionParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/FunctionParam.cs) | _TODO_
+`@function` | [FunctionParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/FunctionParam.cs) | Used to create a function Datastructure in a comment, e.g. used in Lua. This needs to be the last Param, otherwise, the following Params will not be assigned to this new Datastructure
 `@note` | [NoteParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/NoteParam.cs) | Used to add a note to a Datastructure
 `@ref` | [RefParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/RefParam.cs) | Used to reference a ressource. Derived from the `@see` Param
 `@see` | [SeeParam](https://github.com/TTT-2/NeoDoc/blob/master/source/Params/SeeParam.cs) | Used to give a hint for the user to another information
@@ -137,5 +137,55 @@ Globals (global Datastructures) are placed in the `_globals` Wrapper. They are *
 6. Modify the return of the `GetName` to match your new Param's name
 7. ...
 
+### Param Settings
+Param Settings are made to define some default data or mark a Param e.g. as optional with `opt`.
+Values are assigned with `=`.
+
+These are the default Param Settings:
+
+Param Setting | Utilization | Value | Example
+--- | --- | --- | ---
+`default` | Used to set a default value | ✓ | `@param[default=true] boolean isUsed ...`
+`opt` | Used to mark an Param as optional | × | `@param[opt] Player target ...`
+`optchain` | Used to mark an Param as optional chain | × | `@param[optchain] Entity inflictor ...`
+
+Most of all, these Param Settings just makes sense in the `ReturnParam` or `ParamParam`.
+
 # Examples
-_TODO_
+```lua
+---
+-- This is a default description without a param
+-- @param string x The test text
+-- @return boolean Whether the test function was successful
+function TestFunction1(x)
+{
+  -- ...
+}
+
+---
+-- @author AuthorName
+-- @wrapper TestWrapper
+
+---
+-- This function will be placed in the "TestWrapper" Wrapper, Section "none"
+-- @realm client
+function TestFunction2(x)
+{
+  -- ...
+}
+
+---
+-- Another function that will be placed in the "TestWrapper" Wrapper
+function TestFunction3(x)
+{
+  -- ...
+}
+
+-- @wrapper none
+
+---
+-- This function is placed in the "none" Wrapper
+-- @function TestFunction4(x)
+-- @param string x This will not be assigned to the previous function.
+
+```
