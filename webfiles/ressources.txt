@@ -1,2 +1,0 @@
-﻿https://github.com/regenrek/vue-sidebar-menu-example
-https://github.com/EvodiaAut/vue-cookieconsent-component
