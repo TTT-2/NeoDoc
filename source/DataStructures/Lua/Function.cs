@@ -86,7 +86,7 @@ namespace NeoDoc.DataStructures.Lua
                     {
                         return new Hook
                         {
-                            HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim(),
+                            HookName = FunctionData.Split(':')[1].Split('(')[0].Trim(),
                             HookData = FunctionData
                         };
                     }
@@ -100,7 +100,7 @@ namespace NeoDoc.DataStructures.Lua
             {
                 return new Hook
                 {
-                    HookName = FunctionData.Replace("function GM:", "").Replace("function GAMEMODE:", "").Split('(')[0].Trim(),
+                    HookName = FunctionData.Split(':')[1].Split('(')[0].Trim(),
                     HookData = FunctionData
                 };
             }
