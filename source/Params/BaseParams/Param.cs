@@ -19,7 +19,12 @@ namespace NeoDoc.Params
             Dictionary<string, object> tmpData = GetData();
 
             if (tmpData != null && tmpData.Count > 0)
-                tmpDict.Add("data", tmpData);
+            {
+                foreach (KeyValuePair<string, object> entry in tmpData)
+                {
+                    tmpDict.Add(entry.Key, entry.Value);
+                }
+            }
 
             if (SettingsDict != null && SettingsDict.Count > 0)
                 tmpDict.Add("settings", SettingsDict);

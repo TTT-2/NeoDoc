@@ -20,9 +20,6 @@ using System.Text;
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
  * put [opt] and [default] directly after the param (not the type)
- *
- * TODO for the doc generation part
- * (convert param[…] and return[default=…] into the doc pages too)
  */
 
 namespace NeoDoc
@@ -94,6 +91,20 @@ namespace NeoDoc
             File.WriteAllText(newDir + "/search.json", GenerateJSONSearch(wrapperList, globalsDict));
 
             GenerateDocumentationData(wrapperList, globalsDict);
+
+            Console.WriteLine("Finished generating documentation.");
+        }
+
+        internal static void WriteErrors(List<string> errors)
+        {
+            ConsoleColor oldColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            foreach (string error in errors)
+                Console.WriteLine(error);
+
+            Console.ForegroundColor = oldColor;
         }
 
         private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, List<DataStructure>> globalsDict)
@@ -183,7 +194,10 @@ namespace NeoDoc
                     globalsShortDict.Add(entry.Key, dsList);
             }
 
-            jsonDict.Add("_globals", globalsShortDict);
+            foreach (KeyValuePair<string, object> entry in globalsShortDict)
+            {
+                jsonDict.Add(entry.Key, entry.Value);
+            }
 
             return JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
             {
@@ -247,15 +261,19 @@ namespace NeoDoc
                     globalsShortDict.Add(entry.Key, dsList);
             }
 
-            return JsonConvert.SerializeObject(new Dictionary<string, object>
+            Dictionary<string, object> tmpDict = new Dictionary<string, object>
             {
                 { "type", "overview" },
                 { "name", "Search" },
-                { "data", wrapperDict },
-                { "_globals", globalsShortDict }
-            },
-            Formatting.None,
-            new JsonSerializerSettings
+                { "data", wrapperDict }
+            };
+
+            foreach (KeyValuePair<string, object> entry in globalsShortDict)
+            {
+                tmpDict.Add(entry.Key, entry.Value);
+            }
+
+            return JsonConvert.SerializeObject(tmpDict, Formatting.None, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });

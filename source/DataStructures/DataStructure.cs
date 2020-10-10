@@ -26,10 +26,12 @@ namespace NeoDoc.DataStructures
                 { "name", GetDatastructureName() }
             };
 
+            /* This is not needed because it can be builded based on the given params easily
             object jsonData = GetData();
 
             if (jsonData != null)
                 jsonDict.Add("data", jsonData);
+            */
 
             if (ParamsList != null && ParamsList.Length > 0)
             {
@@ -47,7 +49,10 @@ namespace NeoDoc.DataStructures
                         paramsDict.Add(param.GetName(), paramsJSONList);
                     }
 
-                    paramsJSONList.Add(param.GetJSONData());
+                    Dictionary<string, object> jsonData = param.GetJSONData();
+
+                    if (jsonData.Count > 0)
+                        paramsJSONList.Add(jsonData);
                 }
 
                 jsonDict.Add("params", paramsDict);
@@ -104,7 +109,8 @@ namespace NeoDoc.DataStructures
                     case ',':
                         if (bracketsDeepness == 1) // if we are directly in the function hook's instance
                         {
-                            varsList.Add(tmpString);
+                            if (tmpString != "")
+                                varsList.Add(tmpString);
 
                             tmpString = "";
                         }
@@ -125,7 +131,8 @@ namespace NeoDoc.DataStructures
                     break;
             }
 
-            varsList.Add(tmpString);
+            if (tmpString != "")
+                varsList.Add(tmpString);
 
             List<string> finalList = new List<string>();
 

@@ -105,6 +105,46 @@ namespace NeoDoc
                             dataStructure = transformation;
                         }
 
+                        if (dataStructure is Function dataFunction && !dataFunction.IsLocal())
+                        {
+                            string dataStructureData = (string)dataStructure.GetData();
+                            List<string> expectedParams = dataStructure.GetVarsFromFunction(dataStructureData);
+                            List<Param> paramParams = new List<Param>();
+
+                            foreach (Param param in dataStructure.ParamsList)
+                            {
+                                if (param is ParamParam)
+                                    paramParams.Add(param);
+                            }
+
+                            if (paramParams.Count != expectedParams.Count)
+                            {
+                                List<string> errors = new List<string>()
+                                {
+                                    dataStructure.GetName() + " is missing params! (" + dataStructureData + ")",
+                                    "Given params (" + paramParams.Count + "): "
+                                };
+
+                                foreach (Param paramParam in paramParams)
+                                {
+                                    errors.Add(paramParam.GetName());
+                                }
+
+                                errors.Add("");
+                                errors.Add("Expected Params (" + expectedParams.Count + "): ");
+
+                                foreach (string paramParamName in expectedParams)
+                                {
+                                    errors.Add(paramParamName);
+                                }
+
+                                errors.Add("----");
+                                errors.Add("");
+
+                                NeoDoc.WriteErrors(errors);
+                            }
+                        }
+
                         // now add the datastructure into the current section of the current container
                         bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
 
@@ -143,14 +183,10 @@ namespace NeoDoc
 
                     if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
                     {
-                        ConsoleColor oldColor = Console.ForegroundColor;
-
-                        Console.ForegroundColor = ConsoleColor.Red;
-
-                        Console.WriteLine("UNREGISTERED PARAM: " + foundLineParamString);
-                        Console.WriteLine(line);
-
-                        Console.ForegroundColor = oldColor;
+                        NeoDoc.WriteErrors(new List<string>() {
+                            "UNREGISTERED PARAM: " + foundLineParamString,
+                            line
+                        });
 
                         continue;
                     }
