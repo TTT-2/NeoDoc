@@ -121,7 +121,7 @@ namespace NeoDoc
                             {
                                 List<string> errors = new List<string>()
                                 {
-                                    dataStructure.GetName() + " is missing params! (" + dataStructureData + ")",
+                                    "Param mismatch in " + dataStructure.GetName() + " (" + dataStructureData + ")!",
                                     "Given params (" + paramParams.Count + "): "
                                 };
 
