@@ -51,7 +51,8 @@ namespace NeoDoc.DataStructures
             {
                 { "type", "datastructure" },
                 { "subtype", GetName() },
-                { "name", GetDatastructureName() }
+                { "name", GetDatastructureName() },
+                { "realm", Realm }
             };
 
             /* This is not needed because it can be builded based on the given params easily
