@@ -47,14 +47,18 @@ namespace NeoDoc.Params
 
             foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in DataStructureDict)
             {
-                List<string> dsNames = new List<string>();
+                List<Dictionary<string, string>> dsNames = new List<Dictionary<string, string>>();
 
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
                     if (dataStructure.Ignore)
                         continue;
 
-                    dsNames.Add(dataStructure.GetDatastructureName());
+                    dsNames.Add(new Dictionary<string, string>()
+                    {
+                        { "name", dataStructure.GetDatastructureName() },
+                        { "realm", dataStructure.Realm }
+                    });
                 }
 
                 jsonDict.Add(keyValuePair.Key, dsNames);

@@ -173,30 +173,26 @@ namespace NeoDoc
                 ((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapper.GetDataDict());
             }
 
-            Dictionary<string, object> globalsShortDict = new Dictionary<string, object>();
-
             foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
             {
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
-                List<string> dsList = new List<string>();
+                List<Dictionary<string, string>> dsList = new List<Dictionary<string, string>>();
 
                 foreach (DataStructure dataStructure in entry.Value)
                 {
                     if (dataStructure.Ignore)
                         continue;
 
-                    dsList.Add(dataStructure.GetDatastructureName());
+                    dsList.Add(new Dictionary<string, string>() {
+                        { "name", dataStructure.GetDatastructureName() },
+                        { "realm", dataStructure.Realm }
+                    });
                 }
 
                 if (dsList.Count > 0)
-                    globalsShortDict.Add(entry.Key, dsList);
-            }
-
-            foreach (KeyValuePair<string, object> entry in globalsShortDict)
-            {
-                jsonDict.Add(entry.Key, entry.Value);
+                    jsonDict.Add(entry.Key, dsList);
             }
 
             return JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
