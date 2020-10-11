@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
 
@@ -31,9 +30,9 @@ namespace NeoDoc.DataStructures.Lua
             {
                 foreach (Param param in ParamsList)
                 {
-                    if (param is NameParam)
+                    if (param is NameParam nameParam)
                     {
-                        name = ((NameParam)param).Value;
+                        name = nameParam.Value;
 
                         break;
                     }
@@ -48,9 +47,9 @@ namespace NeoDoc.DataStructures.Lua
 
             List<string> tmpData = GetVarsFromFunction(result);
 
-            HookName = (name ?? tmpData[0]).Trim('"');
+            HookName = GlobalWrapper + ":" + (name ?? tmpData[0]).Trim('"');
 
-            HookData = "GM:" + HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 2 : 1, tmpData.Count - (mode ? 2 : 1)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
+            HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 2 : 1, tmpData.Count - (mode ? 2 : 1)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
         }
 
         public override string GetName()
@@ -66,6 +65,11 @@ namespace NeoDoc.DataStructures.Lua
         public override string GetDatastructureName()
         {
             return HookName;
+        }
+
+        public override bool IsGlobal()
+        {
+            return true;
         }
     }
 }

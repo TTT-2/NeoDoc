@@ -101,7 +101,7 @@ namespace NeoDoc.Params
             }
         }
 
-        public void ProcessGlobals(SortedDictionary<string, List<DataStructure>> globalsDict)
+        public void ProcessGlobals(SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
         {
             SortedDictionary<string, List<DataStructure>> finalDict = new SortedDictionary<string, List<DataStructure>>();
 
@@ -118,21 +118,30 @@ namespace NeoDoc.Params
                         continue;
                     }
 
-                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> ds);
+                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out Dictionary<string, List<DataStructure>> dsList);
 
                     if (!exists)
                     {
-                        ds = new List<DataStructure>();
+                        dsList = new Dictionary<string, List<DataStructure>>();
 
-                        globalsDict.Add(dataStructure.GetName(), ds);
+                        globalsDict.Add(dataStructure.GetName(), dsList);
                     }
 
                     // just insert if not already exists
+                    bool dsExists = dsList.TryGetValue(dataStructure.GlobalWrapper, out List<DataStructure> dsWrapperList);
+
+                    if (!dsExists)
+                    {
+                        dsWrapperList = new List<DataStructure>();
+
+                        dsList.Add(dataStructure.GlobalWrapper, dsWrapperList);
+                    }
+
                     bool alreadyExists = false;
 
-                    foreach (DataStructure tmpDs in ds)
+                    foreach (DataStructure entry in dsWrapperList)
                     {
-                        if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName())
+                        if (entry.GetDatastructureName() == dataStructure.GetDatastructureName())
                         {
                             alreadyExists = true;
 
@@ -140,8 +149,10 @@ namespace NeoDoc.Params
                         }
                     }
 
-                    if (!alreadyExists)
-                        ds.Add(dataStructure);
+                    if (alreadyExists)
+                        continue;
+
+                    dsWrapperList.Add(dataStructure);
                 }
 
                 if (finalDSList.Count > 0)

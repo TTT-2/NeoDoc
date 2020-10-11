@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
-using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures.Lua
 {
@@ -87,8 +85,9 @@ namespace NeoDoc.DataStructures.Lua
                     {
                         return new Hook
                         {
-                            HookName = FunctionData.Split(':')[1].Split('(')[0].Trim(),
-                            HookData = FunctionData
+                            HookName = FunctionData.Replace("function ", "").Split('(')[0].Trim().Replace("GAMEMODE", "GM"),
+                            HookData = FunctionData.Replace("GAMEMODE", "GM"),
+                            GlobalWrapper = FunctionData.Replace("function ", "").Split(':')[0].Trim().Replace("GAMEMODE", "GM")
                         };
                     }
                 }
@@ -101,8 +100,8 @@ namespace NeoDoc.DataStructures.Lua
             {
                 return new Hook
                 {
-                    HookName = FunctionData.Split(':')[1].Split('(')[0].Trim(),
-                    HookData = FunctionData
+                    HookName = FunctionData.Replace("function ", "").Split('(')[0].Trim().Replace("GAMEMODE", "GM"),
+                    HookData = FunctionData.Replace("GAMEMODE", "GM")
                 };
             }
 

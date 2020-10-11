@@ -74,7 +74,7 @@ namespace NeoDoc
 				Console.WriteLine("");
 			}
 
-            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, List<DataStructure>> globalsDict));
+            List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict));
 
             // Generate Folders
             string newDir = Directory.GetCurrentDirectory() + "../../../output";
@@ -107,11 +107,11 @@ namespace NeoDoc
             Console.ForegroundColor = oldColor;
         }
 
-        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, List<DataStructure>> globalsDict)
+        private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
         {
             SortedDictionary<string, WrapperParam> wrapperParamsDict = new SortedDictionary<string, WrapperParam>();
 
-            globalsDict = new SortedDictionary<string, List<DataStructure>>();
+            globalsDict = new SortedDictionary<string, Dictionary<string, List<DataStructure>>>();
 
             foreach (FileParser fileParser in fileParsers)
             {
@@ -136,13 +136,14 @@ namespace NeoDoc
                 }
             }
 
-            // sort globals list
+            /* sort globals list
             DataStructureComparator dataStructureComparator = new DataStructureComparator();
 
-            foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in globalsDict)
+            foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> keyValuePair in globalsDict)
             {
                 keyValuePair.Value.Sort(dataStructureComparator);
             }
+            */
 
             WrapperParam[] wrapperParams = new WrapperParam[wrapperParamsDict.Count];
 
@@ -151,7 +152,7 @@ namespace NeoDoc
             return wrapperParams;
         }
 
-        private static string GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
+        private static string GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
         {
             Dictionary<string, object> jsonDict = new Dictionary<string, object>
             {
@@ -173,22 +174,34 @@ namespace NeoDoc
                 ((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapper.GetDataDict());
             }
 
-            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
             {
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
-                List<Dictionary<string, string>> dsList = new List<Dictionary<string, string>>();
+                Dictionary<string, List<Dictionary<string, string>>> dsList = new Dictionary<string, List<Dictionary<string, string>>>();
 
-                foreach (DataStructure dataStructure in entry.Value)
+                foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value)
                 {
-                    if (dataStructure.Ignore)
-                        continue;
+                    foreach (DataStructure dataStructure in globalsEntry.Value)
+                    {
+                        if (dataStructure.Ignore)
+                            continue;
 
-                    dsList.Add(new Dictionary<string, string>() {
-                        { "name", dataStructure.GetDatastructureName() },
-                        { "realm", dataStructure.Realm }
-                    });
+                        bool inserted = dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict);
+
+                        if (!inserted)
+                        {
+                            tmpDsDict = new List<Dictionary<string, string>>();
+
+                            dsList.Add(globalsEntry.Key, tmpDsDict);
+                        }
+
+                        tmpDsDict.Add(new Dictionary<string, string>() {
+                            { "name", dataStructure.GetDatastructureName() },
+                            { "realm", dataStructure.Realm }
+                        });
+                    }
                 }
 
                 if (dsList.Count > 0)
@@ -201,36 +214,41 @@ namespace NeoDoc
             });
         }
 
-        private static string GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, List<DataStructure>> globalsDict)
+        private static string GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
         {
-            // transform into structure "WRAPPER -> TYPE[] -> DATASTRUCTURES[]"
-            Dictionary<string, Dictionary<string, List<string>>> wrapperDict = new Dictionary<string, Dictionary<string, List<string>>>();
+            // transform into structure "WRAPPER_TYPE[] -> WRAPPER -> DATASTRUCTURES[]"
+            Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>> wrapperTypesDict = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
 
             foreach (WrapperParam wrapper in wrapperParams)
             {
-                Dictionary<string, List<string>> typesDict = new Dictionary<string, List<string>>();
+                bool wrapperTypeExists = wrapperTypesDict.TryGetValue(wrapper.GetName(), out Dictionary<string, List<Dictionary<string, string>>> wrappersDict);
 
-                wrapperDict.Add(wrapper.WrapperName, typesDict);
+                if (!wrapperTypeExists)
+                {
+                    wrappersDict = new Dictionary<string, List<Dictionary<string, string>>>();
+
+                    wrapperTypesDict.Add(wrapper.GetName(), wrappersDict);
+                }
+
+                List<Dictionary<string, string>> dsDict = new List<Dictionary<string, string>>();
+
+                wrappersDict.Add(wrapper.WrapperName, dsDict);
 
                 foreach (SectionParam section in wrapper.SectionDict.Values)
                 {
                     foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
                     {
-                        bool exists = typesDict.TryGetValue(keyValuePair.Key, out List<string> foundList);
-
-                        if (!exists)
-                        {
-                            foundList = new List<string>();
-
-                            typesDict.Add(keyValuePair.Key, foundList);
-                        }
-
                         foreach (DataStructure ds in keyValuePair.Value)
                         {
                             if (ds.Ignore)
                                 continue;
 
-                            foundList.Add(ds.GetDatastructureName());
+                            dsDict.Add(new Dictionary<string, string>()
+                            {
+                                { "name", ds.GetDatastructureName() },
+                                { "realm", ds.Realm },
+                                { "type", ds.GetName() }
+                            });
                         }
                     }
                 }
@@ -238,19 +256,34 @@ namespace NeoDoc
 
             Dictionary<string, object> globalsShortDict = new Dictionary<string, object>();
 
-            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
             {
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
-                List<string> dsList = new List<string>();
+                Dictionary<string, List<Dictionary<string, string>>> dsList = new Dictionary<string, List<Dictionary<string, string>>>();
 
-                foreach (DataStructure dataStructure in entry.Value)
+                foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value)
                 {
-                    if (dataStructure.Ignore)
-                        continue;
+                    foreach (DataStructure dataStructure in globalsEntry.Value)
+                    {
+                        if (dataStructure.Ignore)
+                            continue;
 
-                    dsList.Add(dataStructure.GetDatastructureName());
+                        bool inserted = dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict);
+
+                        if (!inserted)
+                        {
+                            tmpDsDict = new List<Dictionary<string, string>>();
+
+                            dsList.Add(globalsEntry.Key, tmpDsDict);
+                        }
+
+                        tmpDsDict.Add(new Dictionary<string, string>() {
+                            { "name", dataStructure.GetDatastructureName() },
+                            { "realm", dataStructure.Realm }
+                        });
+                    }
                 }
 
                 if (dsList.Count > 0)
@@ -259,10 +292,14 @@ namespace NeoDoc
 
             Dictionary<string, object> tmpDict = new Dictionary<string, object>
             {
-                { "type", "overview" },
-                { "name", "Search" },
-                { "data", wrapperDict }
+                { "type", "search" },
+                { "name", "Search" }
             };
+
+            foreach (KeyValuePair<string, Dictionary<string, List<Dictionary<string, string>>>> entry in wrapperTypesDict)
+            {
+                tmpDict.Add(entry.Key, entry.Value);
+            }
 
             foreach (KeyValuePair<string, object> entry in globalsShortDict)
             {
@@ -275,7 +312,7 @@ namespace NeoDoc
             });
         }
 
-        private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, List<DataStructure>> globalsDict)
+        private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
         {
             string newDir = Directory.GetCurrentDirectory() + "../../../output";
 
@@ -294,7 +331,10 @@ namespace NeoDoc
                             if (dataStructure.Ignore)
                                 continue;
 
-                            File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
+                            if (!Directory.Exists(wrapperDir + "/" + dataStructure.Realm))
+                                Directory.CreateDirectory(wrapperDir + "/" + dataStructure.Realm);
+
+                            File.WriteAllText(wrapperDir + "/" + dataStructure.Realm + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
                         }
                     }
                 }
@@ -305,14 +345,23 @@ namespace NeoDoc
 
             Directory.CreateDirectory(globalDir);
 
-            foreach (KeyValuePair<string, List<DataStructure>> entry in globalsDict)
+            foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
             {
-                foreach (DataStructure dataStructure in entry.Value)
-                {
-                    if (dataStructure.Ignore)
-                        continue;
+                if (entry.Value.Count < 0)
+                    continue; // don't include empty globals
 
-                    File.WriteAllText(globalDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
+                foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value)
+                {
+                    foreach (DataStructure dataStructure in globalsEntry.Value)
+                    {
+                        if (dataStructure.Ignore)
+                            continue;
+
+                        if (!Directory.Exists(globalDir + "/" + dataStructure.Realm))
+                            Directory.CreateDirectory(globalDir + "/" + dataStructure.Realm);
+
+                        File.WriteAllText(globalDir + "/" + dataStructure.Realm + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
+                    }
                 }
             }
         }

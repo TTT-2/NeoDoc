@@ -9,6 +9,7 @@ namespace NeoDoc.DataStructures
     {
         public bool Ignore { get; set; } = false;
         public string Realm { get; set; } = "shared";
+        public string GlobalWrapper { get; set; } = "GM";
 
         public Param[] ParamsList;
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
