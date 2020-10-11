@@ -6,9 +6,10 @@ namespace NeoDoc.DataStructures.Lua
 {
     public class Hook : DataStructure
     {
-        private string Line { get; set; }
+        public string Line { get; set; }
         public string HookName { get; set; }
         public string HookData { get; set; }
+        public override string GlobalWrapper { get; set; } = "GM";
 
         public override Regex GetRegex()
         {
@@ -26,13 +27,15 @@ namespace NeoDoc.DataStructures.Lua
 
             string name = null;
 
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
-                foreach (Param param in ParamsList)
+                for (int i = 0; i < ParamsList.Count; i++)
                 {
-                    if (param is NameParam nameParam)
+                    if (ParamsList[i] is NameParam nameParam)
                     {
                         name = nameParam.Value;
+
+                        ParamsList.RemoveAt(i);
 
                         break;
                     }

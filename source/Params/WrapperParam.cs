@@ -60,11 +60,11 @@ namespace NeoDoc.Params
 
         public void ProcessParamsList(List<Param> paramsList)
         {
-            foreach (Param param in paramsList)
+            for (int i = 0; i < paramsList.Count; i++)
             {
-                if (param is AuthorParam)
+                if (paramsList[i] is AuthorParam authorParam)
                 {
-                    Authors.Add(((AuthorParam)param).Text);
+                    Authors.Add(authorParam.Text);
                 }
             }
         }

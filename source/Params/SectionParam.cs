@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NeoDoc.DataStructures;
-using Newtonsoft.Json;
 
 namespace NeoDoc.Params
 {
@@ -67,6 +65,7 @@ namespace NeoDoc.Params
             return jsonDict;
         }
 
+        // merges 2 sections together. Used by a wrapper to merge same sections of different files
         public void Merge(SectionParam sectionParam)
         {
             foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in sectionParam.DataStructureDict)
@@ -74,9 +73,7 @@ namespace NeoDoc.Params
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
                     // just insert if not already exists
-                    bool match = DataStructureDict.TryGetValue(keyValuePair.Key, out List<DataStructure> finalDSList);
-
-                    if (!match) // initialize if not already exists
+                    if (!DataStructureDict.TryGetValue(keyValuePair.Key, out List<DataStructure> finalDSList)) // initialize if not already exists
                     {
                         finalDSList = new List<DataStructure>();
 
@@ -87,7 +84,7 @@ namespace NeoDoc.Params
 
                     foreach (DataStructure tmpDs in finalDSList)
                     {
-                        if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName())
+                        if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName() && tmpDs.Realm == dataStructure.Realm)
                         {
                             alreadyExists = true;
 
@@ -95,8 +92,16 @@ namespace NeoDoc.Params
                         }
                     }
 
-                    if (!alreadyExists)
-                        finalDSList.Add(dataStructure);
+                    if (alreadyExists)
+                    {
+                        NeoDoc.WriteErrors(new List<string>() {
+                            "Tried to add an already existing '" + dataStructure.GetName() + "' datastructure (" + dataStructure.GetDatastructureName() + ") while merging section '" + sectionParam.SectionName + "'!"
+                        });
+
+                        continue;
+                    }
+
+                    finalDSList.Add(dataStructure);
                 }
             }
         }
@@ -111,16 +116,35 @@ namespace NeoDoc.Params
 
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
+                    bool alreadyExists = false;
+
                     if (!dataStructure.IsGlobal())
                     {
+                        foreach (DataStructure entry in finalDSList)
+                        {
+                            if (entry.GetDatastructureName() == dataStructure.GetDatastructureName() && entry.Realm == dataStructure.Realm)
+                            {
+                                alreadyExists = true;
+
+                                break;
+                            }
+                        }
+
+                        if (alreadyExists)
+                        {
+                            NeoDoc.WriteErrors(new List<string>() {
+                                "Tried to add an already existing '" + dataStructure.GetName() + "' datastructure (" + dataStructure.GetDatastructureName() + ") in the same section!"
+                            });
+
+                            continue;
+                        }
+
                         finalDSList.Add(dataStructure);
 
                         continue;
                     }
 
-                    bool exists = globalsDict.TryGetValue(dataStructure.GetName(), out Dictionary<string, List<DataStructure>> dsList);
-
-                    if (!exists)
+                    if (!globalsDict.TryGetValue(dataStructure.GetName(), out Dictionary<string, List<DataStructure>> dsList))
                     {
                         dsList = new Dictionary<string, List<DataStructure>>();
 
@@ -128,20 +152,16 @@ namespace NeoDoc.Params
                     }
 
                     // just insert if not already exists
-                    bool dsExists = dsList.TryGetValue(dataStructure.GlobalWrapper, out List<DataStructure> dsWrapperList);
-
-                    if (!dsExists)
+                    if (!dsList.TryGetValue(dataStructure.GlobalWrapper, out List<DataStructure> dsWrapperList))
                     {
                         dsWrapperList = new List<DataStructure>();
 
                         dsList.Add(dataStructure.GlobalWrapper, dsWrapperList);
                     }
 
-                    bool alreadyExists = false;
-
                     foreach (DataStructure entry in dsWrapperList)
                     {
-                        if (entry.GetDatastructureName() == dataStructure.GetDatastructureName())
+                        if (entry.GetDatastructureName() == dataStructure.GetDatastructureName() && entry.Realm == dataStructure.Realm)
                         {
                             alreadyExists = true;
 
@@ -150,7 +170,13 @@ namespace NeoDoc.Params
                     }
 
                     if (alreadyExists)
+                    {
+                        NeoDoc.WriteErrors(new List<string>() {
+                            "Tried to add an already existing global datastructure (" + dataStructure.GetDatastructureName() + ")!"
+                        });
+
                         continue;
+                    }
 
                     dsWrapperList.Add(dataStructure);
                 }

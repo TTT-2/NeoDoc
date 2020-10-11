@@ -24,13 +24,15 @@ namespace NeoDoc.DataStructures.Lua
         public override void Process(string line)
         {
             // if param "@local" found
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
-                foreach (Param param in ParamsList)
+                for (int i = 0; i < ParamsList.Count; i++)
                 {
-                    if (param is LocalParam)
+                    if (ParamsList[i] is LocalParam)
                     {
                         Local = true;
+
+                        ParamsList.RemoveAt(i);
 
                         break;
                     }
@@ -77,17 +79,23 @@ namespace NeoDoc.DataStructures.Lua
             // check whether it's a hook
 
             // if param "@hook" found
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
-                foreach (Param param in ParamsList)
+                for (int i = 0; i < ParamsList.Count; i++)
                 {
-                    if (param is HookParam)
+                    if (ParamsList[i] is HookParam)
                     {
+                        ParamsList.RemoveAt(i);
+
                         return new Hook
                         {
                             HookName = FunctionData.Replace("function ", "").Split('(')[0].Trim().Replace("GAMEMODE", "GM"),
                             HookData = FunctionData.Replace("GAMEMODE", "GM"),
-                            GlobalWrapper = FunctionData.Replace("function ", "").Split(':')[0].Trim().Replace("GAMEMODE", "GM")
+                            GlobalWrapper = FunctionData.Replace("function ", "").Split(':')[0].Trim().Replace("GAMEMODE", "GM"),
+                            Line = Line,
+                            ParamsList = ParamsList,
+                            Realm = Realm,
+                            Ignore = Ignore
                         };
                     }
                 }
@@ -101,7 +109,11 @@ namespace NeoDoc.DataStructures.Lua
                 return new Hook
                 {
                     HookName = FunctionData.Replace("function ", "").Split('(')[0].Trim().Replace("GAMEMODE", "GM"),
-                    HookData = FunctionData.Replace("GAMEMODE", "GM")
+                    HookData = FunctionData.Replace("GAMEMODE", "GM"),
+                    Line = Line,
+                    ParamsList = ParamsList,
+                    Realm = Realm,
+                    Ignore = Ignore
                 };
             }
 

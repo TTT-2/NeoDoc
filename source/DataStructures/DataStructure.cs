@@ -9,9 +9,9 @@ namespace NeoDoc.DataStructures
     {
         public bool Ignore { get; set; } = false;
         public string Realm { get; set; } = "shared";
-        public string GlobalWrapper { get; set; } = "GM";
+        public virtual string GlobalWrapper { get; set; } = "none";
+        public List<Param> ParamsList;
 
-        public Param[] ParamsList;
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
         public abstract void Process(string line); // process data based on given line string
         public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
@@ -22,13 +22,15 @@ namespace NeoDoc.DataStructures
         public virtual void ProcessDatastructure(string line) // used to set default data
         {
             // if param "@realm" found
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
-                foreach (Param param in ParamsList)
+                for (int i = 0; i < ParamsList.Count; i++)
                 {
-                    if (param is RealmParam realmParam)
+                    if (ParamsList[i] is RealmParam realmParam)
                     {
                         Realm = realmParam.Value;
+
+                        ParamsList.RemoveAt(i);
 
                         break;
                     }
@@ -59,16 +61,14 @@ namespace NeoDoc.DataStructures
                 jsonDict.Add("data", jsonData);
             */
 
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
                 // merge same datastructures together
                 SortedDictionary<string, List<object>> paramsDict = new SortedDictionary<string, List<object>>();
 
                 foreach (Param param in ParamsList)
                 {
-                    bool exists = paramsDict.TryGetValue(param.GetName(), out List<object> paramsJSONList);
-
-                    if (!exists)
+                    if (!paramsDict.TryGetValue(param.GetName(), out List<object> paramsJSONList))
                     {
                         paramsJSONList = new List<object>();
 

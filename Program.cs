@@ -162,9 +162,7 @@ namespace NeoDoc
 
             foreach (WrapperParam wrapper in wrapperParams)
             {
-                bool exists = jsonDict.TryGetValue(wrapper.GetName(), out object wrapperDict);
-
-                if (!exists)
+                if (!jsonDict.TryGetValue(wrapper.GetName(), out object wrapperDict))
                 {
                     wrapperDict = new Dictionary<string, object>();
 
@@ -188,9 +186,7 @@ namespace NeoDoc
                         if (dataStructure.Ignore)
                             continue;
 
-                        bool inserted = dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict);
-
-                        if (!inserted)
+                        if (!dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
                         {
                             tmpDsDict = new List<Dictionary<string, string>>();
 
@@ -221,9 +217,7 @@ namespace NeoDoc
 
             foreach (WrapperParam wrapper in wrapperParams)
             {
-                bool wrapperTypeExists = wrapperTypesDict.TryGetValue(wrapper.GetName(), out Dictionary<string, List<Dictionary<string, string>>> wrappersDict);
-
-                if (!wrapperTypeExists)
+                if (!wrapperTypesDict.TryGetValue(wrapper.GetName(), out Dictionary<string, List<Dictionary<string, string>>> wrappersDict))
                 {
                     wrappersDict = new Dictionary<string, List<Dictionary<string, string>>>();
 
@@ -270,9 +264,7 @@ namespace NeoDoc
                         if (dataStructure.Ignore)
                             continue;
 
-                        bool inserted = dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict);
-
-                        if (!inserted)
+                        if (!dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
                         {
                             tmpDsDict = new List<Dictionary<string, string>>();
 

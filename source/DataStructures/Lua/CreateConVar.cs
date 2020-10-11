@@ -26,13 +26,15 @@ namespace NeoDoc.DataStructures.Lua
 
             string name = null;
 
-            if (ParamsList != null && ParamsList.Length > 0)
+            if (ParamsList != null && ParamsList.Count > 0)
             {
-                foreach (Param param in ParamsList)
+                for (int i = 0; i < ParamsList.Count; i++)
                 {
-                    if (param is NameParam)
+                    if (ParamsList[i] is NameParam nameParam)
                     {
-                        name = ((NameParam)param).Value;
+                        name = nameParam.Value;
+
+                        ParamsList.RemoveAt(i);
 
                         break;
                     }

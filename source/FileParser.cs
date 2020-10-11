@@ -95,29 +95,25 @@ namespace NeoDoc
 
                     if (dataStructure != null)
                     {
-                        dataStructure.ParamsList = paramsList.ToArray(); // set the params with an array copy of the list
+                        dataStructure.ParamsList = new List<Param>(paramsList); // set the params with a copy of the list
                         dataStructure.ProcessDatastructure(line);
 
-                        DataStructure transformation = dataStructure.CheckDataStructureTransformation();
-
-                        if (transformation != null)
+                        if (!dataStructure.Ignore)
                         {
-                            dataStructure = transformation;
+                            dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
+
+                            dataStructure.Check();
+
+                            // now add the datastructure into the current section of the current container
+                            if (!CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
+                            {
+                                dsList = new List<DataStructure>();
+
+                                CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
+                            }
+
+                            dsList.Add(dataStructure);
                         }
-
-                        dataStructure.Check();
-
-                        // now add the datastructure into the current section of the current container
-                        bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
-
-                        if (!exists)
-                        {
-                            dsList = new List<DataStructure>();
-
-                            CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
-                        }
-
-                        dsList.Add(dataStructure);
                     }
 
                     // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
@@ -174,14 +170,11 @@ namespace NeoDoc
 
                     if (lineParam is WrapperParam || lineParam is SectionParam)
                     {
-                        if (lineParam is WrapperParam) // TODO what if Wrapper already exists
+                        if (lineParam is WrapperParam tmpWrapperParam) // TODO what if Wrapper already exists
                         {
-                            WrapperParam tmpWrapperParam = (WrapperParam) lineParam;
                             tmpWrapperParam.ProcessParamsList(paramsList); // e.g. add @author to the wrapper's data
 
-                            bool exists = WrapperDict.TryGetValue(tmpWrapperParam.WrapperName, out WrapperParam foundWrapperParam);
-
-                            if (!exists)
+                            if (!WrapperDict.TryGetValue(tmpWrapperParam.WrapperName, out WrapperParam foundWrapperParam))
                             {
                                 foundWrapperParam = tmpWrapperParam;
 
@@ -199,9 +192,7 @@ namespace NeoDoc
                         {
                             SectionParam tmpSectionParam = (SectionParam)lineParam;
 
-                            bool exists = CurrentWrapper.SectionDict.TryGetValue(tmpSectionParam.SectionName, out SectionParam foundSectionParam);
-
-                            if (!exists)
+                            if (!CurrentWrapper.SectionDict.TryGetValue(tmpSectionParam.SectionName, out SectionParam foundSectionParam))
                             {
                                 foundSectionParam = tmpSectionParam;
 
@@ -222,31 +213,27 @@ namespace NeoDoc
                     {
                         DataStructure dataStructure = new Function
                         {
-                            ParamsList = paramsList.ToArray() // set the params with an array copy of the list
+                            ParamsList = new List<Param>(paramsList) // set the params with a copy of the list
                         };
 
                         dataStructure.ProcessDatastructure(line);
 
-                        DataStructure transformation = dataStructure.CheckDataStructureTransformation();
-
-                        if (transformation != null)
+                        if (!dataStructure.Ignore)
                         {
-                            dataStructure = transformation;
+                            dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
+
+                            dataStructure.Check();
+
+                            // now add the datastructure into the current section of the current container
+                            if (!CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
+                            {
+                                dsList = new List<DataStructure>();
+
+                                CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
+                            }
+
+                            dsList.Add(dataStructure);
                         }
-
-                        dataStructure.Check();
-
-                        // now add the datastructure into the current section of the current container
-                        bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
-
-                        if (!exists)
-                        {
-                            dsList = new List<DataStructure>();
-
-                            CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
-                        }
-
-                        dsList.Add(dataStructure);
 
                         // cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
                         paramsList.Clear();
