@@ -333,26 +333,35 @@ namespace NeoDoc
             }
 
             // add globals too
-            string globalDir = newDir + "/_globals";
-
-            Directory.CreateDirectory(globalDir);
-
             foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
             {
                 if (entry.Value.Count < 0)
                     continue; // don't include empty globals
 
+                string globalsPath = newDir + "/" + entry.Key;
+
+                Directory.CreateDirectory(globalsPath);
+
                 foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value)
                 {
+                    if (globalsEntry.Value.Count < 1)
+                        continue;
+
+                    string globalTypePath = globalsPath + "/" + globalsEntry.Key;
+
+                    Directory.CreateDirectory(globalTypePath);
+
                     foreach (DataStructure dataStructure in globalsEntry.Value)
                     {
                         if (dataStructure.Ignore)
                             continue;
 
-                        if (!Directory.Exists(globalDir + "/" + dataStructure.Realm))
-                            Directory.CreateDirectory(globalDir + "/" + dataStructure.Realm);
+                        string globalTypeDsPath = globalTypePath + "/" + dataStructure.Realm;
 
-                        File.WriteAllText(globalDir + "/" + dataStructure.Realm + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
+                        if (!Directory.Exists(globalTypeDsPath))
+                            Directory.CreateDirectory(globalTypeDsPath);
+
+                        File.WriteAllText(globalTypeDsPath + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
                     }
                 }
             }
