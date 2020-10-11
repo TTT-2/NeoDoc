@@ -96,7 +96,7 @@ namespace NeoDoc
                     if (dataStructure != null)
                     {
                         dataStructure.ParamsList = paramsList.ToArray(); // set the params with an array copy of the list
-                        dataStructure.Process(line);
+                        dataStructure.ProcessDatastructure(line);
 
                         DataStructure transformation = dataStructure.CheckDataStructureTransformation();
 
@@ -105,45 +105,7 @@ namespace NeoDoc
                             dataStructure = transformation;
                         }
 
-                        if (dataStructure is Function dataFunction && !dataFunction.IsLocal())
-                        {
-                            string dataStructureData = (string)dataStructure.GetData();
-                            List<string> expectedParams = dataStructure.GetVarsFromFunction(dataStructureData);
-                            List<Param> paramParams = new List<Param>();
-
-                            foreach (Param param in dataStructure.ParamsList)
-                            {
-                                if (param is ParamParam)
-                                    paramParams.Add(param);
-                            }
-
-                            if (paramParams.Count != expectedParams.Count)
-                            {
-                                List<string> errors = new List<string>()
-                                {
-                                    "Param mismatch in " + dataStructure.GetName() + " (" + dataStructureData + ")!",
-                                    "Given params (" + paramParams.Count + "): "
-                                };
-
-                                foreach (Param paramParam in paramParams)
-                                {
-                                    errors.Add(paramParam.GetName());
-                                }
-
-                                errors.Add("");
-                                errors.Add("Expected Params (" + expectedParams.Count + "): ");
-
-                                foreach (string paramParamName in expectedParams)
-                                {
-                                    errors.Add(paramParamName);
-                                }
-
-                                errors.Add("----");
-                                errors.Add("");
-
-                                NeoDoc.WriteErrors(errors);
-                            }
-                        }
+                        dataStructure.Check();
 
                         // now add the datastructure into the current section of the current container
                         bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);
@@ -263,7 +225,7 @@ namespace NeoDoc
                             ParamsList = paramsList.ToArray() // set the params with an array copy of the list
                         };
 
-                        dataStructure.Process(line);
+                        dataStructure.ProcessDatastructure(line);
 
                         DataStructure transformation = dataStructure.CheckDataStructureTransformation();
 
@@ -271,6 +233,8 @@ namespace NeoDoc
                         {
                             dataStructure = transformation;
                         }
+
+                        dataStructure.Check();
 
                         // now add the datastructure into the current section of the current container
                         bool exists = CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList);

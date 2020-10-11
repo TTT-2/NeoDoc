@@ -8,6 +8,7 @@ namespace NeoDoc.DataStructures
     public abstract class DataStructure
     {
         public bool Ignore { get; set; } = false;
+        public string Realm { get; set; } = "shared";
 
         public Param[] ParamsList;
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
@@ -16,6 +17,30 @@ namespace NeoDoc.DataStructures
         public abstract string GetName(); // returns an identification name
         public abstract string GetDatastructureName(); // returns the individual name of the matched datasctructure
         public abstract object GetData(); // returns data
+
+        public virtual void ProcessDatastructure(string line) // used to set default data
+        {
+            // if param "@realm" found
+            if (ParamsList != null && ParamsList.Length > 0)
+            {
+                foreach (Param param in ParamsList)
+                {
+                    if (param is RealmParam realmParam)
+                    {
+                        Realm = realmParam.Value;
+
+                        break;
+                    }
+                }
+            }
+
+            Process(line);
+        }
+
+        public virtual void Check() // used to finally check for errors and to print them into the console
+        {
+
+        }
 
         public virtual string GetFullJSONData() // returns full json data, used for the entire page structure
         {
