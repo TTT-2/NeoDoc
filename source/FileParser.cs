@@ -20,6 +20,7 @@ namespace NeoDoc
         private readonly LangMatcher langMatcher;
         private readonly Lang lang;
         private readonly string path;
+        private readonly string relPath;
         private readonly ParamMatcher paramMatcher;
 
         public SortedDictionary<string, WrapperParam> WrapperDict { get; set; }
@@ -29,11 +30,12 @@ namespace NeoDoc
 
         public string[] Lines { get; set; }
 
-        public FileParser(LangMatcher langMatcher, Lang lang, string path)
+        public FileParser(LangMatcher langMatcher, Lang lang, string path, string relPath)
         {
             this.langMatcher = langMatcher;
             this.lang = lang;
             this.path = path;
+            this.relPath = relPath;
 
             paramMatcher = new ParamMatcher(lang);
 
@@ -95,7 +97,7 @@ namespace NeoDoc
 
                             // set meta information
                             dataStructure.FoundLine = i;
-                            dataStructure.FoundPath = path;
+                            dataStructure.FoundPath = relPath;
 
                             dataStructure.Check();
 
@@ -139,7 +141,7 @@ namespace NeoDoc
                         NeoDoc.WriteErrors(new List<string>() {
                             "UNREGISTERED PARAM: " + foundLineParamString,
                             line,
-                            "Source: '" + path + "' (ll. " + i + ")"
+                            "Source: '" + relPath + "' (ll. " + i + ")"
                         });
 
                         continue;
@@ -220,7 +222,7 @@ namespace NeoDoc
 
                             // set meta information
                             dataStructure.FoundLine = i;
-                            dataStructure.FoundPath = path;
+                            dataStructure.FoundPath = relPath;
 
                             dataStructure.Check();
 
@@ -259,6 +261,11 @@ namespace NeoDoc
         public string GetPath()
         {
             return path;
+        }
+
+        public string GetRelativePath()
+        {
+            return relPath;
         }
 
         public Lang GetLang()
