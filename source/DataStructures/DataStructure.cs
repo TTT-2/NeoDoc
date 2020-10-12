@@ -11,6 +11,8 @@ namespace NeoDoc.DataStructures
         public string Realm { get; set; } = "shared";
         public virtual string GlobalWrapper { get; set; } = "none";
         public List<Param> ParamsList;
+        public string FoundPath;
+        public int FoundLine;
 
         public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
         public abstract void Process(string line); // process data based on given line string
@@ -52,7 +54,13 @@ namespace NeoDoc.DataStructures
                 { "type", "datastructure" },
                 { "subtype", GetName() },
                 { "name", GetDatastructureName() },
-                { "realm", Realm }
+                { "realm", Realm },
+                { "source", new Dictionary<string, object>()
+                    {
+                        { "file", FoundPath },
+                        { "line", FoundLine }
+                    }
+                }
             };
 
             /* This is not needed because it can be builded based on the given params easily
@@ -136,7 +144,7 @@ namespace NeoDoc.DataStructures
                     case ',':
                         if (bracketsDeepness == 1) // if we are directly in the function hook's instance
                         {
-                            if (tmpString != "")
+                            if (!string.IsNullOrEmpty(tmpString))
                                 varsList.Add(tmpString);
 
                             tmpString = "";
@@ -158,7 +166,7 @@ namespace NeoDoc.DataStructures
                     break;
             }
 
-            if (tmpString != "")
+            if (!string.IsNullOrEmpty(tmpString))
                 varsList.Add(tmpString);
 
             List<string> finalList = new List<string>();

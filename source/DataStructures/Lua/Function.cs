@@ -122,44 +122,37 @@ namespace NeoDoc.DataStructures.Lua
 
         public override void Check()
         {
-            if (!Ignore)
+            string dataStructureData = (string)GetData();
+            List<string> expectedParams = GetVarsFromFunction(dataStructureData);
+            List<Param> paramParams = new List<Param>();
+
+            foreach (Param param in ParamsList)
             {
-                string dataStructureData = (string)GetData();
-                List<string> expectedParams = GetVarsFromFunction(dataStructureData);
-                List<Param> paramParams = new List<Param>();
+                if (param is ParamParam)
+                    paramParams.Add(param);
+            }
 
-                foreach (Param param in ParamsList)
+            if (paramParams.Count != expectedParams.Count)
+            {
+                List<string> errors = new List<string>()
                 {
-                    if (param is ParamParam)
-                        paramParams.Add(param);
+                    "Param mismatch in '" + GetName() + "' datastructure ('" + dataStructureData + "', Source: '" + FoundPath + "' (ll. " + FoundLine + "))!",
+                    "Given params (" + paramParams.Count + "): "
+                };
+
+                foreach (Param paramParam in paramParams)
+                {
+                    errors.Add("- " + paramParam.GetName());
                 }
 
-                if (paramParams.Count != expectedParams.Count)
+                errors.Add("Expected Params (" + expectedParams.Count + "): ");
+
+                foreach (string paramParamName in expectedParams)
                 {
-                    List<string> errors = new List<string>()
-                    {
-                        "Param mismatch in " + GetName() + " (" + dataStructureData + ")!",
-                        "Given params (" + paramParams.Count + "): "
-                    };
-
-                    foreach (Param paramParam in paramParams)
-                    {
-                        errors.Add(paramParam.GetName());
-                    }
-
-                    errors.Add("");
-                    errors.Add("Expected Params (" + expectedParams.Count + "): ");
-
-                    foreach (string paramParamName in expectedParams)
-                    {
-                        errors.Add(paramParamName);
-                    }
-
-                    errors.Add("----");
-                    errors.Add("");
-
-                    NeoDoc.WriteErrors(errors);
+                    errors.Add("- " + paramParamName);
                 }
+
+                NeoDoc.WriteErrors(errors);
             }
         }
     }

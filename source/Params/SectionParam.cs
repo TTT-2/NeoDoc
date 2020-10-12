@@ -80,22 +80,24 @@ namespace NeoDoc.Params
                         DataStructureDict.Add(keyValuePair.Key, finalDSList);
                     }
 
-                    bool alreadyExists = false;
+                    DataStructure alreadyExistingDs = null;
 
                     foreach (DataStructure tmpDs in finalDSList)
                     {
                         if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName() && tmpDs.Realm == dataStructure.Realm)
                         {
-                            alreadyExists = true;
+                            alreadyExistingDs = tmpDs;
 
                             break;
                         }
                     }
 
-                    if (alreadyExists)
+                    if (alreadyExistingDs != null)
                     {
                         NeoDoc.WriteErrors(new List<string>() {
-                            "Tried to add an already existing '" + dataStructure.GetName() + "' datastructure (" + dataStructure.GetDatastructureName() + ") while merging section '" + sectionParam.SectionName + "'!"
+                            "Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') while merging section '" + sectionParam.SectionName + "'!",
+                            "Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
+                            "Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
                         });
 
                         continue;
@@ -116,7 +118,7 @@ namespace NeoDoc.Params
 
                 foreach (DataStructure dataStructure in keyValuePair.Value)
                 {
-                    bool alreadyExists = false;
+                    DataStructure alreadyExistingDs = null;
 
                     if (!dataStructure.IsGlobal())
                     {
@@ -124,16 +126,18 @@ namespace NeoDoc.Params
                         {
                             if (entry.GetDatastructureName() == dataStructure.GetDatastructureName() && entry.Realm == dataStructure.Realm)
                             {
-                                alreadyExists = true;
+                                alreadyExistingDs = entry;
 
                                 break;
                             }
                         }
 
-                        if (alreadyExists)
+                        if (alreadyExistingDs != null)
                         {
                             NeoDoc.WriteErrors(new List<string>() {
-                                "Tried to add an already existing '" + dataStructure.GetName() + "' datastructure (" + dataStructure.GetDatastructureName() + ") in the same section!"
+                                "Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') in the same section ('" + SectionName + "')!",
+                                "Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
+                                "Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
                             });
 
                             continue;
@@ -163,16 +167,18 @@ namespace NeoDoc.Params
                     {
                         if (entry.GetDatastructureName() == dataStructure.GetDatastructureName() && entry.Realm == dataStructure.Realm)
                         {
-                            alreadyExists = true;
+                            alreadyExistingDs = entry;
 
                             break;
                         }
                     }
 
-                    if (alreadyExists)
+                    if (alreadyExistingDs != null)
                     {
                         NeoDoc.WriteErrors(new List<string>() {
-                            "Tried to add an already existing global datastructure (" + dataStructure.GetDatastructureName() + ")!"
+                            "Tried to add an already existing global '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "')!",
+                            "Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
+                            "Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
                         });
 
                         continue;

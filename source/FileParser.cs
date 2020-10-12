@@ -54,22 +54,10 @@ namespace NeoDoc
 
         public void CleanUp()
         {
-            List<string> tmpArr = new List<string>();
-
             for (int i = 0; i < Lines.Length; i++)
             {
-                string line = Lines[i];
-
-                line = line.TrimStart(); // clear every space in front
-
-                // just insert relevant lines (ignore empty lines)
-                if (!string.IsNullOrEmpty(line))
-                {
-                    tmpArr.Add(line);
-                }
+                Lines[i] = Lines[i].TrimStart(); // clear every space in front
             }
-
-            Lines = tmpArr.ToArray();
         }
 
         public void Process()
@@ -80,6 +68,9 @@ namespace NeoDoc
             for (int i = 0; i < Lines.Length; i++)
             {
                 string line = Lines[i];
+
+                if (string.IsNullOrEmpty(line)) // ignore empty lines
+                    continue;
 
                 if (!paramMatcher.IsLineComment(line)) // if there is no comment 
                 {
@@ -101,6 +92,10 @@ namespace NeoDoc
                         if (!dataStructure.Ignore)
                         {
                             dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
+
+                            // set meta information
+                            dataStructure.FoundLine = i;
+                            dataStructure.FoundPath = path;
 
                             dataStructure.Check();
 
@@ -143,7 +138,8 @@ namespace NeoDoc
                     {
                         NeoDoc.WriteErrors(new List<string>() {
                             "UNREGISTERED PARAM: " + foundLineParamString,
-                            line
+                            line,
+                            "Source: '" + path + "' (ll. " + i + ")"
                         });
 
                         continue;
@@ -221,6 +217,10 @@ namespace NeoDoc
                         if (!dataStructure.Ignore)
                         {
                             dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
+
+                            // set meta information
+                            dataStructure.FoundLine = i;
+                            dataStructure.FoundPath = path;
 
                             dataStructure.Check();
 

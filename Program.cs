@@ -26,9 +26,12 @@ namespace NeoDoc
 {
     internal static class NeoDoc
 	{
+        public const bool DEBUGGING = false;
+        public static int Progress = 0;
+
 		private static void Main(string[] args)
 		{
-			if (args.Length < 1)
+            if (args.Length < 1)
 				return;
 
 		    string folder = args[0];
@@ -54,7 +57,9 @@ namespace NeoDoc
 				relPath = relPath.TrimStart('\\');
 				relPath = relPath.Replace('\\', '/');
 
-				Console.WriteLine("[" + (int)Math.Floor((n + 1) / (double)amount * 100.0) + "%] '" + relPath + "'");
+                Progress = (int)Math.Floor((n + 1) / (double)amount * 100.0);
+
+                WriteDebugInfo("[" + Progress + "%] '" + relPath + "'");
 
                 // get the lang based on the file extension
 				Lang lang = langMatcher.GetByFileExtension(Path.GetExtension(file));
@@ -62,7 +67,7 @@ namespace NeoDoc
 				if (lang == null)
 					continue;
 
-				Console.WriteLine("Running '" + lang.GetName() + "' parser");
+                WriteDebugInfo("Running '" + lang.GetName() + "' parser");
 
 				FileParser fileParser = new FileParser(langMatcher, lang, file); // fileParser is used to process a file
 				fileParser.CleanUp();
@@ -70,8 +75,8 @@ namespace NeoDoc
 
 				fileParsers.Add(fileParser);
 
-				Console.WriteLine("Finished parsing");
-				Console.WriteLine("");
+				WriteDebugInfo("Finished parsing");
+                WriteDebugInfo("");
 			}
 
             List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict));
@@ -92,7 +97,23 @@ namespace NeoDoc
 
             GenerateDocumentationData(wrapperList, globalsDict);
 
-            Console.WriteLine("Finished generating documentation.");
+            WriteDebugInfo("Finished generating documentation.");
+        }
+
+        internal static void WriteDebugInfo(string debugInfo)
+        {
+#pragma warning disable CS0162 // Unerreichbarer Code wurde entdeckt.
+            if (!DEBUGGING)
+                return;
+
+            ConsoleColor oldColor = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+
+            Console.Out.WriteLine(debugInfo);
+
+            Console.ForegroundColor = oldColor;
+#pragma warning restore CS0162 // Unerreichbarer Code wurde entdeckt.
         }
 
         internal static void WriteErrors(List<string> errors)
@@ -101,8 +122,12 @@ namespace NeoDoc
 
             Console.ForegroundColor = ConsoleColor.Red;
 
+            TextWriter textWriter = Console.Error;
+
             foreach (string error in errors)
-                Console.WriteLine(error);
+                textWriter.WriteLine(error);
+
+            textWriter.WriteLine("");
 
             Console.ForegroundColor = oldColor;
         }
