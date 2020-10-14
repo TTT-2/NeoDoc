@@ -208,9 +208,6 @@ namespace NeoDoc
 				{
 					foreach (DataStructure dataStructure in globalsEntry.Value)
 					{
-						if (dataStructure.Ignore)
-							continue;
-
 						if (!dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
 						{
 							tmpDsDict = new List<Dictionary<string, string>>();
@@ -259,9 +256,6 @@ namespace NeoDoc
 					{
 						foreach (DataStructure ds in keyValuePair.Value)
 						{
-							if (ds.Ignore)
-								continue;
-
 							dsDict.Add(new Dictionary<string, string>()
 							{
 								{ "name", ds.GetDatastructureName() },
@@ -286,9 +280,6 @@ namespace NeoDoc
 				{
 					foreach (DataStructure dataStructure in globalsEntry.Value)
 					{
-						if (dataStructure.Ignore)
-							continue;
-
 						if (!dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
 						{
 							tmpDsDict = new List<Dictionary<string, string>>();
@@ -345,9 +336,6 @@ namespace NeoDoc
 					{
 						foreach (DataStructure dataStructure in keyValuePair.Value)
 						{
-							if (dataStructure.Ignore)
-								continue;
-
 							if (!Directory.Exists(wrapperDir + "/" + dataStructure.Realm))
 								Directory.CreateDirectory(wrapperDir + "/" + dataStructure.Realm);
 
@@ -378,9 +366,6 @@ namespace NeoDoc
 
 					foreach (DataStructure dataStructure in globalsEntry.Value)
 					{
-						if (dataStructure.Ignore)
-							continue;
-
 						string globalTypeDsPath = globalTypePath + "/" + dataStructure.Realm;
 
 						if (!Directory.Exists(globalTypeDsPath))

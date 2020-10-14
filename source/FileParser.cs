@@ -121,8 +121,7 @@ namespace NeoDoc
 						paramsList.Add(lineParam); // start with a new description per default if matching e.g. "---"
 					}
 
-					if (lineParam != null)
-						lineParam.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
+					lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
 				}
 				else
 				{

@@ -189,7 +189,7 @@ namespace NeoDoc.DataStructures
 
 			ProcessDatastructure(fileParser.Lines[fileParser.CurrentLineCount]);
 
-			if (!Ignore)
+			if (!Ignore) // just add this datastructure if it does not contain the "Ignore" flag
 			{
 				DataStructure dataStructure = CheckDataStructureTransformation() ?? this;
 
