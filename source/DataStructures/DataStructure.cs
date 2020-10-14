@@ -182,6 +182,34 @@ namespace NeoDoc.DataStructures
 
 			return finalList;
 		}
+
+		public virtual void Initialize(FileParser fileParser)
+		{
+			ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
+
+			ProcessDatastructure(fileParser.Lines[fileParser.CurrentLineCount]);
+
+			if (!Ignore)
+			{
+				DataStructure dataStructure = CheckDataStructureTransformation() ?? this;
+
+				// set meta information
+				dataStructure.FoundLine = fileParser.CurrentLineCount;
+				dataStructure.FoundPath = fileParser.relPath;
+
+				dataStructure.Check();
+
+				// now add the datastructure into the current section of the current container
+				if (!fileParser.CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
+				{
+					dsList = new List<DataStructure>();
+
+					fileParser.CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
+				}
+
+				dsList.Add(dataStructure);
+			}
+		}
 	}
 
 	class DataStructureComparator : IComparer<DataStructure>

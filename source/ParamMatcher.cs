@@ -175,7 +175,7 @@ namespace NeoDoc
 		public string[] GetLineCommentData(string line)
 		{
 			// removes the e.g. "-- " or "//// " in front of the line
-			return line.TrimStart(lang.GetSingleCommentChar()).TrimStart().Split(' ');
+			return line.TrimStart(lang.GetSingleCommentChar()).TrimStart().Split(' '); // every line is by default trimmed (in the cleanup)
 		}
 	}
 }

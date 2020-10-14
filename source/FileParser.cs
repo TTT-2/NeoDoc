@@ -20,13 +20,16 @@ namespace NeoDoc
 		private readonly LangMatcher langMatcher;
 		private readonly Lang lang;
 		private readonly string path;
-		private readonly string relPath;
 		private readonly ParamMatcher paramMatcher;
+
+		internal readonly string relPath;
+		internal int CurrentLineCount { get; set; }
+		internal List<Param> paramsList { get; set; }
 
 		public SortedDictionary<string, WrapperParam> WrapperDict { get; set; }
 
-		private WrapperParam CurrentWrapper { get; set; }
-		private SectionParam CurrentSection { get; set; }
+		internal WrapperParam CurrentWrapper { get; set; }
+		internal SectionParam CurrentSection { get; set; }
 
 		public string[] Lines { get; set; }
 
@@ -64,10 +67,12 @@ namespace NeoDoc
 
 		public void Process()
 		{
-			List<Param> paramsList = new List<Param>();
+			paramsList = new List<Param>();
 
 			for (int i = 0; i < Lines.Length; i++)
 			{
+				CurrentLineCount = i;
+
 				string line = Lines[i];
 
 				if (string.IsNullOrEmpty(line)) // ignore empty lines
@@ -77,34 +82,7 @@ namespace NeoDoc
 				{
 					// if there is something else than a comment. That means the doc comment section has end
 
-					DataStructure dataStructure = langMatcher.GetDataStructureType(lang, line);
-
-					if (dataStructure != null)
-					{
-						dataStructure.ParamsList = new List<Param>(paramsList); // set the params with a copy of the list
-						dataStructure.ProcessDatastructure(line);
-
-						if (!dataStructure.Ignore)
-						{
-							dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
-
-							// set meta information
-							dataStructure.FoundLine = i;
-							dataStructure.FoundPath = relPath;
-
-							dataStructure.Check();
-
-							// now add the datastructure into the current section of the current container
-							if (!CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
-							{
-								dsList = new List<DataStructure>();
-
-								CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
-							}
-
-							dsList.Add(dataStructure);
-						}
-					}
+					langMatcher.GetDataStructureType(lang, line)?.Initialize(this);
 
 					// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
 					paramsList.Clear();
@@ -148,86 +126,11 @@ namespace NeoDoc
 				}
 				else
 				{
-					if (lineParam is WrapperParam || lineParam is SectionParam) // TODO rework in post-processing, otherwise defined e.g. "@author" wouldn't work!
-					{
-						if (lineParam is WrapperParam tmpWrapperParam) // TODO what if Wrapper already exists
-						{
-							tmpWrapperParam.ProcessParamsList(paramsList); // e.g. add @author to the wrapper's data
-
-							if (!WrapperDict.TryGetValue(tmpWrapperParam.WrapperName, out WrapperParam foundWrapperParam))
-							{
-								foundWrapperParam = tmpWrapperParam;
-
-								WrapperDict.Add(foundWrapperParam.WrapperName, foundWrapperParam); // adds the new wrapper into the list
-							}
-							else
-							{
-								foundWrapperParam.Merge(tmpWrapperParam);
-							}
-
-							CurrentWrapper = foundWrapperParam; // updates the new wrapper
-							CurrentSection = CurrentWrapper.GetSectionNone(); // reset the section
-						}
-						else
-						{
-							SectionParam tmpSectionParam = (SectionParam)lineParam;
-
-							if (!CurrentWrapper.SectionDict.TryGetValue(tmpSectionParam.SectionName, out SectionParam foundSectionParam))
-							{
-								foundSectionParam = tmpSectionParam;
-
-								CurrentWrapper.SectionDict.Add(foundSectionParam.SectionName, foundSectionParam); // adds the new section into the list
-							}
-							else
-							{
-								foundSectionParam.Merge(tmpSectionParam);
-							}
-
-							CurrentSection = foundSectionParam; // update the section
-						}
-
-						// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
-						paramsList.Clear();
-					}
-					else if (lineParam is FunctionParam) // match @functions and transform them into DataStructures // TODO rework in post-processing: Just if params contains FunctionParam, do it as a function in FunctionParam! (so @function don't have to be the last entry)
-					{
-						DataStructure dataStructure = new Function
-						{
-							ParamsList = new List<Param>(paramsList) // set the params with a copy of the list
-						};
-
-						dataStructure.ProcessDatastructure(line);
-
-						if (!dataStructure.Ignore)
-						{
-							dataStructure = dataStructure.CheckDataStructureTransformation() ?? dataStructure;
-
-							// set meta information
-							dataStructure.FoundLine = i;
-							dataStructure.FoundPath = relPath;
-
-							dataStructure.Check();
-
-							// now add the datastructure into the current section of the current container
-							if (!CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
-							{
-								dsList = new List<DataStructure>();
-
-								CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
-							}
-
-							dsList.Add(dataStructure);
-						}
-
-						// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
-						paramsList.Clear();
-					}
-					else
-					{
-						paramsList.Add(lineParam); // update the last param
-					}
+					lineParam.ModifyFileParser(this); // e.g. function or wrapper params will clean params list if it already contains a wrapper / ...
 				}
 			}
+
+			paramsList = null;
 		}
 
 		public string GetPath()

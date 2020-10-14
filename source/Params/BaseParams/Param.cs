@@ -46,5 +46,10 @@ namespace NeoDoc.Params
 				SettingsDict.Add(settingSplit[0].Trim(), settingSplit.Length > 1 ? settingSplit[1].Trim() : "");
 			}
 		}
+
+		public virtual void ModifyFileParser(FileParser fileParser)
+		{
+			fileParser.paramsList.Add(this); // add self into the list
+		}
 	}
 }

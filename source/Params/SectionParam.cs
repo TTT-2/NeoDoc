@@ -193,5 +193,24 @@ namespace NeoDoc.Params
 
 			DataStructureDict = finalDict;
 		}
+
+		public override void ModifyFileParser(FileParser fileParser)
+		{
+			if (!fileParser.CurrentWrapper.SectionDict.TryGetValue(SectionName, out SectionParam foundSectionParam))
+			{
+				foundSectionParam = this;
+
+				fileParser.CurrentWrapper.SectionDict.Add(SectionName, this); // adds the new section into the list
+			}
+			else
+			{
+				foundSectionParam.Merge(this);
+			}
+
+			fileParser.CurrentSection = foundSectionParam; // update the section
+
+			// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+			fileParser.paramsList.Clear();
+		}
 	}
 }

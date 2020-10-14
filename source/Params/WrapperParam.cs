@@ -137,5 +137,29 @@ namespace NeoDoc.Params
 				section.ProcessGlobals(globalsDict);
 			}
 		}
+
+		public override void ModifyFileParser(FileParser fileParser)
+		{
+			// TODO what if Wrapper already exists
+
+			ProcessParamsList(fileParser.paramsList); // e.g. add @author to the wrapper's data
+
+			if (!fileParser.WrapperDict.TryGetValue(WrapperName, out WrapperParam foundWrapperParam))
+			{
+				foundWrapperParam = this;
+
+				fileParser.WrapperDict.Add(WrapperName, this); // adds the new wrapper into the list
+			}
+			else
+			{
+				foundWrapperParam.Merge(this);
+			}
+
+			fileParser.CurrentWrapper = foundWrapperParam; // updates the new wrapper
+			fileParser.CurrentSection = foundWrapperParam.GetSectionNone(); // reset the section
+
+			// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+			fileParser.paramsList.Clear();
+		}
 	}
 }
