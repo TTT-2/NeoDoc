@@ -78,10 +78,8 @@ namespace NeoDoc
 				if (string.IsNullOrEmpty(line)) // ignore empty lines
 					continue;
 
-				if (!paramMatcher.IsLineComment(line)) // if there is no comment 
+				if (!paramMatcher.IsLineComment(line)) // if there is no comment but something else. That means the doc comment section has end
 				{
-					// if there is something else than a comment. That means the doc comment section has end
-
 					langMatcher.GetDataStructureType(lang, line)?.Initialize(this);
 
 					// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
@@ -103,25 +101,27 @@ namespace NeoDoc
 							line,
 							"Source: '" + relPath + "' (ll. " + i + ")"
 						});
-
-						continue;
 					}
-
-					int size = paramsList.Count;
-
-					if (size > 0) // if there are params in the list
-						lineParam = paramsList.ElementAt(size - 1); // use last param as new line param to support multiline commenting style e.g.
-
-					if (paramMatcher.IsLineCommentStart(line))
+					else
 					{
-						// use already existing description if available, otherwise create a new one
-						if (!(lineParam is DescParam))
-							lineParam = new DescParam();
+						int size = paramsList.Count;
 
-						paramsList.Add(lineParam); // start with a new description per default if matching e.g. "---"
+						if (size > 0) // if there are params in the list
+							lineParam = paramsList.ElementAt(size - 1); // use last param as new line param to support multiline commenting style e.g.
+
+						if (paramMatcher.IsLineCommentStart(line)) // if matching e.g. "---"
+						{
+							// use already existing description if available, otherwise create a new one
+							if (!(lineParam is DescParam))
+							{
+								lineParam = new DescParam(); // start with a new description per default 
+
+								paramsList.Add(lineParam);
+							}
+						}
+
+						lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
 					}
-
-					lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
 				}
 				else
 				{
