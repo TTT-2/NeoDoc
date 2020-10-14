@@ -23,20 +23,24 @@ namespace NeoDoc.DataStructures
 
 		public virtual void ProcessDatastructure(string line) // used to set default data
 		{
-			// if param "@realm" found
-			if (ParamsList != null && ParamsList.Count > 0)
+			// if param "@realm" or "@ignore" found
+			if (ParamsList != null)
 			{
+				List<Param> copyParamList = new List<Param>();
+
 				for (int i = 0; i < ParamsList.Count; i++)
 				{
-					if (ParamsList[i] is RealmParam realmParam)
-					{
+					Param curParam = ParamsList[i];
+
+					if (curParam is RealmParam realmParam)
 						Realm = realmParam.Value;
-
-						ParamsList.RemoveAt(i);
-
-						break;
-					}
+					else if (curParam is IgnoreParam)
+						Ignore = true;
+					else
+						copyParamList.Add(curParam);
 				}
+
+				ParamsList = copyParamList;
 			}
 
 			Process(line);

@@ -8,7 +8,7 @@ using NeoDoc.Langs;
 using NeoDoc.Params;
 
 // Structure:
-// 1. Wrapper, e.g. "module" or "class"
+// 1. Wrapper, e.g. "module" or "class" // TODO make namespace (multiple) support
 // 2. Section, e.g. "section"
 // 3. Datastructures, e.g. "function"
 // 4. Param, e.g. "desc" or "param"
@@ -65,7 +65,6 @@ namespace NeoDoc
 		public void Process()
 		{
 			List<Param> paramsList = new List<Param>();
-			Param lastParam = null;
 
 			for (int i = 0; i < Lines.Length; i++)
 			{
@@ -76,13 +75,7 @@ namespace NeoDoc
 
 				if (!paramMatcher.IsLineComment(line)) // if there is no comment 
 				{
-					if (lastParam != null) // if there is something else than a comment. That means the doc comment section has end
-					{
-						// add the last param before setting it to null
-						paramsList.Add(lastParam);
-
-						lastParam = null;
-					}
+					// if there is something else than a comment. That means the doc comment section has end
 
 					DataStructure dataStructure = langMatcher.GetDataStructureType(lang, line);
 
@@ -123,17 +116,6 @@ namespace NeoDoc
 
 				if (lineParam == null) // if there is no line param
 				{
-					if (paramMatcher.IsLineCommentStart(line))
-					{
-						if (lastParam != null)
-						{
-							// add the last param before replacing it
-							paramsList.Add(lastParam);
-						}
-
-						lastParam = new DescParam(); // start with a new description per default if matching e.g. "---"
-					}
-
 					string foundLineParamString = paramMatcher.GetLineParamString(line);
 
 					if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
@@ -147,26 +129,26 @@ namespace NeoDoc
 						continue;
 					}
 
-					if (lastParam == null) // if there is no last param
+					int size = paramsList.Count;
+
+					if (size > 0) // if there are params in the list
+						lineParam = paramsList.ElementAt(size - 1); // use last param as new line param to support multiline commenting style e.g.
+
+					if (paramMatcher.IsLineCommentStart(line))
 					{
-						continue;
+						// use already existing description if available, otherwise create a new one
+						if (!(lineParam is DescParam))
+							lineParam = new DescParam();
+
+						paramsList.Add(lineParam); // start with a new description per default if matching e.g. "---"
 					}
 
-					lineParam = lastParam; // use last param as new line param to support multiline commenting style
-
-					lineParam.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
+					if (lineParam != null)
+						lineParam.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
 				}
 				else
 				{
-					if (lastParam != null)
-					{
-						// add the last param before setting it to null
-						paramsList.Add(lastParam);
-
-						lastParam = null;
-					}
-
-					if (lineParam is WrapperParam || lineParam is SectionParam)
+					if (lineParam is WrapperParam || lineParam is SectionParam) // TODO rework in post-processing, otherwise defined e.g. "@author" wouldn't work!
 					{
 						if (lineParam is WrapperParam tmpWrapperParam) // TODO what if Wrapper already exists
 						{
@@ -207,7 +189,7 @@ namespace NeoDoc
 						// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
 						paramsList.Clear();
 					}
-					else if (lineParam is FunctionParam) // match @functions and transform them into DataStructures
+					else if (lineParam is FunctionParam) // match @functions and transform them into DataStructures // TODO rework in post-processing: Just if params contains FunctionParam, do it as a function in FunctionParam! (so @function don't have to be the last entry)
 					{
 						DataStructure dataStructure = new Function
 						{
@@ -240,19 +222,9 @@ namespace NeoDoc
 						// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
 						paramsList.Clear();
 					}
-					else if (lineParam is IgnoreParam)
-					{
-						i++; // ignore the next line
-
-						paramsList.Clear(); // and clean the current params list
-
-						lastParam = null; // and the last param too
-
-						continue;
-					}
 					else
 					{
-						lastParam = lineParam; // update the last param
+						paramsList.Add(lineParam); // update the last param
 					}
 				}
 			}
