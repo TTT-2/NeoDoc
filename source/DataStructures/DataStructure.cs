@@ -15,13 +15,13 @@ namespace NeoDoc.DataStructures
 		public int FoundLine;
 
 		public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function
-		public abstract void Process(string line); // process data based on given line string
-		public abstract bool Check(string line); // returns whether the current DocTarget is matched in this line
+		public abstract void Process(FileParser fileParser); // process data based on given line string
+		public abstract bool CheckMatch(string line); // returns whether the current DocTarget is matched in this line
 		public abstract string GetName(); // returns an identification name
 		public abstract string GetDatastructureName(); // returns the individual name of the matched datasctructure
 		public abstract object GetData(); // returns data
 
-		public virtual void ProcessDatastructure(string line) // used to set default data
+		public virtual void ProcessDatastructure(FileParser fileParser) // used to set default data
 		{
 			// if param "@realm" or "@ignore" found
 			if (ParamsList != null)
@@ -43,7 +43,7 @@ namespace NeoDoc.DataStructures
 				ParamsList = copyParamList;
 			}
 
-			Process(line);
+			Process(fileParser);
 		}
 
 		public virtual void Check() // used to finally check for errors and to print them into the console
@@ -187,14 +187,14 @@ namespace NeoDoc.DataStructures
 		{
 			ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
 
-			ProcessDatastructure(fileParser.Lines[fileParser.CurrentLineCount]);
+			ProcessDatastructure(fileParser);
 
 			if (!Ignore) // just add this datastructure if it does not contain the "Ignore" flag
 			{
 				DataStructure dataStructure = CheckDataStructureTransformation() ?? this;
 
 				// set meta information
-				dataStructure.FoundLine = fileParser.CurrentLineCount;
+				dataStructure.FoundLine = fileParser.CurrentLineCount + 1;
 				dataStructure.FoundPath = fileParser.relPath;
 
 				dataStructure.Check();

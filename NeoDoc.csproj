@@ -92,6 +92,8 @@
     <Compile Include="source\Params\FunctionParam.cs" />
     <Compile Include="source\Params\AuthorParam.cs" />
     <Compile Include="source\Params\BaseParams\TypeTextParam.cs" />
+    <Compile Include="source\Params\AccessorParam.cs" />
+    <Compile Include="source\DataStructures\Lua\Accessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="source\" />

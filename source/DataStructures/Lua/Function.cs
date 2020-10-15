@@ -6,22 +6,22 @@ namespace NeoDoc.DataStructures.Lua
 {
 	public class Function : DataStructure
 	{
-		private string Line { get; set; }
-		private bool Local { get; set; }
-		private string FunctionData { get; set; }
-		private string Name { get; set; }
+		internal string Line { get; set; }
+		internal bool Local { get; set; }
+		internal string FunctionData { get; set; }
+		internal string Name { get; set; }
 
 		public override Regex GetRegex()
 		{
 			return new Regex(@"(^\s*(local\s+)?\s*|@)function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*)?\)"); // RegEx matches "@function opt.name(param, opt)" or "local function opt:name()"
 		}
 
-		public override bool Check(string line)
+		public override bool CheckMatch(string line)
 		{
 			return GetRegex().Match(line).Success;
 		}
 
-		public override void Process(string line)
+		public override void Process(FileParser fileParser)
 		{
 			// if param "@local" found
 			if (ParamsList != null && ParamsList.Count > 0)
@@ -39,18 +39,19 @@ namespace NeoDoc.DataStructures.Lua
 				}
 			}
 
-			Line = line;
+			Line = fileParser.Lines[fileParser.CurrentLineCount];
 
 			if (!Local)
 			{
-				Match match = new Regex(@"^\s*local\s*").Match(line);
+				Match match = new Regex(@"^\s*local\s*").Match(Line);
 
 				Local = match.Success;
 			}
 
-			Ignore = Local;
+			if (Local)
+				Ignore = true;
 
-			FunctionData = GetRegex().Match(line).Value.TrimStart('@');
+			FunctionData = GetRegex().Match(Line).Value.TrimStart('@');
 			Name = FunctionData.Replace("function ", "").Split('(')[0].Trim();
 		}
 

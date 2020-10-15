@@ -69,11 +69,9 @@ namespace NeoDoc
 		{
 			paramsList = new List<Param>();
 
-			for (int i = 0; i < Lines.Length; i++)
+			for (CurrentLineCount = 0; CurrentLineCount < Lines.Length; CurrentLineCount++)
 			{
-				CurrentLineCount = i;
-
-				string line = Lines[i];
+				string line = Lines[CurrentLineCount];
 
 				if (string.IsNullOrEmpty(line)) // ignore empty lines
 					continue;
@@ -99,7 +97,7 @@ namespace NeoDoc
 						NeoDoc.WriteErrors(new List<string>() {
 							"UNREGISTERED PARAM: " + foundLineParamString,
 							line,
-							"Source: '" + relPath + "' (ll. " + i + ")"
+							"Source: '" + relPath + "' (ll. " + CurrentLineCount + ")"
 						});
 					}
 					else

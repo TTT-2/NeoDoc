@@ -84,7 +84,7 @@ namespace NeoDoc
 
 			foreach (DataStructure dataStructure in dataStructures)
 			{
-				if (dataStructure.Check(line))
+				if (dataStructure.CheckMatch(line))
 					return (DataStructure)Activator.CreateInstance(dataStructure.GetType()); // return a new instance of this dataStructure
 			}
 

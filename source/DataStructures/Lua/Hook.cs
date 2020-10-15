@@ -16,14 +16,14 @@ namespace NeoDoc.DataStructures.Lua
 			return new Regex(@"\s*hook\.(Run|Call)\s*\("); // RegEx matches "hook.Run(" or "hook.Call("
 		}
 
-		public override bool Check(string line)
+		public override bool CheckMatch(string line)
 		{
 			return GetRegex().Match(line).Success;
 		}
 
-		public override void Process(string line)
+		public override void Process(FileParser fileParser)
 		{
-			Line = line;
+			Line = fileParser.Lines[fileParser.CurrentLineCount];
 
 			string name = null;
 
@@ -42,9 +42,9 @@ namespace NeoDoc.DataStructures.Lua
 				}
 			}
 
-			Match splitMatch = GetRegex().Match(line);
+			Match splitMatch = GetRegex().Match(Line);
 
-			string result = line.Substring(splitMatch.Index, line.Length - splitMatch.Index);
+			string result = Line.Substring(splitMatch.Index, Line.Length - splitMatch.Index);
 
 			bool mode = new Regex(@"\s*hook\.Call\s*\(").Match(Line).Success; // if false, "hook.Run(" is found
 

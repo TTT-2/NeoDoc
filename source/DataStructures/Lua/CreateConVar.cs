@@ -15,14 +15,14 @@ namespace NeoDoc.DataStructures.Lua
 			return new Regex(@"\s*CreateConVar\s*\(");
 		}
 
-		public override bool Check(string line)
+		public override bool CheckMatch(string line)
 		{
 			return GetRegex().Match(line).Success;
 		}
 
-		public override void Process(string line)
+		public override void Process(FileParser fileParser)
 		{
-			Line = line;
+			Line = fileParser.Lines[fileParser.CurrentLineCount];
 
 			string name = null;
 
@@ -41,8 +41,8 @@ namespace NeoDoc.DataStructures.Lua
 				}
 			}
 
-			Match splitMatch = GetRegex().Match(line);
-			string result = line.Substring(splitMatch.Index, line.Length - splitMatch.Index);
+			Match splitMatch = GetRegex().Match(Line);
+			string result = Line.Substring(splitMatch.Index, Line.Length - splitMatch.Index);
 
 			ConVarData = GetVarsFromFunction(result).ToArray();
 			ConVarName = (name ?? ConVarData[0]).Trim('"');
