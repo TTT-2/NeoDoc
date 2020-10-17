@@ -28,5 +28,16 @@ namespace NeoDoc.Params
 		{
 			Process(paramData);
 		}
+
+		public override void ModifyFileParser(FileParser fileParser)
+		{
+			if (string.IsNullOrEmpty(Value))
+				NeoDoc.WriteErrors(new List<string>
+				{
+					"Detected missing or wrong argument format for '@" + GetName() + "' param, Source: '" + fileParser.relPath + "' (ll. " + (fileParser.CurrentLineCount + 1) + ")"
+				});
+
+			base.ModifyFileParser(fileParser);
+		}
 	}
 }

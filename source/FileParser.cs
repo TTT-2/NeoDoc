@@ -102,20 +102,17 @@ namespace NeoDoc
 					}
 					else
 					{
-						int size = paramsList.Count;
-
-						if (size > 0) // if there are params in the list
-							lineParam = paramsList.ElementAt(size - 1); // use last param as new line param to support multiline commenting style e.g.
-
 						if (paramMatcher.IsLineCommentStart(line)) // if matching e.g. "---"
 						{
-							// use already existing description if available, otherwise create a new one
-							if (!(lineParam is DescParam))
-							{
-								lineParam = new DescParam(); // start with a new description by default. HINT: That means that if using e.g. `---` instead of `--` while documenting e.g. a param addition in a new line, this line will be handled as a new description entry instead of a continued param addition / param description.
+							paramsList.Clear(); // clear the paramsList if a new docu block starts
 
-								paramsList.Add(lineParam);
-							}
+							lineParam = new DescParam(); // start with a new description by default. HINT: That means that if using e.g. `---` instead of `--` while documenting e.g. a param addition in a new line, this line will be handled as a new description entry instead of a continued param addition / param description.
+
+							paramsList.Add(lineParam);
+						}
+						else if (paramsList.Count > 0) // if there are params in the list
+						{
+							lineParam = paramsList.ElementAt(paramsList.Count - 1); // use last param as new line param to support multiline commenting style e.g.
 						}
 
 						lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
