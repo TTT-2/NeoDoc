@@ -10,16 +10,6 @@ using System.Text;
 /*
  * TODO
  * FIX multiple hooks (multiple hook.Run / hook.Call of the same hook)
- * FIX multiple functions (server and client realm created (same) functions)
- * 
- * TODO inside of the TTT2 documentation (not in this project)
- *
- * Remove @register
- * Rework documentation: put @module and @function right below the previous param descriptions
- * Improve @function calls, e.g. add PANEL in front of function
- * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
- * Cleanup wrong parameters, e.g. "deprecTated"
- * put [opt] and [default] directly after the param (not the type)
  * 
  * TODO
  * 
@@ -164,18 +154,21 @@ namespace NeoDoc
 			{
 				foreach (WrapperParam wrapper in fileParser.WrapperDict.Values)
 				{
-					// at first, we need to add the wrappers
-					if (!wrapperParamsDict.TryGetValue(wrapper.WrapperName, out WrapperParam finalWrapper))
-					{
-						// add directly if missing
-						wrapperParamsDict.Add(wrapper.WrapperName, wrapper); // add this wrapper as main wrapper if not already exists
+					if (wrapper.SectionDict.Count < 1) // do not process empty wrappers
+						continue;
 
+					bool exists = wrapperParamsDict.TryGetValue(wrapper.WrapperName, out WrapperParam finalWrapper);
+
+					// at first, we need to add the wrappers
+					if (!exists)
 						finalWrapper = wrapper;
-					}
 					else
 						finalWrapper.Merge(wrapper); // e.g. merge Authors
 
 					finalWrapper.ProcessGlobals(globalsDict);
+
+					if (!exists && wrapper.SectionDict.Count > 0) // exclude empty wrapper
+						wrapperParamsDict.Add(wrapper.WrapperName, wrapper); // add this wrapper as main wrapper if not already exists
 				}
 			}
 

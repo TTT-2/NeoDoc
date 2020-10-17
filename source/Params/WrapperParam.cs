@@ -99,6 +99,9 @@ namespace NeoDoc.Params
 			// now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
 			foreach (SectionParam section in wrapperParam.SectionDict.Values)
 			{
+				if (section.DataStructureDict.Count < 1) // do not include empty sections
+					continue;
+
 				// section already exists?
 				SectionParam finalSection = null;
 
@@ -121,10 +124,17 @@ namespace NeoDoc.Params
 
 		internal void ProcessGlobals(SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
 		{
-			foreach (SectionParam section in SectionDict.Values)
+			SortedDictionary<string, SectionParam> tmpSectionDict = new SortedDictionary<string, SectionParam>();
+
+			foreach (KeyValuePair<string, SectionParam> keyValuePair in SectionDict)
 			{
-				section.ProcessGlobals(globalsDict);
+				keyValuePair.Value.ProcessGlobals(globalsDict);
+
+				if (keyValuePair.Value.DataStructureDict.Count > 0)
+					tmpSectionDict.Add(keyValuePair.Key, keyValuePair.Value); // exclude empty sections
 			}
+
+			SectionDict = tmpSectionDict;
 		}
 
 		public override void ModifyFileParser(FileParser fileParser)

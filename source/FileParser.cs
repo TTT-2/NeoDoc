@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NeoDoc.DataStructures;
-using NeoDoc.DataStructures.Lua;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 
