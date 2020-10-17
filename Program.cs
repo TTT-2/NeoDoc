@@ -23,9 +23,11 @@ using System.Text;
  * 
  * TODO
  * 
- * @returns
- * @param/return boolean[]
  * don’t include empty sections (without any ds)
+ * 
+ * TODO
+ * hook.(Run|Call) als Calls auflisten und deren beschreibung anhängen an die Main. Wenn es keine Main gibt, eine erstellen. Wenn später eine gefunden wird, einfach überschreiben! (Main ist dann GM:...)
+ * Wenn es eine shared main gibt, dann diese als Main für Client und Servercalls nutzen!
  */
 
 namespace NeoDoc
@@ -399,7 +401,7 @@ namespace NeoDoc
 			}
 		}
 
-		public static string RemoveSpecialCharacters(this string str)
+		public static string RemoveSpecialCharacters(string str)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -409,9 +411,9 @@ namespace NeoDoc
 				{
 					sb.Append(c);
 				}
-				else
+				else if (c == '.' || c == ':')
 				{
-					sb.Append("_");
+					sb.Append(".");
 				}
 			}
 
