@@ -112,7 +112,7 @@ namespace NeoDoc
 							// use already existing description if available, otherwise create a new one
 							if (!(lineParam is DescParam))
 							{
-								lineParam = new DescParam(); // start with a new description per default 
+								lineParam = new DescParam(); // start with a new description by default. HINT: That means that if using e.g. `---` instead of `--` while documenting e.g. a param addition in a new line, this line will be handled as a new description entry instead of a continued param addition / param description.
 
 								paramsList.Add(lineParam);
 							}

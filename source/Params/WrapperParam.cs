@@ -96,37 +96,26 @@ namespace NeoDoc.Params
 					Authors.Add(author);
 			}
 
-			foreach (KeyValuePair<string, SectionParam> keyValuePair in wrapperParam.SectionDict)
+			// now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
+			foreach (SectionParam section in wrapperParam.SectionDict.Values)
 			{
-				// now we need to search for any section and add it into the wrapper AS WELL AS merging same sections of same wrappers together
-				foreach (SectionParam section in wrapperParam.SectionDict.Values)
+				// section already exists?
+				SectionParam finalSection = null;
+
+				foreach (SectionParam tmpSection in SectionDict.Values)
 				{
-					// section already exists?
-					SectionParam finalSection = null;
-
-					foreach (SectionParam tmpSection in SectionDict.Values)
+					if (tmpSection.SectionName == section.SectionName)
 					{
-						if (tmpSection.SectionName == section.SectionName)
-						{
-							finalSection = tmpSection;
-
-							break;
-						}
-					}
-
-					if (finalSection == null)
-					{
-						// create a new section of the same type
-						SectionParam tmpSection = (SectionParam) Activator.CreateInstance(section.GetType());
-						tmpSection.SectionName = section.SectionName;
-
-						SectionDict.Add(tmpSection.SectionName, tmpSection); // add this section as new section into the wrappers section list
-
 						finalSection = tmpSection;
-					}
 
-					finalSection.Merge(section);
+						break;
+					}
 				}
+
+				if (finalSection == null)
+					SectionDict.Add(section.SectionName, section); // add missing section directly into the wrappers section list
+				else
+					finalSection.Merge(section);
 			}
 		}
 

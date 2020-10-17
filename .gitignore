@@ -152,3 +152,7 @@ webfiles/report.*.json
 overview.json
 search.json
 output/*
+
+errors.txt
+
+output.zip

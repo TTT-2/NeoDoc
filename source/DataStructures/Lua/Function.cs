@@ -96,7 +96,9 @@ namespace NeoDoc.DataStructures.Lua
 							Line = Line,
 							ParamsList = ParamsList,
 							Realm = Realm,
-							Ignore = Ignore
+							Ignore = Ignore,
+							FoundLine = FoundLine,
+							FoundPath = FoundPath
 						};
 					}
 				}
@@ -114,7 +116,9 @@ namespace NeoDoc.DataStructures.Lua
 					Line = Line,
 					ParamsList = ParamsList,
 					Realm = Realm,
-					Ignore = Ignore
+					Ignore = Ignore,
+					FoundLine = FoundLine,
+					FoundPath = FoundPath
 				};
 			}
 
@@ -125,12 +129,12 @@ namespace NeoDoc.DataStructures.Lua
 		{
 			string dataStructureData = (string)GetData();
 			List<string> expectedParams = GetVarsFromFunction(dataStructureData);
-			List<Param> paramParams = new List<Param>();
+			List<ParamParam> paramParams = new List<ParamParam>();
 
 			foreach (Param param in ParamsList)
 			{
-				if (param is ParamParam)
-					paramParams.Add(param);
+				if (param is ParamParam paramParam)
+					paramParams.Add(paramParam);
 			}
 
 			if (paramParams.Count != expectedParams.Count)
@@ -141,9 +145,9 @@ namespace NeoDoc.DataStructures.Lua
 					"Given params (" + paramParams.Count + "): "
 				};
 
-				foreach (Param paramParam in paramParams)
+				foreach (ParamParam paramParam in paramParams)
 				{
-					errors.Add("- " + paramParam.GetName());
+					errors.Add("- " + paramParam.Name);
 				}
 
 				errors.Add("Expected Params (" + expectedParams.Count + "): ");

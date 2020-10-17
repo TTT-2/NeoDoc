@@ -23,6 +23,8 @@ namespace NeoDoc.DataStructures
 
 		public virtual void ProcessDatastructure(FileParser fileParser) // used to set default data
 		{
+			bool foundRealm = false;
+
 			// if param "@realm" or "@ignore" found
 			if (ParamsList != null)
 			{
@@ -33,7 +35,11 @@ namespace NeoDoc.DataStructures
 					Param curParam = ParamsList[i];
 
 					if (curParam is RealmParam realmParam)
+					{
 						Realm = realmParam.Value;
+
+						foundRealm = true;
+					}
 					else if (curParam is IgnoreParam)
 						Ignore = true;
 					else
@@ -43,7 +49,13 @@ namespace NeoDoc.DataStructures
 				ParamsList = copyParamList;
 			}
 
-			Process(fileParser);
+			if (!Ignore)
+				Process(fileParser);
+
+			if (!Ignore && !foundRealm)
+				NeoDoc.WriteErrors(new List<string>{
+					"Missing '@realm' in " + GetName() + " '" + GetDatastructureName() + "', Source: '" + FoundPath + "' (ll. " + FoundLine + ")"
+				});
 		}
 
 		public virtual void Check() // used to finally check for errors and to print them into the console
@@ -187,15 +199,15 @@ namespace NeoDoc.DataStructures
 		{
 			ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
 
+			// set meta information
+			FoundLine = fileParser.CurrentLineCount + 1;
+			FoundPath = fileParser.relPath;
+
 			ProcessDatastructure(fileParser);
 
 			if (!Ignore) // just add this datastructure if it does not contain the "Ignore" flag
 			{
 				DataStructure dataStructure = CheckDataStructureTransformation() ?? this;
-
-				// set meta information
-				dataStructure.FoundLine = fileParser.CurrentLineCount + 1;
-				dataStructure.FoundPath = fileParser.relPath;
 
 				dataStructure.Check();
 

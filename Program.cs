@@ -20,6 +20,12 @@ using System.Text;
  * Add @module in documentation on your own on top of a module("...", ...) call or a "ITEM = {}" declaration
  * Cleanup wrong parameters, e.g. "deprecTated"
  * put [opt] and [default] directly after the param (not the type)
+ * 
+ * TODO
+ * 
+ * @returns
+ * @param/return boolean[]
+ * don’t include empty sections (without any ds)
  */
 
 namespace NeoDoc
@@ -27,6 +33,7 @@ namespace NeoDoc
 	internal static class NeoDoc
 	{
 		public const bool DEBUGGING = false;
+		public static string ERRORLOG = Directory.GetCurrentDirectory() + "../../../errors.txt";
 		public static int Progress = 0;
 
 		private static void Main(string[] args)
@@ -38,6 +45,10 @@ namespace NeoDoc
 
 			if (string.IsNullOrEmpty(folder))
 				return;
+
+			// clear errorlog file
+			File.Delete(ERRORLOG);
+			File.Create(ERRORLOG).Dispose();
 
 			// Build the file tree
 			string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
@@ -100,7 +111,9 @@ namespace NeoDoc
 			WriteDebugInfo("Finished generating documentation.");
 		}
 
+#pragma warning disable IDE0060 // Nicht verwendete Parameter entfernen
 		internal static void WriteDebugInfo(string debugInfo)
+#pragma warning restore IDE0060 // Nicht verwendete Parameter entfernen
 		{
 #pragma warning disable CS0162 // Unerreichbarer Code wurde entdeckt.
 			if (!DEBUGGING)
@@ -127,6 +140,13 @@ namespace NeoDoc
 			foreach (string error in errors)
 				textWriter.WriteLine(error);
 
+			// write to file additionally // TODO decide for one way
+			using (StreamWriter outputFile = File.AppendText(ERRORLOG))
+			{
+				foreach (string line in errors)
+					outputFile.WriteLine(line);
+			}
+
 			textWriter.WriteLine("");
 
 			Console.ForegroundColor = oldColor;
@@ -143,20 +163,16 @@ namespace NeoDoc
 				foreach (WrapperParam wrapper in fileParser.WrapperDict.Values)
 				{
 					// at first, we need to add the wrappers
-					bool wrapperExists = wrapperParamsDict.TryGetValue(wrapper.WrapperName, out WrapperParam finalWrapper);
-
-					if (!wrapperExists)
+					if (!wrapperParamsDict.TryGetValue(wrapper.WrapperName, out WrapperParam finalWrapper))
 					{
-						// create a new wrapper of the same type
-						WrapperParam tmpWrapper = (WrapperParam)Activator.CreateInstance(wrapper.GetType());
-						tmpWrapper.WrapperName = wrapper.WrapperName;
+						// add directly if missing
+						wrapperParamsDict.Add(wrapper.WrapperName, wrapper); // add this wrapper as main wrapper if not already exists
 
-						wrapperParamsDict.Add(tmpWrapper.WrapperName, tmpWrapper); // add this wrapper as main wrapper if not already exists
-
-						finalWrapper = tmpWrapper;
+						finalWrapper = wrapper;
 					}
+					else
+						finalWrapper.Merge(wrapper); // e.g. merge Authors
 
-					finalWrapper.Merge(wrapper); // e.g. merge Authors
 					finalWrapper.ProcessGlobals(globalsDict);
 				}
 			}
@@ -332,14 +348,20 @@ namespace NeoDoc
 
 				foreach (SectionParam section in wrapper.SectionDict.Values)
 				{
+					string sectionDir = wrapperDir + "/" + section.SectionName;
+
+					Directory.CreateDirectory(sectionDir);
+
 					foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
 					{
 						foreach (DataStructure dataStructure in keyValuePair.Value)
 						{
-							if (!Directory.Exists(wrapperDir + "/" + dataStructure.Realm))
-								Directory.CreateDirectory(wrapperDir + "/" + dataStructure.Realm);
+							string fileDir = sectionDir + "/" + dataStructure.Realm;
 
-							File.WriteAllText(wrapperDir + "/" + dataStructure.Realm + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
+							if (!Directory.Exists(fileDir))
+								Directory.CreateDirectory(fileDir);
+
+							File.WriteAllText(fileDir + "/" + RemoveSpecialCharacters(dataStructure.GetDatastructureName()) + ".json", dataStructure.GetFullJSONData());
 						}
 					}
 				}

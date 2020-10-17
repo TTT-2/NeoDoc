@@ -1,6 +1,6 @@
 ﻿namespace NeoDoc.Params
 {
-	public class RefParam : SeeParam
+	public class RefParam : URLParam
 	{
 		public override string GetName()
 		{
