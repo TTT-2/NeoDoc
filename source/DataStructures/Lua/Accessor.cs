@@ -76,7 +76,7 @@ namespace NeoDoc.DataStructures.Lua
 			setterFunc.Line = line;
 			setterFunc.Local = local;
 			setterFunc.FunctionData = line;
-			setterFunc.Name = wrapperName + ":" + (name ?? ("Set" + funcPartName));
+			setterFunc.Name = wrapperName + ":" + ("Set" + (name ?? funcPartName));
 			setterFunc.ParamsList = new List<Param>(ParamsList)
 			{
 				new ParamParam()
@@ -98,7 +98,7 @@ namespace NeoDoc.DataStructures.Lua
 			getterFunc.Line = line;
 			getterFunc.Local = local;
 			getterFunc.FunctionData = line;
-			getterFunc.Name = wrapperName + ":" + (name ?? ("Get" + funcPartName));
+			getterFunc.Name = wrapperName + ":" + ("Get" + (name ?? funcPartName));
 			getterFunc.ParamsList = new List<Param>(ParamsList)
 			{
 				new ReturnParam()
