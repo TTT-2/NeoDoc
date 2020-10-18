@@ -117,7 +117,7 @@ namespace NeoDoc.DataStructures
 
 		public virtual DataStructure CheckDataStructureTransformation() // checks whether the data structure should be transformed
 		{
-			return null;
+			return this;
 		}
 
 		public virtual bool IsGlobal() // whether the DataStructure should be excluded from the sections / wrappers data structuring
@@ -205,22 +205,25 @@ namespace NeoDoc.DataStructures
 
 			ProcessDatastructure(fileParser);
 
-			if (!Ignore) // just add this datastructure if it does not contain the "Ignore" flag
+			if (Ignore) // just add this datastructure if it does not contain the "Ignore" flag
+				return;
+
+			DataStructure dataStructure = CheckDataStructureTransformation();
+
+			if (dataStructure == null)
+				return;
+
+			dataStructure.Check();
+
+			// now add the datastructure into the current section of the current container
+			if (!fileParser.CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
 			{
-				DataStructure dataStructure = CheckDataStructureTransformation() ?? this;
+				dsList = new List<DataStructure>();
 
-				dataStructure.Check();
-
-				// now add the datastructure into the current section of the current container
-				if (!fileParser.CurrentSection.DataStructureDict.TryGetValue(dataStructure.GetName(), out List<DataStructure> dsList))
-				{
-					dsList = new List<DataStructure>();
-
-					fileParser.CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
-				}
-
-				dsList.Add(dataStructure);
+				fileParser.CurrentSection.DataStructureDict.Add(dataStructure.GetName(), dsList);
 			}
+
+			dsList.Add(dataStructure);
 		}
 	}
 

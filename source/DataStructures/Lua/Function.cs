@@ -122,7 +122,7 @@ namespace NeoDoc.DataStructures.Lua
 				};
 			}
 
-			return null;
+			return base.CheckDataStructureTransformation();
 		}
 
 		public override void Check()
