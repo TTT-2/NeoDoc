@@ -12,10 +12,6 @@ using System.Text;
  * FIX multiple hooks (multiple hook.Run / hook.Call of the same hook)
  * 
  * TODO
- * 
- * don’t include empty sections (without any ds)
- * 
- * TODO
  * hook.(Run|Call) als Calls auflisten und deren beschreibung anhängen an die Main. Wenn es keine Main gibt, eine erstellen. Wenn später eine gefunden wird, einfach überschreiben! (Main ist dann GM:...)
  * Wenn es eine shared main gibt, dann diese als Main für Client und Servercalls nutzen!
  */
@@ -400,10 +396,10 @@ namespace NeoDoc
 
 			foreach (char c in str)
 			{
-				if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '.' || c == ':')
-				{
+				if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == '.')
 					sb.Append(c);
-				}
+				else if (c == ':')
+					sb.Append("..");
 			}
 
 			return sb.ToString();
