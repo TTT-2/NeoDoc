@@ -14,6 +14,9 @@ using System.Text;
  * TODO
  * hook.(Run|Call) als Calls auflisten und deren beschreibung anhängen an die Main. Wenn es keine Main gibt, eine erstellen. Wenn später eine gefunden wird, einfach überschreiben! (Main ist dann GM:...)
  * Wenn es eine shared main gibt, dann diese als Main für Client und Servercalls nutzen!
+ * 
+ * TODO
+ * Enums, global table, roleData etc. Fetch (class attributes)
  */
 
 namespace NeoDoc
@@ -333,7 +336,12 @@ namespace NeoDoc
 
 			foreach (WrapperParam wrapper in wrapperList)
 			{
-				string wrapperDir = newDir + "/" + RemoveSpecialCharacters(wrapper.WrapperName);
+				string wrapperTypDir = newDir + "/" + wrapper.GetName();
+
+				if (!Directory.Exists(wrapperTypDir))
+					Directory.CreateDirectory(wrapperTypDir);
+
+				string wrapperDir = wrapperTypDir + "/" + RemoveSpecialCharacters(wrapper.WrapperName);
 
 				Directory.CreateDirectory(wrapperDir);
 
