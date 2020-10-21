@@ -7,10 +7,18 @@ namespace NeoDoc.DataStructures
 {
 	public abstract class DataStructure
 	{
+		[JsonIgnore]
 		public bool Ignore { get; set; } = false;
-		public string Realm { get; set; } = "shared";
+
+		[JsonIgnore]
 		public virtual string GlobalWrapper { get; set; } = "none";
+
+		[JsonIgnore]
+		public string Realm { get; set; } = "shared";
+
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<Param> ParamsList;
+
 		public string FoundPath;
 		public int FoundLine;
 
@@ -51,7 +59,7 @@ namespace NeoDoc.DataStructures
 						copyParamList.Add(curParam);
 				}
 
-				ParamsList = copyParamList;
+				ParamsList = copyParamList.Count > 0 ? copyParamList : null;
 			}
 
 			if (!Ignore)
@@ -135,7 +143,8 @@ namespace NeoDoc.DataStructures
 
 		public virtual void Initialize(FileParser fileParser)
 		{
-			ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
+			if (fileParser.paramsList.Count > 0)
+				ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
 
 			// set meta information
 			FoundLine = fileParser.CurrentLineCount + 1;

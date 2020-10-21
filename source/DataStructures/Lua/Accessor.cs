@@ -45,6 +45,9 @@ namespace NeoDoc.DataStructures.Lua
 					else
 						copyParamsList.Add(currentParam);
 				}
+
+				if (ParamsList.Count == 0)
+					ParamsList = null;
 			}
 
 			if (local)
@@ -122,7 +125,8 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override void Initialize(FileParser fileParser)
 		{
-			ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
+			if (fileParser.paramsList.Count > 0)
+				ParamsList = new List<Param>(fileParser.paramsList); // set the params with a copy of the list
 
 			ProcessDatastructure(fileParser);
 		}

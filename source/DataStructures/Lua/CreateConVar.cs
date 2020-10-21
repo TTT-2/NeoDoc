@@ -39,6 +39,9 @@ namespace NeoDoc.DataStructures.Lua
 						break;
 					}
 				}
+
+				if (ParamsList.Count == 0)
+					ParamsList = null;
 			}
 
 			Match splitMatch = GetRegex().Match(Line);

@@ -88,6 +88,9 @@ namespace NeoDoc.DataStructures.Lua
 					{
 						ParamsList.RemoveAt(i);
 
+						if (ParamsList.Count == 0)
+							ParamsList = null;
+
 						return new Hook
 						{
 							HookName = FunctionData.Replace("function ", "").Split('(')[0].Trim().Replace("GAMEMODE", "GM"),
@@ -132,10 +135,13 @@ namespace NeoDoc.DataStructures.Lua
 			List<string> expectedParams = NeoDoc.GetEntriesFromString(FunctionData, out _);
 			List<ParamParam> paramParams = new List<ParamParam>();
 
-			foreach (Param param in ParamsList)
+			if (ParamsList != null)
 			{
-				if (param is ParamParam paramParam)
-					paramParams.Add(paramParam);
+				foreach (Param param in ParamsList)
+				{
+					if (param is ParamParam paramParam)
+						paramParams.Add(paramParam);
+				}
 			}
 
 			if (paramParams.Count != expectedParams.Count)

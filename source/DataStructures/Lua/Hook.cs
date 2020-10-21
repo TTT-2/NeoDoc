@@ -1,17 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures.Lua
 {
 	public class Hook : DataStructure
 	{
+		[JsonIgnore]
 		public string Line { get; set; }
-		public string HookName { get; set; }
-		public string HookData { get; set; }
+
+		[JsonIgnore]
 		public override string GlobalWrapper { get; set; } = "GM";
-		public List<Hook> Calls { get; set; } = new List<Hook>();
+
+		[JsonIgnore]
 		public bool IsMain { get; set; } = false;
+
+		[JsonIgnore]
+		public List<Hook> Calls { get; set; } = new List<Hook>();
+
+		[JsonIgnore]
+		public string HookName { get; set; }
+
+		public string HookData { get; set; }
 
 		public override Regex GetRegex()
 		{
@@ -42,6 +53,9 @@ namespace NeoDoc.DataStructures.Lua
 						break;
 					}
 				}
+
+				if (ParamsList.Count == 0)
+					ParamsList = null;
 			}
 
 			Match splitMatch = GetRegex().Match(Line);
