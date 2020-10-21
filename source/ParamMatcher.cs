@@ -99,8 +99,7 @@ namespace NeoDoc
 			{
 				paramSettings = NeoDoc.GetEntriesFromString(param, out lastPos).ToArray(); // get entries of the first list based on the first layer
 
-				if (lastPos == 0)
-					lastPos = param.IndexOf('[');
+				lastPos++;
 			}
 
 			if (lastPos == -1)
