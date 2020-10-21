@@ -32,10 +32,10 @@ namespace NeoDoc.Params
 		public override void ModifyFileParser(FileParser fileParser)
 		{
 			if (string.IsNullOrEmpty(Value))
-				NeoDoc.WriteErrors(new List<string>
+				NeoDoc.WriteErrors("Invalid param argument format", new List<string>
 				{
-					"Detected missing or wrong argument format for '@" + GetName() + "' param, Source: '" + fileParser.relPath + "' (ll. " + (fileParser.CurrentLineCount + 1) + ")"
-				});
+					"In '@" + GetName() + "' param"
+				}, fileParser.relPath, fileParser.CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.INVALID_PARAM_ARGS_FORMAT);
 
 			base.ModifyFileParser(fileParser);
 		}

@@ -53,9 +53,9 @@ namespace NeoDoc.DataStructures.Lua
 			string line = fileParser.Lines[fileParser.CurrentLineCount];
 
 			if (typs == null)
-				NeoDoc.WriteErrors(new List<string>() {
-					"AccessorFunc without '@accessor' param! Source: '" + fileParser.relPath + "' (ll. " + (fileParser.CurrentLineCount + 1) + ")",
-				});
+				NeoDoc.WriteErrors("Missing essential param", new List<string>{
+					"Missing '@accessor' in '" + GetName() + "' datastructure"
+				}, fileParser.relPath, fileParser.CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.MISSING_ESSENTIAL_PARAMS);
 
 			Match splitMatch = GetRegex().Match(line);
 

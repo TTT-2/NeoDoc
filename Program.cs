@@ -9,14 +9,14 @@ using System.Text;
 
 /*
  * TODO
- * FIX multiple hooks (multiple hook.Run / hook.Call of the same hook)
+ * 
+- detail.json -> for Wrapper and Sections: class/Armor/detail.json and class/ARMOR/none/detail.json
+  - detail.json: DataStructures, Descs, Authors
+ * param settings Color(255, 255, 255, 255) fix
+ * sort datastructures in lists
  * 
  * TODO
- * hook.(Run|Call) als Calls auflisten und deren beschreibung anhängen an die Main. Wenn es keine Main gibt, eine erstellen. Wenn später eine gefunden wird, einfach überschreiben! (Main ist dann GM:...)
- * Wenn es eine shared main gibt, dann diese als Main für Client und Servercalls nutzen!
- * 
- * TODO
- * Enums, global table, roleData etc. Fetch (class attributes)
+ * Enums, global table, roleData etc. fetch (class attributes)
  */
 
 namespace NeoDoc
@@ -24,22 +24,52 @@ namespace NeoDoc
 	internal static class NeoDoc
 	{
 		public const bool DEBUGGING = false;
-		public static string ERRORLOG = Directory.GetCurrentDirectory() + "../../../errors.txt";
 		public static int Progress = 0;
 
-		private static void Main(string[] args)
+		public enum ERROR_CODES: int
 		{
-			if (args.Length < 1)
-				return;
+			INVALID_COMMAND_LINE = 0x667,
+			BAD_ARGUMENTS = 0xA0,
+			NOT_EXISTS = 0x194,
+			MISSING_ESSENTIAL_PARAMS = 0x1000,
+			UNREGISTERED_PARAM = 0x2000,
+			PARAM_MISMATCH = 0x3000,
+			MERGING_ISSUE = 0x4000,
+			INVALID_PARAM_ARGS_FORMAT = 0x5000
+		}
 
-			string folder = args[0];
+		public static void Main()
+		{
+			string[] args = Environment.GetCommandLineArgs();
+
+			if (args.Length == 1)
+			{
+				Console.Error.WriteLine("Invalid command line (missing folder path)!");
+
+				Environment.ExitCode = (int)ERROR_CODES.INVALID_COMMAND_LINE;
+
+				return;
+			}
+
+			string folder = args[1];
 
 			if (string.IsNullOrEmpty(folder))
-				return;
+			{
+				Console.Error.WriteLine("Provided folder path is null or empty!");
 
-			// clear errorlog file
-			File.Delete(ERRORLOG);
-			File.Create(ERRORLOG).Dispose();
+				Environment.ExitCode = (int)ERROR_CODES.BAD_ARGUMENTS;
+
+				return;
+			}
+
+			if (!Directory.Exists(folder))
+			{
+				Console.Error.WriteLine("Provided folder '" + folder + "' does not exists!");
+
+				Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
+
+				return;
+			}
 
 			// Build the file tree
 			string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
@@ -120,25 +150,28 @@ namespace NeoDoc
 #pragma warning restore CS0162 // Unerreichbarer Code wurde entdeckt.
 		}
 
-		internal static void WriteErrors(List<string> errors)
+		internal static void WriteErrors(string title, List<string> errors, string relPath, int? foundLine, int? exitCode)
 		{
+			if (exitCode != null)
+			{
+				Console.WriteLine("Error " + exitCode);
+
+				Environment.ExitCode = (int)exitCode;
+			}
+
 			ConsoleColor oldColor = Console.ForegroundColor;
 
 			Console.ForegroundColor = ConsoleColor.Red;
 
 			TextWriter textWriter = Console.Error;
 
-			foreach (string error in errors)
-				textWriter.WriteLine(error);
+			StringBuilder errorBuilder = new StringBuilder((relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
 
-			// write to file additionally // TODO decide for one way
-			using (StreamWriter outputFile = File.AppendText(ERRORLOG))
-			{
-				foreach (string line in errors)
-					outputFile.WriteLine(line);
-			}
+			if (errors != null)
+				foreach (string error in errors)
+					errorBuilder.AppendLine(error);
 
-			textWriter.WriteLine("");
+			textWriter.WriteLine(errorBuilder.ToString());
 
 			Console.ForegroundColor = oldColor;
 		}

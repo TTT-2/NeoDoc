@@ -142,23 +142,22 @@ namespace NeoDoc.DataStructures.Lua
 			{
 				List<string> errors = new List<string>()
 				{
-					"Param mismatch in '" + GetName() + "' datastructure ('" + FunctionData + "', Source: '" + FoundPath + "' (ll. " + FoundLine + "))!",
-					"Given params (" + paramParams.Count + "): "
+					"In '" + GetName() + "' datastructure ('" + FunctionData + "'), detected params (" + paramParams.Count + "): "
 				};
 
 				foreach (ParamParam paramParam in paramParams)
 				{
-					errors.Add("- " + paramParam.Name);
+					errors.Add("- '" + paramParam.Name + "'");
 				}
 
 				errors.Add("Expected Params (" + expectedParams.Count + "): ");
 
 				foreach (string paramParamName in expectedParams)
 				{
-					errors.Add("- " + paramParamName);
+					errors.Add("- '" + paramParamName + "'");
 				}
 
-				NeoDoc.WriteErrors(errors);
+				NeoDoc.WriteErrors("Param mismatch", errors, FoundPath, FoundLine, (int)NeoDoc.ERROR_CODES.PARAM_MISMATCH);
 			}
 		}
 	}

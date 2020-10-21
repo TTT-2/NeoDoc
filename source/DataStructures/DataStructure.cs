@@ -53,9 +53,9 @@ namespace NeoDoc.DataStructures
 				Process(fileParser);
 
 			if (!Ignore && !foundRealm)
-				NeoDoc.WriteErrors(new List<string>{
-					"Missing '@realm' in " + GetName() + " '" + GetDatastructureName() + "', Source: '" + FoundPath + "' (ll. " + FoundLine + ")"
-				});
+				NeoDoc.WriteErrors("Missing essential param", new List<string>{
+					"Missing '@realm' in " + GetName() + " '" + GetDatastructureName() + "'"
+				}, FoundPath, FoundLine, (int)NeoDoc.ERROR_CODES.MISSING_ESSENTIAL_PARAMS);
 		}
 
 		public virtual void Check() // used to finally check for errors and to print them into the console

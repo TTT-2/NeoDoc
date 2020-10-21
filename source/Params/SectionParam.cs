@@ -101,11 +101,10 @@ namespace NeoDoc.Params
 
 						if (mergedDs == null)
 						{
-							NeoDoc.WriteErrors(new List<string>() {
+							NeoDoc.WriteErrors("Merging issue", new List<string>() {
 								"Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') while merging section '" + sectionParam.SectionName + "'!",
-								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
-								"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
-							});
+								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")"
+							}, dataStructure.FoundPath, dataStructure.FoundLine, (int)NeoDoc.ERROR_CODES.MERGING_ISSUE);
 						}
 						else if (mergedDs != alreadyExistingDs) // replace if new ds
 						{
@@ -146,11 +145,10 @@ namespace NeoDoc.Params
 
 						if (alreadyExistingDs != null)
 						{
-							NeoDoc.WriteErrors(new List<string>() {
+							NeoDoc.WriteErrors("Merging issue", new List<string>() {
 								"Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') in the same section ('" + SectionName + "')!",
-								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
-								"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
-							});
+								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")"
+							}, dataStructure.FoundPath, dataStructure.FoundLine, (int)NeoDoc.ERROR_CODES.MERGING_ISSUE);
 
 							continue;
 						}
@@ -195,11 +193,10 @@ namespace NeoDoc.Params
 
 						if (mergedDs == null)
 						{
-							NeoDoc.WriteErrors(new List<string>() {
+							NeoDoc.WriteErrors("Merging issue", new List<string>() {
 								"Tried to add an already existing global '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "')!",
-								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
-								"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
-							});
+								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")"
+							}, dataStructure.FoundPath, dataStructure.FoundLine, (int)NeoDoc.ERROR_CODES.MERGING_ISSUE);
 						}
 						else if (mergedDs != alreadyExistingDs) // replace if new ds
 						{
