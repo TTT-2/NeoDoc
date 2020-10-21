@@ -22,6 +22,7 @@ namespace NeoDoc.DataStructures.Lua
 		[JsonIgnore]
 		public string HookName { get; set; }
 
+		[JsonProperty("data")]
 		public string HookData { get; set; }
 
 		public override Regex GetRegex()

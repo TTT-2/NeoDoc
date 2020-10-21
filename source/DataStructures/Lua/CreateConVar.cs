@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures.Lua
 {
 	public class CreateConVar : DataStructure
 	{
 		private string Line { get; set; }
-		public string ConVarName { get; set; }
 		private string[] ConVarData { get; set; }
+
+		[JsonProperty("name")]
+		public string ConVarName { get; set; }
 
 		public override Regex GetRegex()
 		{

@@ -19,7 +19,10 @@ namespace NeoDoc.DataStructures
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public List<Param> ParamsList;
 
+		[JsonProperty("path")]
 		public string FoundPath;
+
+		[JsonProperty("line")]
 		public int FoundLine;
 
 		public abstract Regex GetRegex(); // returns the exact RegEx to match e.g. the Function

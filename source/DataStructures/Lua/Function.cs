@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NeoDoc.Params;
+using Newtonsoft.Json;
 
 namespace NeoDoc.DataStructures.Lua
 {
@@ -8,8 +9,12 @@ namespace NeoDoc.DataStructures.Lua
 	{
 		internal string Line { get; set; }
 		internal bool Local { get; set; }
-		internal string FunctionData { get; set; }
-		internal string Name { get; set; }
+
+		[JsonProperty("data")]
+		public string FunctionData { get; set; }
+
+		[JsonProperty("name")]
+		public string Name { get; set; }
 
 		public override Regex GetRegex()
 		{
