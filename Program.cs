@@ -10,8 +10,6 @@ using System.Text;
 /*
  * TODO
  * 
-- detail.json -> for Wrapper and Sections: class/Armor/detail.json and class/ARMOR/none/detail.json
-  - detail.json: DataStructures, Descs, Authors
  * param settings Color(255, 255, 255, 255) fix
  * sort datastructures in lists
  * 
@@ -25,6 +23,7 @@ namespace NeoDoc
 	{
 		public const bool DEBUGGING = false;
 		public static int Progress = 0;
+		public static string NEWDIR = Directory.GetCurrentDirectory() + "../../../output";
 
 		public enum ERROR_CODES: int
 		{
@@ -121,13 +120,14 @@ namespace NeoDoc
 
 			Directory.CreateDirectory(newDir);
 
-			// Write overview JSON
-			File.WriteAllText(newDir + "/overview.json", GenerateJSONIndex(wrapperList, globalsDict));
+			// Write single files
+			GenerateDocumentationData(wrapperList, globalsDict);
+
+			// Write overviews JSON
+			GenerateJSONIndex(wrapperList, globalsDict);
 
 			// Write search JSON
-			File.WriteAllText(newDir + "/search.json", GenerateJSONSearch(wrapperList, globalsDict));
-
-			GenerateDocumentationData(wrapperList, globalsDict);
+			GenerateJSONSearch(wrapperList, globalsDict);
 
 			WriteDebugInfo("Finished generating documentation.");
 		}
@@ -220,15 +220,15 @@ namespace NeoDoc
 			return wrapperParams;
 		}
 
-		private static string GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static void GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
 		{
 			Dictionary<string, object> jsonDict = new Dictionary<string, object>
 			{
 				{ "type", "overview" },
-				{ "name", "Overview" }
+				{ "name", "CompleteOverview" }
 			};
 
-			foreach (WrapperParam wrapper in wrapperParams)
+			foreach (WrapperParam wrapper in wrapperParams) // wrappers
 			{
 				if (!jsonDict.TryGetValue(wrapper.GetName(), out object wrapperDict))
 				{
@@ -237,25 +237,61 @@ namespace NeoDoc
 					jsonDict.Add(wrapper.GetName(), wrapperDict);
 				}
 
-				((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapper.GetDataDict());
+				Dictionary<string, object> wrapperData = wrapper.GetDataDict();
+
+				((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapperData);
+
+				// detail.json
+				string wrapperDir = NEWDIR + "/" + wrapper.GetName() + "/" + RemoveSpecialCharacters(wrapper.WrapperName);
+
+				// section detail.json
+				foreach (SectionParam section in wrapper.SectionDict.Values) // sections
+				{
+					Dictionary<string, object> sectionDataJson = new Dictionary<string, object>
+					{
+						{ "type", "overview" },
+						{ "name", "SectionOverview" },
+						{ "data", section.GetDataDict() }
+					};
+
+					File.WriteAllText(wrapperDir + "/" + section.SectionName + "/detail.json", JsonConvert.SerializeObject(sectionDataJson, Formatting.None, new JsonSerializerSettings
+					{
+						NullValueHandling = NullValueHandling.Ignore
+					}));
+				}
+
+				// wrapper detail.json
+				Dictionary<string, object> wrapperDataJson = new Dictionary<string, object>
+				{
+					{ "type", "overview" },
+					{ "name", "WrapperOverview" },
+					{ "data", wrapperData }
+				};
+
+				File.WriteAllText(wrapperDir + "/detail.json", JsonConvert.SerializeObject(wrapperDataJson, Formatting.None, new JsonSerializerSettings
+				{
+					NullValueHandling = NullValueHandling.Ignore
+				}));
 			}
 
-			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
+			// globals
+			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict) // key = type, value = Dictionary<wrapper, List<DataStructure>>
 			{
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
 
-				Dictionary<string, List<Dictionary<string, string>>> dsList = new Dictionary<string, List<Dictionary<string, string>>>();
+				// { WrapperParam, [{WrapperParam, [DataStructure]}] }
+				Dictionary<string, List<Dictionary<string, string>>> dsDictList = new Dictionary<string, List<Dictionary<string, string>>>();
 
-				foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value)
+				foreach (KeyValuePair<string, List<DataStructure>> globalsEntry in entry.Value) // key = wrapper, value = List<DataStructures>
 				{
 					foreach (DataStructure dataStructure in globalsEntry.Value)
 					{
-						if (!dsList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
+						if (!dsDictList.TryGetValue(globalsEntry.Key, out List<Dictionary<string, string>> tmpDsDict))
 						{
 							tmpDsDict = new List<Dictionary<string, string>>();
 
-							dsList.Add(globalsEntry.Key, tmpDsDict);
+							dsDictList.Add(globalsEntry.Key, tmpDsDict);
 						}
 
 						tmpDsDict.Add(new Dictionary<string, string>() {
@@ -265,22 +301,53 @@ namespace NeoDoc
 					}
 				}
 
-				if (dsList.Count > 0)
-					jsonDict.Add(entry.Key, dsList);
+				if (dsDictList.Count == 0)
+					continue;
+
+				jsonDict.Add(entry.Key, dsDictList); // type, data
+
+				// wrapper-only
+				foreach (KeyValuePair<string, List<Dictionary<string, string>>> listEntry in dsDictList) // key = wrapper, value = Dictionary<dsName, dsRealm>
+				{
+					Dictionary<string, object> wrapperDataJson = new Dictionary<string, object>
+					{
+						{ "type", "overview" },
+						{ "name", listEntry.Key + "Overview" },
+						{ "data", listEntry.Value }
+					};
+
+					File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key) + "/" + RemoveSpecialCharacters(listEntry.Key) + "/detail.json", JsonConvert.SerializeObject(wrapperDataJson, Formatting.None, new JsonSerializerSettings
+					{
+						NullValueHandling = NullValueHandling.Ignore
+					}));
+				}
+
+				// wrappers
+				Dictionary<string, object> wrappersDataJson = new Dictionary<string, object>
+				{
+					{ "type", "overview" },
+					{ "name", entry.Key + "Overview" },
+					{ "data", dsDictList }
+				};
+
+				File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key) + "/detail.json", JsonConvert.SerializeObject(wrappersDataJson, Formatting.None, new JsonSerializerSettings
+				{
+					NullValueHandling = NullValueHandling.Ignore
+				}));
 			}
 
-			return JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
+			File.WriteAllText(NEWDIR + "/overview.json", JsonConvert.SerializeObject(jsonDict, Formatting.None, new JsonSerializerSettings
 			{
 				NullValueHandling = NullValueHandling.Ignore
-			});
+			}));
 		}
 
-		private static string GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static void GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
 		{
 			// transform into structure "WRAPPER_TYPE[] -> WRAPPER -> DATASTRUCTURES[]"
 			Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>> wrapperTypesDict = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
 
-			foreach (WrapperParam wrapper in wrapperParams)
+			foreach (WrapperParam wrapper in wrapperParams) // wrappers
 			{
 				if (!wrapperTypesDict.TryGetValue(wrapper.GetName(), out Dictionary<string, List<Dictionary<string, string>>> wrappersDict))
 				{
@@ -293,11 +360,11 @@ namespace NeoDoc
 
 				wrappersDict.Add(wrapper.WrapperName, dsDict);
 
-				foreach (SectionParam section in wrapper.SectionDict.Values)
+				foreach (SectionParam section in wrapper.SectionDict.Values) // sections
 				{
-					foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict)
+					foreach (KeyValuePair<string, List<DataStructure>> keyValuePair in section.DataStructureDict) // ds types
 					{
-						foreach (DataStructure ds in keyValuePair.Value)
+						foreach (DataStructure ds in keyValuePair.Value) // ds
 						{
 							dsDict.Add(new Dictionary<string, string>()
 							{
@@ -357,19 +424,17 @@ namespace NeoDoc
 				tmpDict.Add(entry.Key, entry.Value);
 			}
 
-			return JsonConvert.SerializeObject(tmpDict, Formatting.None, new JsonSerializerSettings
+			File.WriteAllText(NEWDIR + "/search.json", JsonConvert.SerializeObject(tmpDict, Formatting.None, new JsonSerializerSettings
 			{
 				NullValueHandling = NullValueHandling.Ignore
-			});
+			}));
 		}
 
 		private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
 		{
-			string newDir = Directory.GetCurrentDirectory() + "../../../output";
-
 			foreach (WrapperParam wrapper in wrapperList)
 			{
-				string wrapperTypDir = newDir + "/" + wrapper.GetName();
+				string wrapperTypDir = NEWDIR + "/" + wrapper.GetName();
 
 				if (!Directory.Exists(wrapperTypDir))
 					Directory.CreateDirectory(wrapperTypDir);
@@ -405,7 +470,7 @@ namespace NeoDoc
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
 
-				string globalsPath = newDir + "/" + entry.Key;
+				string globalsPath = NEWDIR + "/" + entry.Key;
 
 				Directory.CreateDirectory(globalsPath);
 
