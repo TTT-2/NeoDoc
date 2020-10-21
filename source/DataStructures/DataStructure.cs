@@ -79,12 +79,10 @@ namespace NeoDoc.DataStructures
 				}
 			};
 
-			/* This is not needed because it can be builded based on the given params easily
-			object jsonData = GetData();
+			object data = GetData();
 
-			if (jsonData != null)
-				jsonDict.Add("data", jsonData);
-			*/
+			if (data != null)
+				jsonDict.Add("data", data);
 
 			if (ParamsList != null && ParamsList.Count > 0)
 			{
@@ -224,6 +222,11 @@ namespace NeoDoc.DataStructures
 			}
 
 			dsList.Add(dataStructure);
+		}
+
+		public virtual DataStructure Merge(DataStructure dataStructure)
+		{
+			return null;
 		}
 	}
 

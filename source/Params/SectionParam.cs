@@ -81,9 +81,12 @@ namespace NeoDoc.Params
 					}
 
 					DataStructure alreadyExistingDs = null;
+					int i = 0;
 
-					foreach (DataStructure tmpDs in finalDSList)
+					for (; i < finalDSList.Count; i++)
 					{
+						DataStructure tmpDs = finalDSList[i];
+
 						if (tmpDs.GetDatastructureName() == dataStructure.GetDatastructureName() && tmpDs.Realm == dataStructure.Realm)
 						{
 							alreadyExistingDs = tmpDs;
@@ -94,11 +97,20 @@ namespace NeoDoc.Params
 
 					if (alreadyExistingDs != null)
 					{
-						NeoDoc.WriteErrors(new List<string>() {
-							"Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') while merging section '" + sectionParam.SectionName + "'!",
-							"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
-							"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
-						});
+						DataStructure mergedDs = alreadyExistingDs.Merge(dataStructure);
+
+						if (mergedDs == null)
+						{
+							NeoDoc.WriteErrors(new List<string>() {
+								"Tried to add an already existing '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "') while merging section '" + sectionParam.SectionName + "'!",
+								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
+								"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
+							});
+						}
+						else if (mergedDs != alreadyExistingDs) // replace if new ds
+						{
+							finalDSList[i] = mergedDs;
+						}
 
 						continue;
 					}
@@ -163,8 +175,12 @@ namespace NeoDoc.Params
 						dsList.Add(dataStructure.GlobalWrapper, dsWrapperList);
 					}
 
-					foreach (DataStructure entry in dsWrapperList)
+					int i = 0;
+
+					for (; i < dsWrapperList.Count; i++)
 					{
+						DataStructure entry = dsWrapperList[i];
+
 						if (entry.GetDatastructureName() == dataStructure.GetDatastructureName() && entry.Realm == dataStructure.Realm)
 						{
 							alreadyExistingDs = entry;
@@ -175,11 +191,20 @@ namespace NeoDoc.Params
 
 					if (alreadyExistingDs != null)
 					{
-						NeoDoc.WriteErrors(new List<string>() {
-							"Tried to add an already existing global '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "')!",
-							"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
-							"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
-						});
+						DataStructure mergedDs = alreadyExistingDs.Merge(dataStructure);
+
+						if (mergedDs == null)
+						{
+							NeoDoc.WriteErrors(new List<string>() {
+								"Tried to add an already existing global '" + alreadyExistingDs.GetName() + "' datastructure ('" + alreadyExistingDs.GetDatastructureName() + "')!",
+								"Existing datastructure source: '" + alreadyExistingDs.FoundPath + "' (ll. " + alreadyExistingDs.FoundLine + ")",
+								"Adding-failed datastructure source: '" + dataStructure.FoundPath + "' (ll. " + dataStructure.FoundLine + ")"
+							});
+						}
+						else if (mergedDs != alreadyExistingDs) // replace if new ds
+						{
+							dsWrapperList[i] = mergedDs;
+						}
 
 						continue;
 					}

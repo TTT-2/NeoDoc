@@ -67,7 +67,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override object GetData()
 		{
-			return FunctionData;
+			return null;
 		}
 
 		public override string GetDatastructureName()
@@ -98,7 +98,8 @@ namespace NeoDoc.DataStructures.Lua
 							Realm = Realm,
 							Ignore = Ignore,
 							FoundLine = FoundLine,
-							FoundPath = FoundPath
+							FoundPath = FoundPath,
+							IsMain = true
 						};
 					}
 				}
@@ -118,7 +119,8 @@ namespace NeoDoc.DataStructures.Lua
 					Realm = Realm,
 					Ignore = Ignore,
 					FoundLine = FoundLine,
-					FoundPath = FoundPath
+					FoundPath = FoundPath,
+					IsMain = true
 				};
 			}
 
@@ -127,8 +129,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override void Check()
 		{
-			string dataStructureData = (string)GetData();
-			List<string> expectedParams = GetVarsFromFunction(dataStructureData);
+			List<string> expectedParams = GetVarsFromFunction(FunctionData);
 			List<ParamParam> paramParams = new List<ParamParam>();
 
 			foreach (Param param in ParamsList)
@@ -141,7 +142,7 @@ namespace NeoDoc.DataStructures.Lua
 			{
 				List<string> errors = new List<string>()
 				{
-					"Param mismatch in '" + GetName() + "' datastructure ('" + dataStructureData + "', Source: '" + FoundPath + "' (ll. " + FoundLine + "))!",
+					"Param mismatch in '" + GetName() + "' datastructure ('" + FunctionData + "', Source: '" + FoundPath + "' (ll. " + FoundLine + "))!",
 					"Given params (" + paramParams.Count + "): "
 				};
 

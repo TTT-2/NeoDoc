@@ -139,7 +139,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override object GetData()
 		{
-			return "accessor";
+			return null;
 		}
 	}
 }

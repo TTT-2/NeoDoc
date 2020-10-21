@@ -10,6 +10,8 @@ namespace NeoDoc.DataStructures.Lua
 		public string HookName { get; set; }
 		public string HookData { get; set; }
 		public override string GlobalWrapper { get; set; } = "GM";
+		public List<Hook> Calls { get; set; } = new List<Hook>();
+		public bool IsMain { get; set; } = false;
 
 		public override Regex GetRegex()
 		{
@@ -62,7 +64,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override object GetData()
 		{
-			return HookData;
+			return Calls;
 		}
 
 		public override string GetDatastructureName()
@@ -73,6 +75,37 @@ namespace NeoDoc.DataStructures.Lua
 		public override bool IsGlobal()
 		{
 			return true;
+		}
+
+		public override DataStructure Merge(DataStructure dataStructure)
+		{
+			if (dataStructure is Hook hook)
+			{
+				if (hook.IsMain)
+				{
+					if (IsMain) // both are main
+					{
+						return null; // error
+					}
+					else // just new one is main
+					{
+						hook.Calls = Calls; // set reference
+						Calls = new List<Hook>(); // clear reference
+
+						hook.Calls.Add(this); // add this as a call too
+
+						return hook; // replace the current ds with the new hook in the final ds list
+					}
+				}
+				else // new one isn't main
+				{
+					Calls.Add(hook);
+				}
+
+				return this; // this has merged
+			}
+
+			return base.Merge(dataStructure);
 		}
 	}
 }
