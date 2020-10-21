@@ -42,6 +42,11 @@ namespace NeoDoc.DataStructures
 					}
 					else if (curParam is IgnoreParam)
 						Ignore = true;
+					else if (curParam is DescParam descParam)
+					{
+						if (!string.IsNullOrEmpty(descParam.Text)) // just add if desc is not empty
+							copyParamList.Add(curParam);
+					}
 					else
 						copyParamList.Add(curParam);
 				}

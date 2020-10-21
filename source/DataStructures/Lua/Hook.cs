@@ -64,7 +64,12 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override object GetData()
 		{
-			return Calls;
+			if (Calls.Count == 0)
+				return null;
+
+			return new Dictionary<string, object>{
+				{ "calls", Calls }
+			};
 		}
 
 		public override string GetDatastructureName()
