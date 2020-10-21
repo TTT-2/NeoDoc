@@ -122,7 +122,7 @@ namespace NeoDoc.Params
 			}
 		}
 
-		internal void ProcessGlobals(SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		internal void ProcessGlobals(SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			SortedDictionary<string, SectionParam> tmpSectionDict = new SortedDictionary<string, SectionParam>();
 

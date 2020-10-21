@@ -119,7 +119,7 @@ namespace NeoDoc.Params
 			}
 		}
 
-		public void ProcessGlobals(SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		public void ProcessGlobals(SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			SortedDictionary<string, List<DataStructure>> finalDict = new SortedDictionary<string, List<DataStructure>>();
 
@@ -158,9 +158,9 @@ namespace NeoDoc.Params
 						continue;
 					}
 
-					if (!globalsDict.TryGetValue(dataStructure.GetName(), out Dictionary<string, List<DataStructure>> dsList))
+					if (!globalsDict.TryGetValue(dataStructure.GetName(), out SortedDictionary<string, List<DataStructure>> dsList))
 					{
-						dsList = new Dictionary<string, List<DataStructure>>();
+						dsList = new SortedDictionary<string, List<DataStructure>>();
 
 						globalsDict.Add(dataStructure.GetName(), dsList);
 					}

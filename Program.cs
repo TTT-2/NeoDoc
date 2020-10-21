@@ -9,10 +9,6 @@ using System.Text;
 
 /*
  * TODO
- * 
- * sort datastructures in lists
- * 
- * TODO
  * Enums, global table, roleData etc. fetch (class attributes)
  */
 
@@ -109,15 +105,13 @@ namespace NeoDoc
 				WriteDebugInfo("");
 			}
 
-			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict));
+			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict));
 
 			// Generate Folders
-			string newDir = Directory.GetCurrentDirectory() + "../../../output";
+			if (Directory.Exists(NEWDIR))
+				Directory.Delete(NEWDIR, true);
 
-			if (Directory.Exists(newDir))
-				Directory.Delete(newDir, true);
-
-			Directory.CreateDirectory(newDir);
+			Directory.CreateDirectory(NEWDIR);
 
 			// Write single files
 			GenerateDocumentationData(wrapperList, globalsDict);
@@ -177,11 +171,11 @@ namespace NeoDoc
 			Console.ForegroundColor = oldColor;
 		}
 
-		private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			SortedDictionary<string, WrapperParam> wrapperParamsDict = new SortedDictionary<string, WrapperParam>();
 
-			globalsDict = new SortedDictionary<string, Dictionary<string, List<DataStructure>>>();
+			globalsDict = new SortedDictionary<string, SortedDictionary<string, List<DataStructure>>>();
 
 			foreach (FileParser fileParser in fileParsers)
 			{
@@ -205,14 +199,29 @@ namespace NeoDoc
 				}
 			}
 
-			/* sort globals list
+			// sort
 			DataStructureComparator dataStructureComparator = new DataStructureComparator();
 
-			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> keyValuePair in globalsDict)
+			// sort wrappers
+			foreach (WrapperParam wrapper in wrapperParamsDict.Values)
 			{
-				keyValuePair.Value.Sort(dataStructureComparator);
+				foreach (SectionParam section in wrapper.SectionDict.Values)
+				{
+					foreach (KeyValuePair<string, List<DataStructure>> dsListEntry in section.DataStructureDict)
+					{
+						dsListEntry.Value.Sort(dataStructureComparator);
+					}
+				}
 			}
-			*/
+
+			// sort globals list
+			foreach (KeyValuePair<string, SortedDictionary<string, List<DataStructure>>> keyValuePair in globalsDict)
+			{
+				foreach (KeyValuePair<string, List<DataStructure>> dsListEntry in keyValuePair.Value)
+				{
+					dsListEntry.Value.Sort(dataStructureComparator);
+				}
+			}
 
 			WrapperParam[] wrapperParams = new WrapperParam[wrapperParamsDict.Count];
 
@@ -221,7 +230,7 @@ namespace NeoDoc
 			return wrapperParams;
 		}
 
-		private static void GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static void GenerateJSONIndex(List<WrapperParam> wrapperParams, SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			Dictionary<string, object> jsonDict = new Dictionary<string, object>
 			{
@@ -276,7 +285,7 @@ namespace NeoDoc
 			}
 
 			// globals
-			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict) // key = type, value = Dictionary<wrapper, List<DataStructure>>
+			foreach (KeyValuePair<string, SortedDictionary<string, List<DataStructure>>> entry in globalsDict) // key = type, value = Dictionary<wrapper, List<DataStructure>>
 			{
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
@@ -343,7 +352,7 @@ namespace NeoDoc
 			}));
 		}
 
-		private static void GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static void GenerateJSONSearch(List<WrapperParam> wrapperParams, SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			// transform into structure "WRAPPER_TYPE[] -> WRAPPER -> DATASTRUCTURES[]"
 			Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>> wrapperTypesDict = new Dictionary<string, Dictionary<string, List<Dictionary<string, string>>>>();
@@ -380,7 +389,7 @@ namespace NeoDoc
 
 			Dictionary<string, object> globalsShortDict = new Dictionary<string, object>();
 
-			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
+			foreach (KeyValuePair<string, SortedDictionary<string, List<DataStructure>>> entry in globalsDict)
 			{
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
@@ -431,7 +440,7 @@ namespace NeoDoc
 			}));
 		}
 
-		private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, Dictionary<string, List<DataStructure>>> globalsDict)
+		private static void GenerateDocumentationData(List<WrapperParam> wrapperList, SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
 		{
 			foreach (WrapperParam wrapper in wrapperList)
 			{
@@ -466,7 +475,7 @@ namespace NeoDoc
 			}
 
 			// add globals too
-			foreach (KeyValuePair<string, Dictionary<string, List<DataStructure>>> entry in globalsDict)
+			foreach (KeyValuePair<string, SortedDictionary<string, List<DataStructure>>> entry in globalsDict)
 			{
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
