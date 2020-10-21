@@ -10,7 +10,6 @@ using System.Text;
 /*
  * TODO
  * 
- * param settings Color(255, 255, 255, 255) fix
  * sort datastructures in lists
  * 
  * TODO
@@ -165,7 +164,9 @@ namespace NeoDoc
 
 			TextWriter textWriter = Console.Error;
 
-			StringBuilder errorBuilder = new StringBuilder((relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
+			StringBuilder errorBuilder = new StringBuilder();
+
+			errorBuilder.AppendLine((relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
 
 			if (errors != null)
 				foreach (string error in errors)
@@ -509,6 +510,96 @@ namespace NeoDoc
 			}
 
 			return sb.ToString();
+		}
+
+		public static List<string> GetEntriesFromString(string str, out int lastPos, int deepness = 0, int list = 0) // list = which list (index) of found lists
+		{
+			int bracketsDeepness = 0;
+			bool string1Active = false;
+			bool string2Active = false;
+			string tmpString = "";
+			int currentList = 0;
+
+			List<string> entriesList = new List<string>();
+
+			for (lastPos = 0; lastPos < str.Length; lastPos++)
+			{
+				char c = str[lastPos];
+
+				switch (c)
+				{
+					case '(':
+					case '{':
+					case '[':
+						if (bracketsDeepness > deepness) // if we are in a scope
+							tmpString += c;
+
+						if (!string1Active && !string2Active)
+							bracketsDeepness++;
+
+						break;
+					case ')':
+					case '}':
+					case ']':
+						if (!string1Active && !string2Active)
+						{
+							if (bracketsDeepness == deepness + 1)
+							{
+								if (!string.IsNullOrEmpty(tmpString) && currentList == list) // insert before starting a new list
+									entriesList.Add(tmpString.Trim());
+
+								tmpString = "";
+
+								currentList++; // increase current list count because the previous list has ended
+							}
+
+							bracketsDeepness--;
+						}
+
+						if (bracketsDeepness > deepness) // if we are in a scope
+							tmpString += c;
+
+						break;
+					case '"':
+						string1Active = !string1Active;
+
+						if (bracketsDeepness > deepness) // if we are in a scope
+							tmpString += c;
+
+						break;
+					case '\'':
+						string2Active = !string2Active;
+
+						if (bracketsDeepness > deepness) // if we are in a scope
+							tmpString += c;
+
+						break;
+					case ',':
+						if (bracketsDeepness == deepness + 1 && !string1Active && !string2Active) // if we are directly in the list and not in a string
+						{
+							if (!string.IsNullOrEmpty(tmpString) && currentList == list)
+								entriesList.Add(tmpString.Trim());
+
+							tmpString = "";
+						}
+						else
+						{
+							tmpString += c;
+						}
+
+						break;
+					default:
+						if (bracketsDeepness > deepness) // if we are in a scope
+							tmpString += c;
+
+						break;
+				}
+
+				if (bracketsDeepness < deepness || currentList > list) // don't continue, even if the line hasn't ended yet
+					break;
+			}
+
+			return entriesList;
 		}
 	}
 }

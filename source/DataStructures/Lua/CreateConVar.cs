@@ -44,7 +44,7 @@ namespace NeoDoc.DataStructures.Lua
 			Match splitMatch = GetRegex().Match(Line);
 			string result = Line.Substring(splitMatch.Index, Line.Length - splitMatch.Index);
 
-			ConVarData = GetVarsFromFunction(result).ToArray();
+			ConVarData = NeoDoc.GetEntriesFromString(result, out _).ToArray();
 			ConVarName = (name ?? ConVarData[0]).Trim('"');
 		}
 

@@ -129,7 +129,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override void Check()
 		{
-			List<string> expectedParams = GetVarsFromFunction(FunctionData);
+			List<string> expectedParams = NeoDoc.GetEntriesFromString(FunctionData, out _);
 			List<ParamParam> paramParams = new List<ParamParam>();
 
 			foreach (Param param in ParamsList)

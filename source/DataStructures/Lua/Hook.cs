@@ -50,7 +50,7 @@ namespace NeoDoc.DataStructures.Lua
 
 			bool mode = new Regex(@"\s*hook\.Call\s*\(").Match(Line).Success; // if false, "hook.Run(" is found
 
-			List<string> tmpData = GetVarsFromFunction(result);
+			List<string> tmpData = NeoDoc.GetEntriesFromString(result, out _);
 
 			HookName = GlobalWrapper + ":" + (name ?? tmpData[0]).Trim('"');
 

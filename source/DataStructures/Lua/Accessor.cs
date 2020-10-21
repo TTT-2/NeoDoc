@@ -59,7 +59,7 @@ namespace NeoDoc.DataStructures.Lua
 
 			Match splitMatch = GetRegex().Match(line);
 
-			List<string> tmpData = GetVarsFromFunction(line.Substring(splitMatch.Index, line.Length - splitMatch.Index));
+			List<string> tmpData = NeoDoc.GetEntriesFromString(line.Substring(splitMatch.Index, line.Length - splitMatch.Index), out _);
 
 			string wrapperName = tmpData[0].Trim();
 			string varName = tmpData[1].Trim('"');

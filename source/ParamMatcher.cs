@@ -78,9 +78,10 @@ namespace NeoDoc
 		}
 
 		// extracts the line's param string
-		private string ExtractLineParam(string line, out string[] paramSettings)
+		private string ExtractLineParam(string line, out string[] paramSettings, out string[] paramData)
 		{
 			paramSettings = null;
+			paramData = new string[0];
 
 			string param = line.TrimStart(lang.GetSingleCommentChar()).TrimStart();
 
@@ -89,39 +90,34 @@ namespace NeoDoc
 				return null;
 			}
 
-			string extractedParam = param.TrimStart('@').Split(' ')[0].ToLower();
-			string[] paramDataArr = extractedParam.Split('['); // e.g. split the default param data from "-- @return[default=false]"
+			string[] paramDataArr = param.Split(' ')[0].Split('['); // e.g. split the default param data from "-- @return[default=false] type text with [ etc." or "-- @note text with h[ .." too
+			string extractedParam = paramDataArr[0].TrimStart('@').ToLower();
 
-			if (paramDataArr.Length > 1)
+			int lastPos = param.IndexOf(' ');
+
+			if (paramDataArr.Length > 1) // there are settings
 			{
-				extractedParam = paramDataArr[0];
+				paramSettings = NeoDoc.GetEntriesFromString(param, out lastPos).ToArray(); // get entries of the first list based on the first layer
 
-				paramSettings = paramDataArr[1].TrimEnd(']').Trim().Split(',');
+				if (lastPos == 0)
+					lastPos = param.IndexOf('[');
 			}
 
-			return extractedParam;
-		}
+			if (lastPos == -1)
+				lastPos = 0;
 
-		// extracts the line's param string
-		private string[] ExtractLineParamData(string line)
-		{
-			string param = line.TrimStart(lang.GetSingleCommentChar()).TrimStart();
+			// paramData
+			string[] tmpParamData = param.Substring(lastPos).TrimStart('@').TrimStart().Split(' ');
 
-			if (!param.StartsWith("@"))
+			// clean the param data
+			paramData = new string[tmpParamData.Length];
+
+			for (int i = 0; i < paramData.Length; i++)
 			{
-				return null;
+				paramData[i] = tmpParamData[i].Trim();
 			}
 
-			// remove the param and get the other data
-			string[] arr = param.TrimStart('@').Split(' ');
-			string[] retArr = new string[arr.Length - 1];
-
-			for (int x = 1; x < arr.Length; x++)
-			{
-				retArr[x - 1] = arr[x];
-			}
-
-			return retArr;
+			return extractedParam.Trim();
 		}
 
 		// returns whether the current string / line is a comment
@@ -152,7 +148,7 @@ namespace NeoDoc
 		public Param GetLineParam(string line)
 		{
 			// extract possible param from line
-			string param = ExtractLineParam(line, out string[] paramSettings);
+			string param = ExtractLineParam(line, out string[] paramSettings, out string[] paramData);
 
 			if (param == null)
 				return null;
@@ -163,7 +159,7 @@ namespace NeoDoc
 				return null;
 
 			// let each val process the data on it's own (without the param prefix stuff)
-			val.Process(ExtractLineParamData(line));
+			val.Process(paramData);
 
 			if (paramSettings != null)
 				val.ProcessSettings(paramSettings);
