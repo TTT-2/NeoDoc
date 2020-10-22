@@ -96,17 +96,10 @@ namespace NeoDoc
 			int lastPos = param.IndexOf(' ');
 
 			if (paramDataArr.Length > 1) // there are settings
-			{
 				paramSettings = NeoDoc.GetEntriesFromString(param, out lastPos).ToArray(); // get entries of the first list based on the first layer
 
-				lastPos++;
-			}
-
-			if (lastPos == -1)
-				lastPos = 0;
-
 			// paramData
-			string[] tmpParamData = param.Substring(lastPos).TrimStart('@').TrimStart().Split(' ');
+			string[] tmpParamData = param.Substring(lastPos + 1).TrimStart('@').TrimStart().Split(' ');
 
 			// clean the param data
 			paramData = new string[tmpParamData.Length];

@@ -139,8 +139,6 @@ namespace NeoDoc.Params
 
 		public override void ModifyFileParser(FileParser fileParser)
 		{
-			// TODO what if Wrapper already exists
-
 			ProcessParamsList(fileParser.paramsList); // e.g. add @author to the wrapper's data
 
 			if (!fileParser.WrapperDict.TryGetValue(WrapperName, out WrapperParam foundWrapperParam))

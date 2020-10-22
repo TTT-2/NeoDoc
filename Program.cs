@@ -181,7 +181,7 @@ namespace NeoDoc
 			{
 				foreach (WrapperParam wrapper in fileParser.WrapperDict.Values)
 				{
-					if (wrapper.SectionDict.Count < 1) // do not process empty wrappers
+					if (wrapper.SectionDict.Count == 0) // do not process empty wrappers
 						continue;
 
 					bool exists = wrapperParamsDict.TryGetValue(wrapper.WrapperName, out WrapperParam finalWrapper);
@@ -252,7 +252,7 @@ namespace NeoDoc
 				((Dictionary<string, object>) wrapperDict).Add(wrapper.WrapperName, wrapperData);
 
 				// detail.json
-				string wrapperDir = NEWDIR + "/" + wrapper.GetName() + "/" + RemoveSpecialCharacters(wrapper.WrapperName);
+				string wrapperDir = NEWDIR + "/" + wrapper.GetName().ToLower() + "/" + RemoveSpecialCharacters(wrapper.WrapperName).ToLower();
 
 				// section detail.json
 				foreach (SectionParam section in wrapper.SectionDict.Values) // sections
@@ -263,8 +263,8 @@ namespace NeoDoc
 						{ "name", "SectionOverview" },
 						{ "data", section.GetDataDict() }
 					};
-
-					File.WriteAllText(wrapperDir + "/" + section.SectionName + "/detail.json", JsonConvert.SerializeObject(sectionDataJson, Formatting.None, new JsonSerializerSettings
+					
+					File.WriteAllText(wrapperDir + "/" + RemoveSpecialCharacters(section.SectionName).ToLower() + "/detail.json", JsonConvert.SerializeObject(sectionDataJson, Formatting.None, new JsonSerializerSettings
 					{
 						NullValueHandling = NullValueHandling.Ignore
 					}));
@@ -326,7 +326,7 @@ namespace NeoDoc
 						{ "data", listEntry.Value }
 					};
 
-					File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key) + "/" + RemoveSpecialCharacters(listEntry.Key) + "/detail.json", JsonConvert.SerializeObject(wrapperDataJson, Formatting.None, new JsonSerializerSettings
+					File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key).ToLower() + "/" + RemoveSpecialCharacters(listEntry.Key).ToLower() + "/detail.json", JsonConvert.SerializeObject(wrapperDataJson, Formatting.None, new JsonSerializerSettings
 					{
 						NullValueHandling = NullValueHandling.Ignore
 					}));
@@ -340,7 +340,7 @@ namespace NeoDoc
 					{ "data", dsDictList }
 				};
 
-				File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key) + "/detail.json", JsonConvert.SerializeObject(wrappersDataJson, Formatting.None, new JsonSerializerSettings
+				File.WriteAllText(NEWDIR + "/" + RemoveSpecialCharacters(entry.Key).ToLower() + "/detail.json", JsonConvert.SerializeObject(wrappersDataJson, Formatting.None, new JsonSerializerSettings
 				{
 					NullValueHandling = NullValueHandling.Ignore
 				}));
@@ -444,18 +444,18 @@ namespace NeoDoc
 		{
 			foreach (WrapperParam wrapper in wrapperList)
 			{
-				string wrapperTypDir = NEWDIR + "/" + wrapper.GetName();
+				string wrapperTypDir = NEWDIR + "/" + wrapper.GetName().ToLower();
 
 				if (!Directory.Exists(wrapperTypDir))
 					Directory.CreateDirectory(wrapperTypDir);
 
-				string wrapperDir = wrapperTypDir + "/" + RemoveSpecialCharacters(wrapper.WrapperName);
+				string wrapperDir = wrapperTypDir + "/" + RemoveSpecialCharacters(wrapper.WrapperName).ToLower();
 
 				Directory.CreateDirectory(wrapperDir);
 
 				foreach (SectionParam section in wrapper.SectionDict.Values)
 				{
-					string sectionDir = wrapperDir + "/" + section.SectionName;
+					string sectionDir = wrapperDir + "/" + RemoveSpecialCharacters(section.SectionName).ToLower();
 
 					Directory.CreateDirectory(sectionDir);
 
@@ -480,7 +480,7 @@ namespace NeoDoc
 				if (entry.Value.Count < 0)
 					continue; // don't include empty globals
 
-				string globalsPath = NEWDIR + "/" + entry.Key;
+				string globalsPath = NEWDIR + "/" + RemoveSpecialCharacters(entry.Key).ToLower();
 
 				Directory.CreateDirectory(globalsPath);
 
@@ -489,7 +489,7 @@ namespace NeoDoc
 					if (globalsEntry.Value.Count < 1)
 						continue;
 
-					string globalTypePath = globalsPath + "/" + globalsEntry.Key;
+					string globalTypePath = globalsPath + "/" + RemoveSpecialCharacters(globalsEntry.Key).ToLower();
 
 					Directory.CreateDirectory(globalTypePath);
 
