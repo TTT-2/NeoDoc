@@ -103,11 +103,11 @@ namespace NeoDoc.DataStructures
 			if (ParamsList != null && ParamsList.Count > 0)
 			{
 				// merge same datastructures together
-				SortedDictionary<string, List<object>> paramsDict = new SortedDictionary<string, List<object>>();
+				SortedDictionary<string, object> paramsDict = new SortedDictionary<string, object>();
 
 				foreach (Param param in ParamsList)
 				{
-					if (!paramsDict.TryGetValue(param.GetName(), out List<object> paramsJSONList))
+					if (!paramsDict.TryGetValue(param.GetName(), out object paramsJSONList))
 					{
 						paramsJSONList = new List<object>();
 
@@ -116,8 +116,29 @@ namespace NeoDoc.DataStructures
 
 					Dictionary<string, object> jsonData = param.GetJSONData();
 
-					if (jsonData.Count > 0)
-						paramsJSONList.Add(jsonData);
+					if (jsonData == null)
+					{
+						if (!(paramsJSONList is bool) && ((List<object>)paramsJSONList).Count == 0) // just replace by a bool if there is no data inserted
+						{
+							paramsDict.Remove(param.GetName());
+
+							paramsDict.Add(param.GetName(), true);
+						}
+					}
+					else if (jsonData.Count > 0) // if there is some additional data, transform into a list.
+					{
+						if (paramsJSONList is List<object> tmpList)
+							tmpList.Add(jsonData);
+						else
+						{
+							paramsDict.Remove(param.GetName());
+
+							paramsDict.Add(param.GetName(), new List<object>
+							{
+								jsonData
+							});
+						}
+					}
 				}
 
 				jsonDict.Add("params", paramsDict);

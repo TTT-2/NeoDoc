@@ -5,7 +5,13 @@ namespace NeoDoc.Params
 {
 	public abstract class Param
 	{
-		public Dictionary<string, string> SettingsDict { get; set; }
+		[JsonIgnore]
+		public string FoundPath;
+
+		[JsonIgnore]
+		public int FoundLine;
+
+		public Dictionary<string, object> SettingsDict { get; set; }
 
 		public abstract string GetName(); // returns the name of the param
 		public abstract void Process(string[] paramData); // paramData = everything except the @param prefix part
@@ -37,18 +43,24 @@ namespace NeoDoc.Params
 			if (paramSettings.Length < 1)
 				return;
 
-			SettingsDict = new Dictionary<string, string>();
+			SettingsDict = new Dictionary<string, object>();
 
 			foreach (string settingConstruct in paramSettings)
 			{
 				string[] settingSplit = settingConstruct.Trim().Split('='); // split e.g. "default=true"
 
-				SettingsDict.Add(settingSplit[0].Trim(), settingSplit.Length > 1 ? settingSplit[1].Trim() : "");
+				if (settingSplit.Length > 1)
+					SettingsDict.Add(settingSplit[0].Trim(), settingSplit[1].Trim());
+				else
+					SettingsDict.Add(settingSplit[0].Trim(), true);
 			}
 		}
 
 		public virtual void ModifyFileParser(FileParser fileParser)
 		{
+			FoundPath = fileParser.relPath;
+			FoundLine = fileParser.CurrentLineCount + 1;
+
 			fileParser.paramsList.Add(this); // add self into the list
 		}
 	}
