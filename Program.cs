@@ -18,7 +18,7 @@ namespace NeoDoc
 	{
 		public const bool DEBUGGING = false;
 		public static int Progress = 0;
-		public static string NEWDIR = Directory.GetCurrentDirectory() + "../../../output";
+		public static string NEWDIR = Directory.GetCurrentDirectory() + "/output";
 
 		public enum ERROR_CODES: int
 		{
@@ -31,6 +31,12 @@ namespace NeoDoc
 			MERGING_ISSUE = 0x4000,
 			INVALID_PARAM_ARGS_FORMAT = 0x5000,
 			NO_SETTINGS_PARAM = 0x6000
+		}
+
+		public static void Empty(this DirectoryInfo directory)
+		{
+			foreach(FileInfo file in directory.GetFiles()) file.Delete();
+			foreach(DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
 		}
 
 		public static void Main()
@@ -64,6 +70,21 @@ namespace NeoDoc
 				Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
 
 				return;
+			}
+
+			if (args.Length == 3) {
+				string outputFolderArg = args[2];
+
+				if (string.IsNullOrEmpty(outputFolderArg))
+				{
+					Console.Error.WriteLine("Provided output folder '" + outputFolderArg + "' is null or an empty string!");
+
+					Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
+
+					return;
+				}
+
+				NEWDIR = outputFolderArg;
 			}
 
 			// Build the file tree
@@ -109,10 +130,12 @@ namespace NeoDoc
 			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict));
 
 			// Generate Folders
-			if (Directory.Exists(NEWDIR))
-				Directory.Delete(NEWDIR, true);
-
-			Directory.CreateDirectory(NEWDIR);
+			DirectoryInfo outputFolderInfo = new DirectoryInfo(NEWDIR);
+			if (outputFolderInfo.Exists) {
+				outputFolderInfo.Empty();
+			} else {
+				Directory.CreateDirectory(NEWDIR);
+			}
 
 			// Write single files
 			GenerateDocumentationData(wrapperList, globalsDict);
