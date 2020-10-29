@@ -1,4 +1,4 @@
-﻿using NeoDoc.DataStructures;
+using NeoDoc.DataStructures;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 using Newtonsoft.Json;
@@ -18,7 +18,7 @@ namespace NeoDoc
 	{
 		public const bool DEBUGGING = false;
 		public static int Progress = 0;
-		public static string NEWDIR = Directory.GetCurrentDirectory() + "../../../output";
+		public static string NEWDIR = Directory.GetCurrentDirectory() + "/output";
 
 		public enum ERROR_CODES: int
 		{
@@ -64,6 +64,21 @@ namespace NeoDoc
 				Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
 
 				return;
+			}
+
+			if (args.Length == 3) {
+				string outputFolderArg = args[2];
+
+				if (string.IsNullOrEmpty(outputFolderArg))
+				{
+					Console.Error.WriteLine("Provided output folder '" + outputFolderArg + "' is null or an empty string!");
+
+					Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
+
+					return;
+				}
+
+				NEWDIR = outputFolderArg;
 			}
 
 			// Build the file tree
