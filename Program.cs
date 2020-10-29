@@ -1,4 +1,4 @@
-using NeoDoc.DataStructures;
+﻿using NeoDoc.DataStructures;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 using Newtonsoft.Json;
@@ -31,6 +31,12 @@ namespace NeoDoc
 			MERGING_ISSUE = 0x4000,
 			INVALID_PARAM_ARGS_FORMAT = 0x5000,
 			NO_SETTINGS_PARAM = 0x6000
+		}
+
+		public static void Empty(this System.IO.DirectoryInfo directory)
+		{
+			foreach(System.IO.FileInfo file in directory.GetFiles()) file.Delete();
+			foreach(System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
 		}
 
 		public static void Main()
@@ -124,10 +130,12 @@ namespace NeoDoc
 			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict));
 
 			// Generate Folders
-			if (Directory.Exists(NEWDIR))
-				Directory.Delete(NEWDIR, true);
-
-			Directory.CreateDirectory(NEWDIR);
+			DirectoryInfo outputFolderInfo = new DirectoryInfo(NEWDIR);
+			if (outputFolderInfo.Exists) {
+				outputFolderInfo.Empty();
+			} else {
+				Directory.CreateDirectory(NEWDIR);
+			}
 
 			// Write single files
 			GenerateDocumentationData(wrapperList, globalsDict);
