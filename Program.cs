@@ -33,10 +33,10 @@ namespace NeoDoc
 			NO_SETTINGS_PARAM = 0x6000
 		}
 
-		public static void Empty(this System.IO.DirectoryInfo directory)
+		public static void Empty(this DirectoryInfo directory)
 		{
-			foreach(System.IO.FileInfo file in directory.GetFiles()) file.Delete();
-			foreach(System.IO.DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
+			foreach(FileInfo file in directory.GetFiles()) file.Delete();
+			foreach(DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
 		}
 
 		public static void Main()
