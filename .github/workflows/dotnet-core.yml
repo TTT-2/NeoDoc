@@ -25,7 +25,7 @@ jobs:
         # Artifact name
         name: NeoDocCompiled
         # A file, directory or wildcard pattern that describes what to upload
-        path: /bin/Release/*
+        path: bin/Release/*
         retention-days: 30
     - name: Build and push Docker images
       uses: docker/build-push-action@v2.0.1
