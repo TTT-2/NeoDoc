@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET Core
       run: sudo apt-get install -y mono-complete
     - name: Install dependencies
-      run: msbuild restore
+      run: nuget install -o packages
     - name: Build executable
       run: msbuild -p:Configuration=Release
     - name: Build and push Docker images
