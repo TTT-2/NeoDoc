@@ -40,10 +40,10 @@ jobs:
         # Build's context is the set of files located in the specified PATH or URL
         context: .
         # List of tags
-        tags: docker.pkg.github.com/ttt-2/neodoc:dev
+        tags: docker.pkg.github.com/ttt-2/neodoc/neodoc:dev
         # Always attempt to pull a newer version of the image
         pull: true
         load: true
     - name: Push docker image
       if: github.event_name != 'pull_request'
-      run: docker push docker.pkg.github.com/ttt-2/neodoc:dev
+      run: docker push docker.pkg.github.com/ttt-2/neodoc/neodoc:dev
