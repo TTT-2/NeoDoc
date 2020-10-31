@@ -1,4 +1,4 @@
-name: .NET Core
+name: .NET Core build & build docker dev image
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
         # Build's context is the set of files located in the specified PATH or URL
         context: .
         # List of tags
-        tags: ghcr.io/ttt-2/neodoc:latest
+        tags: docker.pkg.github.com/ttt-2/neodoc:dev
         # Always attempt to pull a newer version of the image
         pull: true
         # Push is a shorthand for --output=type=registry
