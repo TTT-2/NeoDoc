@@ -43,7 +43,7 @@ namespace NeoDoc
 				subDirectory.Delete(true);
 		}
 
-		public static void Main()
+		public static int Main()
 		{
 			string[] args = Environment.GetCommandLineArgs();
 
@@ -51,9 +51,7 @@ namespace NeoDoc
 			{
 				Console.Error.WriteLine("Invalid command line (missing folder path)!");
 
-				Environment.ExitCode = (int)ERROR_CODES.INVALID_COMMAND_LINE;
-
-				return;
+				return (int)ERROR_CODES.INVALID_COMMAND_LINE;
 			}
 
 			string folder = args[1];
@@ -62,18 +60,14 @@ namespace NeoDoc
 			{
 				Console.Error.WriteLine("Provided folder path is null or empty!");
 
-				Environment.ExitCode = (int)ERROR_CODES.BAD_ARGUMENTS;
-
-				return;
+				return (int)ERROR_CODES.BAD_ARGUMENTS;
 			}
 
 			if (!Directory.Exists(folder))
 			{
 				Console.Error.WriteLine("Provided folder '" + folder + "' does not exists!");
 
-				Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
-
-				return;
+				return (int)ERROR_CODES.NOT_EXISTS;
 			}
 
 			if (args.Length > 2)
@@ -125,7 +119,7 @@ namespace NeoDoc
 			{
 				WriteDebugInfo("Finished checking the documentation.");
 
-				return;
+				return Environment.ExitCode;
 			}
 
 			// Generate Folders
@@ -146,6 +140,8 @@ namespace NeoDoc
 			GenerateJSONSearch(wrapperList, globalsDict);
 
 			WriteDebugInfo("Finished generating the documentation.");
+
+			return Environment.ExitCode;
 		}
 
 #pragma warning disable IDE0060 // Nicht verwendete Parameter entfernen
@@ -169,11 +165,7 @@ namespace NeoDoc
 		internal static void WriteErrors(string title, List<string> errors, string relPath, int? foundLine, int? exitCode)
 		{
 			if (exitCode != null)
-			{
-				Console.WriteLine("Error " + exitCode);
-
 				Environment.ExitCode = (int)exitCode;
-			}
 
 			ConsoleColor oldColor = Console.ForegroundColor;
 
@@ -183,13 +175,13 @@ namespace NeoDoc
 
 			StringBuilder errorBuilder = new StringBuilder();
 
-			errorBuilder.AppendLine((relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
+			errorBuilder.Append("\nError " + (exitCode != null ? ((int)exitCode).ToString() : "???") + ": " + (relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
 
 			if (errors != null)
 				foreach (string error in errors)
-					errorBuilder.AppendLine(error);
+					errorBuilder.Append("\n" + error);
 
-			textWriter.WriteLine(errorBuilder.ToString());
+			textWriter.WriteLine(errorBuilder.Append("\n").ToString());
 
 			Console.ForegroundColor = oldColor;
 		}
