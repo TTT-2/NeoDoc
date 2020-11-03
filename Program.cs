@@ -175,13 +175,13 @@ namespace NeoDoc
 
 			StringBuilder errorBuilder = new StringBuilder();
 
-			errorBuilder.Append("\nError " + (exitCode != null ? ((int)exitCode).ToString() : "???") + ": " + (relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
+			errorBuilder.AppendLine("Error " + (exitCode != null ? ((int)exitCode).ToString() : "???") + ": " + (relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
 
 			if (errors != null)
 				foreach (string error in errors)
-					errorBuilder.Append("\n" + error);
+					errorBuilder.AppendLine(error);
 
-			textWriter.WriteLine(errorBuilder.Append("\n").ToString());
+			textWriter.WriteLine(errorBuilder.ToString());
 
 			Console.ForegroundColor = oldColor;
 		}
