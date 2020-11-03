@@ -18,7 +18,7 @@ namespace NeoDoc
 	{
 		public const bool DEBUGGING = false;
 		public static int Progress = 0;
-		public static string NEWDIR = Directory.GetCurrentDirectory() + "/output";
+		public static string NEWDIR = "";
 
 		public enum ERROR_CODES: int
 		{
@@ -76,25 +76,8 @@ namespace NeoDoc
 				return;
 			}
 
-			bool generateDocumentation = true;
-
-			if (args.Length > 2) {
-				string outputFolderArg = args[2];
-
-				if (string.IsNullOrEmpty(outputFolderArg))
-				{
-					Console.Error.WriteLine("Provided output folder '" + outputFolderArg + "' is null or an empty string!");
-
-					Environment.ExitCode = (int)ERROR_CODES.NOT_EXISTS;
-
-					return;
-				}
-
-				NEWDIR = outputFolderArg;
-
-				if (args.Length > 3)
-					generateDocumentation = bool.Parse(args[3]);
-			}
+			if (args.Length > 2)
+				NEWDIR = args[2];
 
 			// Build the file tree
 			string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
@@ -138,7 +121,7 @@ namespace NeoDoc
 
 			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict));
 
-			if (!generateDocumentation)
+			if (string.IsNullOrEmpty(NEWDIR))
 			{
 				WriteDebugInfo("Finished checking the documentation.");
 
