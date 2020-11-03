@@ -61,15 +61,18 @@ namespace NeoDoc.DataStructures.Lua
 
 			Match splitMatch = GetRegex().Match(Line);
 
+			if (splitMatch.NextMatch().Success) // there are multiple hooks in this line
+				NeoDoc.WriteErrors("Multiple datastructures found", null, fileParser.relPath, fileParser.CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.MULTIPLE_DS_IN_LINE);
+
 			string result = Line.Substring(splitMatch.Index, Line.Length - splitMatch.Index);
 
-			bool mode = new Regex(@"\s*hook\.Call\s*\(").Match(Line).Success; // if false, "hook.Run(" is found
+			bool mode = new Regex(@"\s*hook\.Run\s*\(").Match(Line).Success; // if false, "hook.Call(" is found
 
 			List<string> tmpData = NeoDoc.GetEntriesFromString(result, out _);
 
 			HookName = GlobalWrapper + ":" + (name ?? tmpData[0]).Trim('"');
 
-			HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 2 : 1, tmpData.Count - (mode ? 2 : 1)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
+			HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 1 : 2, tmpData.Count - (mode ? 1 : 2)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
 		}
 
 		public override string GetName()

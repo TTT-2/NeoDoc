@@ -79,16 +79,23 @@ namespace NeoDoc.DataStructures.Lua
 			setterFunc.Line = line;
 			setterFunc.Local = local;
 			setterFunc.FunctionData = line;
-			setterFunc.Name = wrapperName + ":" + ("Set" + (name ?? funcPartName));
-			setterFunc.ParamsList = new List<Param>(ParamsList)
+			setterFunc.Name = wrapperName + ":" + "Set" + (name ?? funcPartName);
+
+			List<Param> _tmpList;
+
+			if (ParamsList == null)
+				_tmpList = new List<Param>();
+			else
+				_tmpList = new List<Param>(ParamsList);
+
+			setterFunc.ParamsList = _tmpList;
+
+			setterFunc.ParamsList.Add(new ParamParam()
 			{
-				new ParamParam()
-				{
-					Name = varName,
-					Typs = typs,
-					Description = typDesc
-				}
-			};
+				Name = varName,
+				Typs = typs,
+				Description = typDesc
+			});
 
 			// create a getter func
 			Function getterFunc = new Function
@@ -101,15 +108,20 @@ namespace NeoDoc.DataStructures.Lua
 			getterFunc.Line = line;
 			getterFunc.Local = local;
 			getterFunc.FunctionData = line;
-			getterFunc.Name = wrapperName + ":" + ("Get" + (name ?? funcPartName));
-			getterFunc.ParamsList = new List<Param>(ParamsList)
+			getterFunc.Name = wrapperName + ":" + "Get" + (name ?? funcPartName);
+
+			if (ParamsList == null)
+				_tmpList = new List<Param>();
+			else
+				_tmpList = new List<Param>(ParamsList);
+
+			getterFunc.ParamsList = _tmpList;
+
+			getterFunc.ParamsList.Add(new ReturnParam()
 			{
-				new ReturnParam()
-				{
-					Typs = typs,
-					Description = typDesc
-				}
-			};
+				Typs = typs,
+				Description = typDesc
+			});
 
 			// now add the datastructure into the current section of the current container
 			if (!fileParser.CurrentSection.DataStructureDict.TryGetValue(getterFunc.GetName(), out List<DataStructure> dsList))

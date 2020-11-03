@@ -30,13 +30,17 @@ namespace NeoDoc
 			PARAM_MISMATCH = 0x3000,
 			MERGING_ISSUE = 0x4000,
 			INVALID_PARAM_ARGS_FORMAT = 0x5000,
-			NO_SETTINGS_PARAM = 0x6000
+			NO_SETTINGS_PARAM = 0x6000,
+			MULTIPLE_DS_IN_LINE = 0x7000
 		}
 
 		public static void Empty(this DirectoryInfo directory)
 		{
-			foreach(FileInfo file in directory.GetFiles()) file.Delete();
-			foreach(DirectoryInfo subDirectory in directory.GetDirectories()) subDirectory.Delete(true);
+			foreach(FileInfo file in directory.GetFiles())
+				file.Delete();
+
+			foreach(DirectoryInfo subDirectory in directory.GetDirectories())
+				subDirectory.Delete(true);
 		}
 
 		public static void Main()
@@ -72,7 +76,9 @@ namespace NeoDoc
 				return;
 			}
 
-			if (args.Length == 3) {
+			bool generateDocumentation = true;
+
+			if (args.Length > 2) {
 				string outputFolderArg = args[2];
 
 				if (string.IsNullOrEmpty(outputFolderArg))
@@ -85,6 +91,9 @@ namespace NeoDoc
 				}
 
 				NEWDIR = outputFolderArg;
+
+				if (args.Length > 3)
+					generateDocumentation = bool.Parse(args[3]);
 			}
 
 			// Build the file tree
@@ -129,13 +138,20 @@ namespace NeoDoc
 
 			List<WrapperParam> wrapperList = new List<WrapperParam>(ProcessFileParsers(fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict));
 
+			if (!generateDocumentation)
+			{
+				WriteDebugInfo("Finished checking the documentation.");
+
+				return;
+			}
+
 			// Generate Folders
 			DirectoryInfo outputFolderInfo = new DirectoryInfo(NEWDIR);
-			if (outputFolderInfo.Exists) {
+
+			if (outputFolderInfo.Exists)
 				outputFolderInfo.Empty();
-			} else {
+			else
 				Directory.CreateDirectory(NEWDIR);
-			}
 
 			// Write single files
 			GenerateDocumentationData(wrapperList, globalsDict);
@@ -146,7 +162,7 @@ namespace NeoDoc
 			// Write search JSON
 			GenerateJSONSearch(wrapperList, globalsDict);
 
-			WriteDebugInfo("Finished generating documentation.");
+			WriteDebugInfo("Finished generating the documentation.");
 		}
 
 #pragma warning disable IDE0060 // Nicht verwendete Parameter entfernen
