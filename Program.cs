@@ -2,6 +2,7 @@
 using NeoDoc.Langs;
 using NeoDoc.Params;
 using Newtonsoft.Json;
+using CommandLine;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,13 +17,13 @@ namespace NeoDoc
 {
 	internal static class NeoDoc
 	{
-		public const bool DEBUGGING = false;
-		public static int Progress = 0;
+		public static bool DEBUGGING;
+		public static int Progress;
 		public static string NEWDIR = "";
+        public static string ErrorLogFormat = "auto";
 
 		public enum ERROR_CODES: int
 		{
-			INVALID_COMMAND_LINE = 1,
 			BAD_ARGUMENTS = 2,
 			NOT_EXISTS = 3,
 			MISSING_ESSENTIAL_PARAMS = 4,
@@ -43,38 +44,44 @@ namespace NeoDoc
 				subDirectory.Delete(true);
 		}
 
-		public static int Main()
-		{
-			string[] args = Environment.GetCommandLineArgs();
+        public class Options
+        {
+            [Option('f', "format", Default = "auto", Required = false, HelpText = "Choose a log message format (auto, standard, github).")]
+            public string LogFormat { get; set; }
 
-			if (args.Length == 1)
-			{
-				Console.Error.WriteLine("Invalid command line (missing folder path)!");
+            [Option('v', "verbose", Default = false, Required = false, HelpText = "Should the output be more verbose and contain debugging logs?")]
+            public bool Verbose { get; set; }
 
-				return (int)ERROR_CODES.INVALID_COMMAND_LINE;
-			}
+            [Value(0, Required = true, HelpText = "The source folder to check and read files from.")]
+            public string Folder { get; set; }
 
-			string folder = args[1];
+            [Value(1, HelpText = "Set this to a path and you will generate json output (usually used by external applications such as NeoVis).")]
+            public string OutputFolder { get; set; }
+        }
 
-			if (string.IsNullOrEmpty(folder))
-			{
-				Console.Error.WriteLine("Provided folder path is null or empty!");
+        public static int Main(string[] args)
+        {
+            return Parser.Default.ParseArguments<Options>(args)
+                .MapResult(
+                    Run,
+                    error => (int) ERROR_CODES.BAD_ARGUMENTS
+                );
+        }
 
-				return (int)ERROR_CODES.BAD_ARGUMENTS;
-			}
+        public static int Run(Options options) {
+            NEWDIR = options.OutputFolder;
+            ErrorLogFormat = options.LogFormat;
+            DEBUGGING = options.Verbose;
 
-			if (!Directory.Exists(folder))
-			{
-				Console.Error.WriteLine("Provided folder '" + folder + "' does not exists!");
+            if (!Directory.Exists(options.Folder))
+            {
+                Console.Error.WriteLine("Provided folder '" + options.Folder + "' does not exists!");
 
-				return (int)ERROR_CODES.NOT_EXISTS;
-			}
+                return (int) ERROR_CODES.NOT_EXISTS;
+            }
 
-			if (args.Length > 2)
-				NEWDIR = args[2];
-
-			// Build the file tree
-			string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+            // Build the file tree
+            string[] files = Directory.GetFiles(options.Folder, "*.*", SearchOption.AllDirectories);
 
 			// Prepare the files
 			List<FileParser> fileParsers = new List<FileParser>();
@@ -87,7 +94,7 @@ namespace NeoDoc
 			{
 				string file = files[n];
 
-				string relPath = file.Remove(0, folder.Length);
+				string relPath = file.Remove(0, options.Folder.Length);
 				relPath = relPath.TrimStart('\\');
 				relPath = relPath.Replace('\\', '/');
 
@@ -144,11 +151,8 @@ namespace NeoDoc
 			return Environment.ExitCode;
 		}
 
-#pragma warning disable IDE0060 // Nicht verwendete Parameter entfernen
 		internal static void WriteDebugInfo(string debugInfo)
-#pragma warning restore IDE0060 // Nicht verwendete Parameter entfernen
 		{
-#pragma warning disable CS0162 // Unerreichbarer Code wurde entdeckt.
 			if (!DEBUGGING)
 				return;
 
@@ -159,10 +163,9 @@ namespace NeoDoc
 			Console.Out.WriteLine(debugInfo);
 
 			Console.ForegroundColor = oldColor;
-#pragma warning restore CS0162 // Unerreichbarer Code wurde entdeckt.
 		}
 
-		internal static void WriteErrors(string title, List<string> errors, string relPath, int? foundLine, int? exitCode)
+		internal static void WriteErrors(string message, List<string> errors, string relPath, int? foundLine, int? exitCode)
 		{
 			if (exitCode != null)
 				Environment.ExitCode = (int)exitCode;
@@ -173,17 +176,56 @@ namespace NeoDoc
 
 			TextWriter textWriter = Console.Error;
 
+			textWriter.WriteLine(formatLogMessage(message, errors, relPath, foundLine, exitCode));
+
+			Console.ForegroundColor = oldColor;
+		}
+
+		private static string formatLogMessage(string message, List<string> errors, string relPath, int? foundLine, int? exitCode) {
+			switch (ErrorLogFormat) {
+				case "auto":
+					if (System.Environment.GetEnvironmentVariable("GITHUB_ACTIONS") != null && System.Environment.GetEnvironmentVariable("GITHUB_WORKFLOW") != null) {
+						return formatGithub(message, errors, relPath, foundLine, exitCode);
+					}
+					return formatStandard(message, errors, relPath, foundLine, exitCode);
+				case "standard":
+					return formatStandard(message, errors, relPath, foundLine, exitCode);
+				case "github":
+					return formatGithub(message, errors, relPath, foundLine, exitCode);
+				default:
+					Console.Error.WriteLine("Could not understand the given format param, falling back to mode: standard");
+					return formatStandard(message, errors, relPath, foundLine, exitCode);
+			}
+		}
+
+		private static string formatStandard(string message, List<string> errors, string relPath, int? foundLine, int? exitCode) {
 			StringBuilder errorBuilder = new StringBuilder();
 
-			errorBuilder.AppendLine("Error " + (exitCode != null ? ((int)exitCode).ToString() : "???") + ": " + (relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + title);
+			errorBuilder.AppendLine("Error " + (exitCode != null ? ((int)exitCode).ToString() : "???") + ": " + (relPath ?? "?") + ": [Warning] line " + (foundLine != null ? ((int)foundLine).ToString() : "?") + ": " + message);
 
 			if (errors != null)
 				foreach (string error in errors)
 					errorBuilder.AppendLine(error);
+			
+			return errorBuilder.ToString();
+		}
 
-			textWriter.WriteLine(errorBuilder.ToString());
+		private static string formatGithub(string message, List<string> errors, string relPath, int? foundLine, int? exitCode) {
+			string output = "::error ";
+			
+			output += "file=" + (relPath ?? "?") + ",";
+			output += "line=" + (foundLine != null ? ((int)foundLine).ToString() : "?");
+			output += "::";
+			output += "Code (" + (exitCode != null ? ((int)exitCode).ToString() : "???") + ") ";
+			output += message + "\\n";
 
-			Console.ForegroundColor = oldColor;
+			if (errors != null)
+				output += "Errors: \\n";
+				foreach (string error in errors)
+					output += error + "\\n";
+			
+			// Also output human readable format for the log files
+			return output + "\n" + formatStandard(message, errors, relPath, foundLine, exitCode);
 		}
 
 		private static WrapperParam[] ProcessFileParsers(List<FileParser> fileParsers, out SortedDictionary<string, SortedDictionary<string, List<DataStructure>>> globalsDict)
