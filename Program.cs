@@ -216,13 +216,12 @@ namespace NeoDoc
 			output += "file=" + (relPath ?? "?") + ",";
 			output += "line=" + (foundLine != null ? ((int)foundLine).ToString() : "?");
 			output += "::";
-			output += "Code (" + (exitCode != null ? ((int)exitCode).ToString() : "???") + ") ";
-			output += message + "\\n";
+			output += message;
 
 			if (errors != null)
-				output += "Errors: \\n";
+				output += " -->";
 				foreach (string error in errors)
-					output += error + "\\n";
+					output += " \"" + error + "\"";
 			
 			// Also output human readable format for the log files
 			return output + "\n" + formatStandard(message, errors, relPath, foundLine, exitCode);
