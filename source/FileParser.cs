@@ -91,9 +91,9 @@ namespace NeoDoc
 
 					if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
 					{
-						NeoDoc.WriteErrors("Unregistered param detected", new List<string>() {
-							"'" + foundLineParamString + "' ('" + line + "')"
-						}, relPath, CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.UNREGISTERED_PARAM);
+						//NeoDoc.WriteErrors("Unregistered param detected", new List<string>() {
+						//	"'" + foundLineParamString + "' ('" + line + "')"
+						//}, relPath, CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.UNREGISTERED_PARAM);
 					}
 					else
 					{
