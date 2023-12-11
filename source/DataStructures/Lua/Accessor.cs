@@ -8,7 +8,7 @@ namespace NeoDoc.DataStructures.Lua
 	{
 		public override Regex GetRegex()
 		{
-			return new Regex(@"\s*AccessorFunc(DT)?\s*\("); // RegEx matches "hook.Run(" or "hook.Call("
+			return new Regex(@"\s*AccessorFunc(DT)?\s*\((\w|,|\s)+\)"); // RegEx matches "hook.Run(" or "hook.Call("
 		}
 
 		public override bool CheckMatch(string line)
