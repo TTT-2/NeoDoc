@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NeoDoc.DataStructures;
 using NeoDoc.Langs;
 using NeoDoc.Params;
 
@@ -21,6 +22,7 @@ namespace NeoDoc
 
 		internal readonly string relPath;
 		internal int CurrentLineCount { get; set; }
+		internal int CurrentMatchedLines { get; set; }
 		internal List<Param> paramsList { get; set; }
 
 		public SortedDictionary<string, WrapperParam> WrapperDict { get; set; }
@@ -70,15 +72,41 @@ namespace NeoDoc
 			{
 				string line = Lines[CurrentLineCount];
 
-				if (string.IsNullOrEmpty(line)) // ignore empty lines
-					continue;
-
-				if (!paramMatcher.IsLineComment(line)) // if there is no comment but something else. That means the doc comment section has end
+				if (string.IsNullOrEmpty(line))
 				{
-					langMatcher.GetDataStructureType(lang, line)?.Initialize(this);
-
-					// cleans the params list to be used for the next function or whatever, even if there is no dataStructure match
+					// There shouldn't be empty lines between docs and their datastructure
+					// we therefore discard the params list here.
 					paramsList.Clear();
+					continue;
+				}
+
+				// if this line is not a comment it means the doc comment section has ended
+				// and we should now be able to find a datastructure.
+				if (!paramMatcher.IsLineComment(line))
+				{
+					line = line.TrimEnd();
+					DataStructure dataStructure = langMatcher.GetDataStructureType(lang, line);
+					int counter = 1;
+
+					// Search the next lines incrementally for a datastructure and only stop once
+					// we find one or when the next line would be empty or a comment
+					while(dataStructure == null
+							&& CurrentLineCount + counter < Lines.Length
+							&& !string.IsNullOrEmpty(Lines[CurrentLineCount + counter])
+							&& !paramMatcher.IsLineComment(Lines[CurrentLineCount + counter]))
+					{
+						line = line + Lines[CurrentLineCount + counter].TrimEnd();
+						dataStructure = langMatcher.GetDataStructureType(lang, line);
+						counter++;
+					}
+
+					if (dataStructure != null)
+					{
+						CurrentMatchedLines = counter;
+						dataStructure.Initialize(this);
+						paramsList.Clear();
+						CurrentLineCount = CurrentLineCount + counter - 1;
+					}
 
 					continue;
 				}
@@ -89,29 +117,23 @@ namespace NeoDoc
 				{
 					string foundLineParamString = paramMatcher.GetLineParamString(line);
 
-					if (!string.IsNullOrEmpty(foundLineParamString)) // if there is a not registered param
+					if (paramMatcher.IsLineCommentStart(line)) // if matching e.g. "---"
 					{
-						//NeoDoc.WriteErrors("Unregistered param detected", new List<string>() {
-						//	"'" + foundLineParamString + "' ('" + line + "')"
-						//}, relPath, CurrentLineCount + 1, (int)NeoDoc.ERROR_CODES.UNREGISTERED_PARAM);
+						// start with a new description by default.
+						// HINT: That means that if using e.g. `---` instead of `--` while
+						// documenting e.g. a param addition in a new line, this line will be
+						// handled as a new description entry instead of a continued
+						// param addition / param description.
+						lineParam = new DescParam();
+
+						paramsList.Add(lineParam);
 					}
-					else
+					else if (paramsList.Count > 0) // if there are params in the list
 					{
-						if (paramMatcher.IsLineCommentStart(line)) // if matching e.g. "---"
-						{
-							paramsList.Clear(); // clear the paramsList if a new docu block starts
-
-							lineParam = new DescParam(); // start with a new description by default. HINT: That means that if using e.g. `---` instead of `--` while documenting e.g. a param addition in a new line, this line will be handled as a new description entry instead of a continued param addition / param description.
-
-							paramsList.Add(lineParam);
-						}
-						else if (paramsList.Count > 0) // if there are params in the list
-						{
-							lineParam = paramsList.ElementAt(paramsList.Count - 1); // use last param as new line param to support multiline commenting style e.g.
-						}
-
-						lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
+						lineParam = paramsList.ElementAt(paramsList.Count - 1); // use last param as new line param to support multiline commenting style e.g.
 					}
+
+					lineParam?.ProcessAddition(paramMatcher.GetLineCommentData(line)); // add additional content
 				}
 				else
 				{

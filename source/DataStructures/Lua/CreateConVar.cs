@@ -15,7 +15,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override Regex GetRegex()
 		{
-			return new Regex(@"\s*CreateConVar\s*\(");
+			return new Regex(@"\s*CreateConVar\s*\(.*\)");
 		}
 
 		public override bool CheckMatch(string line)
@@ -25,8 +25,6 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override void Process(FileParser fileParser)
 		{
-			Line = fileParser.Lines[fileParser.CurrentLineCount];
-
 			string name = null;
 
 			if (ParamsList != null && ParamsList.Count > 0)
@@ -45,6 +43,11 @@ namespace NeoDoc.DataStructures.Lua
 
 				if (ParamsList.Count == 0)
 					ParamsList = null;
+			}
+
+			for (int j = 0; j < fileParser.CurrentMatchedLines; j++)
+			{
+				Line = Line + fileParser.Lines[fileParser.CurrentLineCount + j];
 			}
 
 			Match splitMatch = GetRegex().Match(Line);

@@ -18,7 +18,8 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override Regex GetRegex()
 		{
-			return new Regex(@"(^\s*(local\s+)?\s*|@)function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*)?\)"); // RegEx matches "@function opt.name(param, opt)" or "local function opt:name()"
+			// RegEx matches "@function opt.name(param, opt)" or "local function opt:name()"
+			return new Regex(@"(^\s*(local\s+)?\s*|@)function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*)?\)");
 		}
 
 		public override bool CheckMatch(string line)
@@ -44,7 +45,10 @@ namespace NeoDoc.DataStructures.Lua
 				}
 			}
 
-			Line = fileParser.Lines[fileParser.CurrentLineCount];
+			for (int j = 0; j < fileParser.CurrentMatchedLines; j++)
+			{
+				Line = Line + fileParser.Lines[fileParser.CurrentLineCount + j];
+			}
 
 			if (!Local)
 			{
