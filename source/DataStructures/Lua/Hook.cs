@@ -27,7 +27,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override Regex GetRegex()
 		{
-			return new Regex(@"\s*hook\.(Run|Call)\s*\(.*\)"); // RegEx matches "hook.Run(" or "hook.Call("
+			return new Regex(@"hook\.(Run|Call)\s*\(.*\)"); // RegEx matches "hook.Run(" or "hook.Call("
 		}
 
 		public override bool CheckMatch(string line)

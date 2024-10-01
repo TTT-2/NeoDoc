@@ -15,7 +15,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override Regex GetRegex()
 		{
-			return new Regex(@"\s*CreateConVar\s*\(.*\)");
+			return new Regex(@"CreateConVar\s*\(.*\)");
 		}
 
 		public override bool CheckMatch(string line)
