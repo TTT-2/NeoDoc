@@ -19,7 +19,7 @@ namespace NeoDoc.DataStructures.Lua
 		public override Regex GetRegex()
 		{
 			// RegEx matches "@function opt.name(param, opt)" or "local function opt:name()"
-			return new Regex(@"(^\s*(local\s+)?\s*|@)function\s*\w+((\.|\:)\w+)*\s*\((\w+\s*(,\s*\w+\s*)*)?\)");
+			return new Regex(@"((local\s+)?|@)function\s*\w+((\.|\:)\w+)?\s*\((\s*\w+\s*(,\s*\w+\s*)*)?\)");
 		}
 
 		public override bool CheckMatch(string line)
