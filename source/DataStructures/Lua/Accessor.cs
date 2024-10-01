@@ -53,7 +53,12 @@ namespace NeoDoc.DataStructures.Lua
 			if (local)
 				Ignore = true;
 
-			string line = fileParser.Lines[fileParser.CurrentLineCount];
+			string line = "";
+
+			for (int j = 0; j < fileParser.CurrentMatchedLines; j++)
+			{
+				line = line + fileParser.Lines[fileParser.CurrentLineCount + j];
+			}
 
 			if (typs == null)
 				NeoDoc.WriteErrors("Missing essential param", new List<string>{

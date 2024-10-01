@@ -27,7 +27,7 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override Regex GetRegex()
 		{
-			return new Regex(@"\s*hook\.(Run|Call)\s*\("); // RegEx matches "hook.Run(" or "hook.Call("
+			return new Regex(@"\s*hook\.(Run|Call)\s*\(.*\)"); // RegEx matches "hook.Run(" or "hook.Call("
 		}
 
 		public override bool CheckMatch(string line)
@@ -37,7 +37,6 @@ namespace NeoDoc.DataStructures.Lua
 
 		public override void Process(FileParser fileParser)
 		{
-			Line = fileParser.Lines[fileParser.CurrentLineCount];
 
 			string name = null;
 
@@ -59,6 +58,11 @@ namespace NeoDoc.DataStructures.Lua
 					ParamsList = null;
 			}
 
+			for (int j = 0; j < fileParser.CurrentMatchedLines; j++)
+			{
+				Line = Line + fileParser.Lines[fileParser.CurrentLineCount + j];
+			}
+
 			Match splitMatch = GetRegex().Match(Line);
 
 			if (splitMatch.NextMatch().Success) // there are multiple hooks in this line
@@ -66,13 +70,14 @@ namespace NeoDoc.DataStructures.Lua
 
 			string result = Line.Substring(splitMatch.Index, Line.Length - splitMatch.Index);
 
-			bool mode = new Regex(@"\s*hook\.Run\s*\(").Match(Line).Success; // if false, "hook.Call(" is found
+			bool hookRun = new Regex(@"hook\.Run\s*\(").Match(Line).Success; // if false, "hook.Call(" is found
 
 			List<string> tmpData = NeoDoc.GetEntriesFromString(result, out _);
 
 			HookName = GlobalWrapper + ":" + (name ?? tmpData[0]).Trim('"');
 
-			HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(mode ? 1 : 2, tmpData.Count - (mode ? 1 : 2)).ToArray()) + ")"; // "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
+			// "hook.Call( string eventName, table gamemodeTable, vararg args )" or "hook.Run( string eventName, vararg args )"
+			HookData = HookName + "(" + string.Join(", ", tmpData.GetRange(hookRun ? 1 : 2, tmpData.Count - (hookRun ? 1 : 2)).ToArray()) + ")";
 		}
 
 		public override string GetName()
