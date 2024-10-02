@@ -7,42 +7,34 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      run: sudo apt-get install -y mono-complete
-    - name: Install dependencies
-      run: nuget install -o packages
-    - name: Build executable
-      run: msbuild -p:Configuration=Release
-    - name: Set release version env var
-      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-    - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2.2.0
-      with:
-        # Artifact name
-        name: NeoDoc-${{ env.RELEASE_VERSION }}
-        # A file, directory or wildcard pattern that describes what to upload
-        path: bin/Release/*
-        retention-days: 90
-    - name: Login to GitHub Registry
-      uses: docker/login-action@v1 
-      with:
-        registry: docker.pkg.github.com
-        username: $GITHUB_ACTOR
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build and push Docker images
-      uses: docker/build-push-action@v2.0.1
-      with:
-        # Build's context is the set of files located in the specified PATH or URL
-        context: .
-        # List of tags
-        tags: docker.pkg.github.com/ttt-2/neodoc/neodoc:${{ env.RELEASE_VERSION }}
-        # Always attempt to pull a newer version of the image
-        pull: true
-        load: true
-    - name: Push docker image
-      run: docker push docker.pkg.github.com/ttt-2/neodoc/neodoc:${{ env.RELEASE_VERSION }}
+      - uses: actions/checkout@v4
+      - name: Setup .NET Core
+        run: sudo apt-get install -y mono-complete
+      - name: Install dependencies
+        run: nuget install -o packages
+      - name: Build executable
+        run: msbuild -p:Configuration=Release
+      - name: Set release version env var
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeoDoc-${{ env.RELEASE_VERSION }}
+          path: bin/Release/*
+          retention-days: 90
+      - name: Login to GitHub Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v6
+        with:
+          tags: ghcr.io/ttt-2/neodoc/neodoc:${{ env.RELEASE_VERSION }}
+          pull: true
+          push: true
+          load: true
